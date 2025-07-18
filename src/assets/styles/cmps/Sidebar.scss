@@ -1,80 +1,72 @@
 .sidebar {
   width: 250px;
-  padding: 1.5rem 1rem;
   height: 100vh;
+  padding: 1rem 1.5rem;
   background-color: #fff;
   border-right: 1px solid #dbdbdb;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  position: fixed;
-  top: 0;
-  left: 0;
 
-  .sidebar-header {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+  .logo {
+    font-family: 'Pacifico', cursive; // סגנון דומה ל־Instagram
+    font-size: 1.8rem;
+    font-weight: normal;
     color: #262626;
-    padding-bottom: 2rem;
-    padding-left: 0.5rem;
+    margin-bottom: 1rem;
+    padding-left: 0.3rem;
   }
 
-  .nav-links {
+  nav {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
-  }
-
-  .logout-section {
-    margin-top: auto;
-    padding-top: 2rem;
-    border-top: 1px solid #eee;
+    gap: 1.3rem; // מרווחים אחידים בין כפתורים
+    flex-grow: 1;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
     gap: 1rem;
-    font-size: 1rem;
     text-decoration: none;
     color: #262626;
-    padding: 0.3rem 0.5rem;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-
-    &:hover {
-      background-color: #f2f2f2;
-    }
+    font-size: 1rem;
+    transition: background 0.2s;
 
     &.active {
       font-weight: bold;
     }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .label {
+      display: inline-block;
+    }
+  }
+
+  .logout {
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
   }
 
   @media (max-width: 768px) {
-    width: 72px;
-    padding: 1rem 0.5rem;
+    width: 80px;
 
-    .sidebar-header {
+    .logo {
       display: none;
     }
 
     .nav-link {
       justify-content: center;
 
-      span {
+      .label {
         display: none;
       }
-    }
-
-    .logout-section {
-      border-top: none;
     }
   }
 }
