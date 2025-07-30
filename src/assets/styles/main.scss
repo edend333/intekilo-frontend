@@ -13,8 +13,15 @@
 
 
 // pages
-
+@import "pages/homePage.scss";
+@import "pages/modalPost.scss";
 // Components
-@import "cmps/Sidebar.scss";
+@import "cmps/sidebar.scss";
+@import "cmps/post-preview.scss";
+@import "cmps/postList.scss";
+@import "cmps/rightSidebar.scss";
 
+
+// 
+@import './RootCmp';
 

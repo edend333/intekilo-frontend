@@ -8,65 +8,139 @@
   flex-direction: column;
 
   .logo {
-    font-family: 'Pacifico', cursive; // סגנון דומה ל־Instagram
+    font-family: 'Pacifico', cursive;
     font-size: 1.8rem;
-    font-weight: normal;
     color: #262626;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     padding-left: 0.3rem;
   }
 
   nav {
     display: flex;
     flex-direction: column;
-    gap: 1.3rem; // מרווחים אחידים בין כפתורים
-    flex-grow: 1;
+    gap: 1.5rem;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
     gap: 1rem;
+    font-size: 1rem;
     text-decoration: none;
     color: #262626;
-    font-size: 1rem;
-    transition: background 0.2s;
+    font-weight: 500;
+    transition: background-color 0.2s, font-weight 0.2s;
+      font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
 
-    &.active {
-      font-weight: bold;
-    }
-
-    .icon {
+    svg {
       width: 24px;
       height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+        fill: #000;
+        stroke: none;
+      stroke-width: 2;
     }
 
-    .label {
-      display: inline-block;
+    &:hover {
+      font-weight: 600;
+    }
+
+    &.active {
+      font-weight: 700;
     }
   }
 
-  .logout {
-    padding-top: 1.5rem;
-    border-top: 1px solid #eee;
+.logout {
+  margin-top: auto;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+
+  .nav-link {
+    padding-left: 0;
   }
+}
+  //  איקונים בלבד
+// @media (max-width: 768px) {
+//   .sidebar {
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     height: 100vh;
+//     width: 72px;
+//     background-color: white;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: flex-start;
+//     padding-top: 1rem;
+//     border-right: 1px solid #ddd;
+//     z-index: 1000;
+//   }
 
-  @media (max-width: 768px) {
-    width: 80px;
+//   .logo {
+//     display: none;
+//   }
 
-    .logo {
-      display: none;
+//   nav {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 1.2rem;
+//   }
+
+//   .nav-link {
+//     justify-content: center;
+//     padding: 0.6rem;
+//     flex-direction: column;
+//     align-items: center;
+//   }
+
+//   .nav-link span.label {
+//     display: none;
+//   }
+
+//   .logout {
+//     margin-top: auto;
+//     padding-bottom: 1rem;
+//     width: 100%;
+//     display: flex;
+//     justify-content: center;
+//   }
+// };
+
+  @media (max-width: 480px) {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-right: none;
+    border-top: 1px solid #dbdbdb;
+
+    nav {
+      flex-direction: row;
+      gap: 0;
     }
 
     .nav-link {
+      flex-direction: column;
       justify-content: center;
 
-      .label {
+      svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      span.label {
         display: none;
       }
+    }
+
+    .logout {
+      display: none;
     }
   }
 }
