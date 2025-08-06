@@ -1,47 +1,59 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
-
-import { userService } from '../services/user'
-import { login } from '../store/user.actions'
+import { useState } from 'react'
 
 export function Login() {
-    const [users, setUsers] = useState([])
-    const [credentials, setCredentials] = useState({ username: '', password: '', fullname: '' })
+  const [credentials, setCredentials] = useState({ username: '', password: '' })
 
-    const navigate = useNavigate()
+  function handleChange(ev) {
+    const { name, value } = ev.target
+    setCredentials(prev => ({ ...prev, [name]: value }))
+  }
 
-    useEffect(() => {
-        loadUsers()
-    }, [])
+  function handleSubmit(ev) {
+    ev.preventDefault()
+    console.log('Logging in with:', credentials)
+    // פה אפשר להוסיף התחברות בפועל בעתיד
+  }
 
-    async function loadUsers() {
-        const users = await userService.getUsers()
-        setUsers(users)
-    }
+  return (
+    <section className="login-page">
+      <div className="login-box">
+        <h1 className="logoLogin">InstaKilo</h1>
 
-    async function onLogin(ev = null) {
-        if (ev) ev.preventDefault()
-
-        if (!credentials.username) return
-        await login(credentials)
-        navigate('/')
-    }
-
-    function handleChange(ev) {
-        const field = ev.target.name
-        const value = ev.target.value
-        setCredentials({ ...credentials, [field]: value })
-    }
-    return (
-        <form className="login-form" onSubmit={onLogin}>
-            <select
-                name="username"
-                value={credentials.username}
-                onChange={handleChange}>
-                    <option value="">Select User</option>
-                    {users.map(user => <option key={user._id} value={user.username}>{user.fullname}</option>)}
-            </select>
-            <button>Login</button>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="username"
+            placeholder="מספר טלפון, שם משתמש או אימייל"
+            value={credentials.username}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="סיסמה"
+            value={credentials.password}
+            onChange={handleChange}
+          />
+          <button className="btn-login">התחבר/י</button>
         </form>
-    )
-}
+
+        <div className="divider">או</div>
+
+        {/* <button className="facebook-login">התחבר/י באמצעות פייסבוק</button> */}
+        <a className="forgot-password" href="#">שכחת את הסיסמה?</a>
+
+        <div className="signup-prompt">
+          אין לך חשבון? <a href="/signup">הרשמה</a>
+        </div>
+
+        <footer className="login-footer">
+          עברית · הסכמי פשרה · Meta Verified · Instagram from Meta · Threads · תנאים · פרטיות · קוקיז · עוד
+        </footer>
+      </div>
+
+      <div className="image-section">
+        <img src="public/img/loginImg.png" alt="loginImg" />
+      </div>
+    </section>
+  )
+} 

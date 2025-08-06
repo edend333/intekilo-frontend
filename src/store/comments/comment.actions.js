@@ -31,6 +31,7 @@ export async function loadComments(postId) {
 
 // Add a comment to a post
 export async function addComment(postId, txt) {
+
   try {
     const savedComment = await commentService.add(postId, txt)
     store.dispatch({ type: ADD_COMMENT, comment: savedComment })
