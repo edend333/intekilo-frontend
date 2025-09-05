@@ -1,0 +1,163 @@
+@use '../setup/variables' as vars;
+
+/* ברירת מחדל (סב-מובייל): מוסתר */
+.sidebar { display: none; }
+
+/* ≤767px — הופך לנאב תחתון */
+@media (max-width: 767.98px){
+  :where(.app, .main-container) > .sidebar{
+    position: fixed !important;
+    left: 0; right: 0; bottom: 0; top: auto !important;
+
+    /* פס צר ומרוכז כמו אינסטה */
+    max-width: 480px;            /* אפשר 420–520 לפי טעם */
+    margin-inline: auto;
+    padding-inline: 8px;
+
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr);
+    justify-content: center !important;
+    column-gap: 8px;
+
+    align-items: center; justify-items: center;
+    height: var(--bottom-nav-h, 56px);
+    background: #fff;
+    border-top: 1px solid #dbdbdb;
+    border-right: none !important;
+    z-index: 1000;
+  }
+
+  :where(.app, .main-container) > .sidebar nav{ display: contents; }
+
+  :where(.app, .main-container) > .sidebar .nav-link{
+    width: 100%; height: 100%;
+    padding: 0; border-radius: 0;
+    display: grid; place-items: center;
+    transition: background-color 0.2s ease;
+    
+    &:hover{ background:#f5f5f5; }
+    
+    &:focus {
+      outline: 2px solid #0095f6;
+      outline-offset: 2px;
+      background: #f5f5f5;
+    }
+    
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+    
+    &.is-active {
+      .icon svg {
+        fill: #262626;
+        stroke: #262626;
+      }
+    }
+  }
+
+  :where(.app, .main-container) > .sidebar .icon{ width:24px; height:24px; display:grid; place-items:center; }
+  :where(.app, .main-container) > .sidebar .label,
+  :where(.app, .main-container) > .sidebar .logo,
+  :where(.app, .main-container) > .sidebar .logout{ display:none !important; }
+}
+
+/* ≥768px — מצב מצומצם (72px, אייקונים בלבד) */
+@media (min-width: vars.$bp-sm){
+  .sidebar{
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100dvh - var(--header-h));
+    align-self: start;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+
+    inline-size: var(--left-nav-collapsed);
+    width: var(--left-nav-collapsed);
+    background: #fff;
+    border-right: 1px solid #dbdbdb;
+    z-index: 10;
+  }
+
+  .sidebar .logo{ display: none; }
+  .sidebar .label{ display: none; }
+
+  .sidebar nav{ display: grid; gap: 4px; }
+
+  .sidebar .nav-link{
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; height: 48px; padding: 0 12px; border-radius: 9999px;
+    color:#262626; text-decoration:none; cursor:pointer;
+    position: relative;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    
+    &:hover{ 
+      background:#f5f5f5; 
+      
+      /* Tooltip */
+      &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 8px;
+        padding: 6px 8px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        font-size: 12px;
+        border-radius: 4px;
+        white-space: nowrap;
+        z-index: 1000;
+        pointer-events: none;
+      }
+    }
+    
+    &:focus {
+      outline: 2px solid #0095f6;
+      outline-offset: 2px;
+      background: #f5f5f5;
+    }
+    
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+    
+    &.is-active{ 
+      font-weight: 600; 
+      color: #262626;
+      
+      .icon svg {
+        fill: #262626;
+      }
+    }
+  }
+
+  .sidebar .icon{ width:24px; height:24px; flex:0 0 24px; display:grid; place-items:center; }
+
+  /* כפתור יציאה בתחתית, מוצג במצומצם */
+  .sidebar .logout{ margin-top: auto; display:block; }
+  .sidebar .logout .nav-link{ justify-content: center; }
+}
+
+/* ≥1264px — מצב מורחב (244px, אייקון + טקסט + לוגו) */
+@media (min-width: vars.$bp-lg){
+  .sidebar{
+    inline-size: var(--left-nav-expanded);
+    width: var(--left-nav-expanded);
+  }
+  .sidebar .nav-link{ justify-content: flex-start; }
+  .sidebar .label{ display: inline; font-size: 16px; }
+  .sidebar .logo{
+    display:block; text-align:left; padding-inline:12px;
+    font-size:22px; font-weight:700;
+  }
+}
+
+/* RTL */
+[dir="rtl"] .sidebar{
+  border-right: none;
+  border-left: 1px solid #dbdbdb;
+}

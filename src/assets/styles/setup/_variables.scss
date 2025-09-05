@@ -1,4 +1,16 @@
-// Colors
+/* ===== Layout tokens (SCSS) ===== */
+$header-h:            60px;
+$left-nav-collapsed:  72px;   // אייקונים בלבד
+$left-nav-expanded:   244px;  // אייקון + טקסט
+$feed-width:          470px;  // רוחב כרטיס פיד אינסטה
+$right-rail-width:    319px;  // הצעות/פרופיל בצד ימין
+
+
+$bp-sm: 768px;   // טאבלט: סרגל מופיע (אייקונים בלבד)
+$bp-md: 1024px;  // דסקטופ: אופציונלי right-rail
+$bp-lg: 1264px;  // דסקטופ רחב: סרגל נפתח (טקסט)
+
+
 $clr1: #ce2e6c;
 $clr2: #4f3a65;
 $clr3: #574f7d;
@@ -12,7 +24,17 @@ $gray2: #aaa;
 $gray3: #777;
 $gray4: #333;
 
-// Breakpoints
+
 $mobile-breakpoint: 460px;
 $narrow-breakpoint: 720px;
 $normal-breakpoint: 960px;
+
+/* ===== CSS Custom Properties מגוזרים מה-SCSS (מניעת פערים) ===== */
+:root{
+  --header-h:             #{$header-h};
+  --left-nav-collapsed:   #{$left-nav-collapsed};
+  --left-nav-expanded:    #{$left-nav-expanded};
+  --feed-width:           #{$feed-width};
+  --right-rail-width:     #{$right-rail-width};
+   --bottom-nav-h: 56px;
+}
