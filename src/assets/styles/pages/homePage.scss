@@ -6,7 +6,8 @@
 }
 
 .feed {
-    width: 470px;
+    max-width: 470px;
+    width: 100%;
     margin-right: 60px;
     min-height: 300vh;
 }
@@ -66,4 +67,33 @@
     font-size: 12px;
     margin-top: 20px;
     color: #c7c7c7;
+}
+
+/* Responsive design */
+@media (max-width: 1023px) {
+    .feed-layout {
+        gap: 20px;
+    }
+    
+    .suggestions {
+        display: none;
+    }
+    
+    .feed {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .home-page {
+        padding: 0;
+    }
+    
+    .feed-layout {
+        gap: 0;
+    }
+    
+    .feed {
+        margin-right: 0;
+    }
 }
