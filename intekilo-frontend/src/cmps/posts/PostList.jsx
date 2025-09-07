@@ -1,16 +1,30 @@
-import { useSelector } from 'react-redux'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { PostPreview } from './PostPreview.jsx'
 import { useScroll } from '../../customHooks/useScroll.js'
-import { loadPosts } from '../../store/posts/post.actions.js'
 import { useNavigate } from 'react-router'
+import { api } from '../../lib/api.js'
 
 export function PostList() {
   const navigate = useNavigate()
-  const posts = useSelector(state => state.postModule.posts || [])
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // כאן תשלבי בעתיד את הקריאה לשרת עם page/limit
+    async function loadPosts() {
+      try {
+        console.log('🔄 PostList: Starting to load posts from server...')
+        setLoading(true)
+        const postsData = await api('/api/post')
+        console.log('📊 PostList: Received posts from server:', postsData)
+        console.log('📈 PostList: Number of posts:', postsData.length)
+        setPosts(postsData)
+      } catch (error) {
+        console.error('❌ PostList: Failed to load posts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
     loadPosts()
   }, [])
 
@@ -19,7 +33,8 @@ export function PostList() {
     console.log('Reached bottom - load more from server')
   })
 
-  if (!posts?.length) return <div>Loading posts...</div>
+  if (loading) return <div>Loading posts...</div>
+  if (!posts?.length) return <div>No posts found</div>
 
   return (
     <>

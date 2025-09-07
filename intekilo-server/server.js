@@ -1,66 +1,61 @@
-import express from 'express'
+import http from 'http'
+import path from 'path'
 import cors from 'cors'
+import express from 'express'
+import cookieParser from 'cookie-parser'
+import dotenv from 'dotenv'
+dotenv.config()
 
-import { carService } from './services/car.service.js'
-import { loggerService } from './services/logger.service.js'
-
+import connectDB from './config/mongoConnect.js'
+import { authRoutes } from './api/auth/auth.routes.js'
+import { userRoutes } from './api/user/user.routes.js'
+import { reviewRoutes } from './api/review/review.routes.js'
+import { postRoutes } from './api/post/post.routes.js'
+import { setupSocketAPI } from './services/socket.service.js'
+import { setupAsyncLocalStorage } from './middlewares/setupAls.middleware.js'
+import { loggerService as logger } from './services/logger.service.js'
 const app = express()
-app.use(express.static('public'))
+const server = http.createServer(app)
 
-const corsOptions = {
-	origin: [
-        'http://127.0.0.1:5173',
-        'http://localhost:5173',
-        'http://127.0.0.1:5174',
-        'http://localhost:5174',
+app.use(cookieParser())
+app.use(express.json())
+app.use(setupAsyncLocalStorage)
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.resolve('public')))
+} else {
+  app.use(cors({
+    origin: [
+      'http://127.0.0.1:8080',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://localhost:5173',
     ],
-	credentials: true,
+    credentials: true,
+  }))
 }
 
-app.use(cors(corsOptions))
+app.use('/api/post', postRoutes)
 
-app.get('/', (req, res) => {
-	res.send('Welcome to Express!!!')
-})
+// setupSocketAPI(server)
 
-app.get('/puki', (req, res) => {
-	res.send('Hello Puki')
-})
+// fallback – לשים בסוף
+// app.get('/*', (req, res) => {
+//   res.sendFile(path.resolve('public/index.html'))
+// })
 
-app.get('/nono', (req, res) => res.redirect('/'))
+const port = process.env.PORT || 3030
 
-app.get('/api/car', async (req, res) => {
-    const cars = await carService.query()
-	res.send(cars)
-})
+const startServer = async () => {
+  try {
+    await connectDB()
+    server.listen(port, () => {
+      logger.info('Server is running on: ' + `http://localhost:${port}/`)
+    })
+  } catch (error) {
+    logger.error('Failed to start server:', error)
+    process.exit(1)
+  }
+}
 
-app.get('/api/car/save', async (req, res) => {
-    const { vendor, speed, _id } = req.query
-    const carToSave = { vendor, speed: +speed, _id }
-
-    const savedCar = await carService.save(carToSave)
-	res.send(savedCar)
-})
-
-app.get('/api/car/:id', async (req, res) => {
-    const carId = req.params.id
-
-    try {
-        const car = await carService.getById(carId)
-        res.send(car)
-    } catch (err) {
-        loggerService.error(err)
-        res.status(404).send(err)
-    }
-
-})
-
-app.get('/api/car/:id/remove', async (req, res) => {
-    const carId = req.params.id
-
-    await carService.remove(carId)
-	res.send('OK')
-})
-
-const port = 3030
-app.listen(port, () => loggerService.info(`Server listening on port http://127.0.0.1:${port}/`))
+startServer()

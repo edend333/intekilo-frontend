@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-export const loggerService = {
+export const logger = {
     debug(...args) {
         doLog('DEBUG', ...args)
     },
@@ -14,6 +14,9 @@ export const loggerService = {
         doLog('ERROR', ...args)
     }
 }
+
+// Keep backward compatibility
+export const loggerService = logger
 
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) {

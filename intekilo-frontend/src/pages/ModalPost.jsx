@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
-import { loadPostById } from '../store/posts/post.actions'
 
 export function ModalPost() {
   const { postId } = useParams()
