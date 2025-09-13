@@ -1,0 +1,227 @@
+// Signup Page Styles - Instagram-like design
+.signup-page {
+  min-height: 100vh;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  direction: rtl; // Hebrew support
+  text-align: right;
+}
+
+.signup-container {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// Main Signup Card
+.signup-card {
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 1px;
+  padding: 40px 40px 20px;
+  text-align: center;
+
+  .logo {
+    margin-bottom: 12px;
+    
+    h1 {
+      font-family: 'Billabong', cursive;
+      font-size: 51px;
+      font-weight: 400;
+      margin: 0;
+      color: #262626;
+    }
+  }
+
+  .signup-subtitle {
+    color: #8e8e8e;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0 40px 20px;
+    direction: rtl;
+    text-align: center;
+  }
+
+  .facebook-btn {
+    width: 100%;
+    background-color: #0095f6;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #1877f2;
+    }
+
+    .facebook-icon {
+      background-color: white;
+      color: #0095f6;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #8e8e8e;
+    font-size: 13px;
+    font-weight: 600;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #dbdbdb;
+    }
+
+    span {
+      padding: 0 20px;
+    }
+  }
+
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    input {
+      width: 100%;
+      padding: 9px 0 7px 8px;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+      background-color: #fafafa;
+      font-size: 12px;
+      color: #262626;
+      outline: none;
+      box-sizing: border-box;
+
+      &:focus {
+        border-color: #8e8e8e;
+        background-color: white;
+      }
+
+      &::placeholder {
+        color: #8e8e8e;
+      }
+    }
+
+    .contact-info,
+    .terms-info {
+      font-size: 12px;
+      color: #8e8e8e;
+      line-height: 16px;
+      margin: 10px 0;
+      direction: rtl;
+      text-align: center;
+
+      a {
+        color: #0095f6;
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .signup-btn {
+      width: 100%;
+      background-color: #0095f6;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      margin-top: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #1877f2;
+      }
+
+      &:disabled {
+        background-color: #b2dffc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Login Card
+.login-card {
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 1px;
+  padding: 25px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #262626;
+    direction: rtl;
+    text-align: center;
+
+    a {
+      color: #0095f6;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 450px) {
+  .signup-page {
+    padding: 0;
+    background-color: white;
+  }
+
+  .signup-container {
+    max-width: 100%;
+  }
+
+  .signup-card {
+    border: none;
+    padding: 20px;
+  }
+
+  .login-card {
+    border: none;
+    background-color: transparent;
+  }
+}

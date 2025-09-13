@@ -1,0 +1,93 @@
+[
+    {
+      "_id": "u101",
+      "username": "alice_bloom",
+      "email": "alice.bloom@instakilo.com",
+      "password": "1234",
+      "fullname": "Alice Bloom",
+      "imgUrl": "https://randomuser.me/api/portraits/women/68.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "admin"
+    },
+    {
+      "_id": "u102",
+      "username": "john_maverick",
+      "email": "john.maverick@instakilo.com",
+      "password": "1234",
+      "fullname": "John Maverick",
+      "imgUrl": "https://randomuser.me/api/portraits/men/32.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    },
+    {
+      "_id": "u103",
+      "username": "rita_moss",
+      "email": "rita.moss@instakilo.com",
+      "password": "1234",
+      "fullname": "Rita Moss",
+      "imgUrl": "https://randomuser.me/api/portraits/women/55.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    },
+    {
+      "_id": "u104",
+      "username": "foodie_girl",
+      "email": "foodie.girl@instakilo.com",
+      "password": "1234",
+      "fullname": "foodie_girl",
+      "imgUrl": "https://randomuser.me/api/portraits/women/19.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    },
+    {
+      "_id": "u105",
+      "username": "sea_soul",
+      "email": "sea.soul@instakilo.com",
+      "password": "1234",
+      "fullname": "sea_soul",
+      "imgUrl": "https://randomuser.me/api/portraits/men/25.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    },
+    {
+      "_id": "u107",
+      "username": "dev_dude",
+      "email": "dev.dude@instakilo.com",
+      "password": "1234",
+      "fullname": "dev_dude",
+      "imgUrl": "https://randomuser.me/api/portraits/men/30.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    },
+    {
+      "_id": "u108",
+      "username": "winter_wanderer",
+      "email": "winter.wanderer@instakilo.com",
+      "password": "1234",
+      "fullname": "winter_wanderer",
+      "imgUrl": "https://randomuser.me/api/portraits/women/32.jpg",
+      "following": [],
+      "followers": [],
+      "likedStoryIds": [],
+      "savedStoryIds": [],
+      "ROUL": "user"
+    }
+  ]

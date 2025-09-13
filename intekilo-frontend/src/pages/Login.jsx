@@ -1,17 +1,34 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useDispatch } from 'react-redux'
+import { login } from '../store/user.actions'
 
 export function Login() {
-  const [credentials, setCredentials] = useState({ username: '', password: '' })
+  const [credentials, setCredentials] = useState({ email: '', password: '' })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   function handleChange(ev) {
     const { name, value } = ev.target
     setCredentials(prev => ({ ...prev, [name]: value }))
+    setError('') // Clear error when user types
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault()
-    console.log('Logging in with:', credentials)
-    // פה אפשר להוסיף התחברות בפועל בעתיד
+    setIsLoading(true)
+    setError('')
+    
+    try {
+      await dispatch(login(credentials))
+      navigate('/')
+    } catch (err) {
+      setError('כתובת מייל או סיסמה שגויים')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -21,11 +38,13 @@ export function Login() {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <input
-            type="text"
-            name="username"
-            placeholder="מספר טלפון, שם משתמש או אימייל"
-            value={credentials.username}
+            type="email"
+            name="email"
+            placeholder="כתובת מייל"
+            value={credentials.email}
             onChange={handleChange}
+            required
+            disabled={isLoading}
           />
           <input
             type="password"
@@ -33,13 +52,28 @@ export function Login() {
             placeholder="סיסמה"
             value={credentials.password}
             onChange={handleChange}
+            required
+            disabled={isLoading}
           />
-          <button className="btn-login">התחבר/י</button>
+          
+          {error && (
+            <div className="error-message" style={{ color: 'red', fontSize: '14px', marginBottom: '10px' }}>
+              {error}
+            </div>
+          )}
+          
+          <button 
+            type="submit" 
+            className="btn-login" 
+            disabled={isLoading}
+            style={{ opacity: isLoading ? 0.7 : 1 }}
+          >
+            {isLoading ? 'מתחבר...' : 'התחבר/י'}
+          </button>
         </form>
 
         <div className="divider">או</div>
 
-        {/* <button className="facebook-login">התחבר/י באמצעות פייסבוק</button> */}
         <a className="forgot-password" href="#">שכחת את הסיסמה?</a>
 
         <div className="signup-prompt">
@@ -56,4 +90,4 @@ export function Login() {
       </div>
     </section>
   )
-} 
+}

@@ -1,66 +1,120 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
-
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { signup } from '../store/user.actions'
 
-import { ImgUploader } from '../cmps/ImgUploader'
-import { userService } from '../services/user'
-
 export function Signup() {
-    const [credentials, setCredentials] = useState(userService.getEmptyUser())
-    const navigate = useNavigate()
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+    fullname: '',
+    username: ''
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-    function clearState() {
-        setCredentials({ username: '', password: '', fullname: '', imgUrl: '', score: 100 })
+  function handleChange(ev) {
+    const { name, value } = ev.target
+    setCredentials(prev => ({ ...prev, [name]: value }))
+    setError('') // Clear error when user types
+  }
+
+  async function handleSubmit(ev) {
+    ev.preventDefault()
+    setIsLoading(true)
+    setError('')
+    
+    try {
+      await dispatch(signup(credentials))
+      navigate('/')
+    } catch (err) {
+      console.error('Signup failed:', err)
+      setError(err.message || 'שגיאה בהרשמה')
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    function handleChange(ev) {
-        const field = ev.target.name
-        const value = ev.target.value
-        setCredentials(credentials => ({ ...credentials, [field]: value }))
-    }
+  return (
+    <div className="signup-page">
+      <div className="signup-container">
+        {/* Main Signup Card */}
+        <div className="signup-card">
+          <div className="logo">
+            <h1>InstaKilo</h1>
+          </div>
+          
+          <p className="signup-subtitle">
+            הירשמו כדי לראות תמונות וסרטונים מחברים שלכם.
+          </p>
 
-    async function onSignup(ev = null) {
-        if (ev) ev.preventDefault()
+          <div className="divider">
+            <span>או</span>
+          </div>
 
-        if (!credentials.username || !credentials.password || !credentials.fullname) return
-        await signup(credentials)
-        clearState()
-        navigate('/')
-    }
-
-    function onUploaded(imgUrl) {
-        setCredentials(credentials => ({ ...credentials, imgUrl }))
-    }
-
-    return (
-        <form className="signup-form" onSubmit={onSignup}>
+          <form className="signup-form" onSubmit={handleSubmit}>
             <input
-                type="text"
-                name="fullname"
-                value={credentials.fullname}
-                placeholder="Fullname"
-                onChange={handleChange}
-                required
+              type="email"
+              name="email"
+              placeholder="מספר טלפון או כתובת מייל"
+              value={credentials.email}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
             />
             <input
-                type="text"
-                name="username"
-                value={credentials.username}
-                placeholder="Username"
-                onChange={handleChange}
-                required
+              type="password"
+              name="password"
+              placeholder="סיסמה"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
             />
             <input
-                type="password"
-                name="password"
-                value={credentials.password}
-                placeholder="Password"
-                onChange={handleChange}
-                required
+              type="text"
+              name="fullname"
+              placeholder="שם מלא"
+              value={credentials.fullname}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
             />
-            <ImgUploader onUploaded={onUploaded} />
-            <button>Signup</button>
-        </form>
-    )
+            <input
+              type="text"
+              name="username"
+              placeholder="שם משתמש"
+              value={credentials.username}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+
+            {error && (
+              <div className="error-message" style={{ color: 'red', fontSize: '12px', marginBottom: '10px', textAlign: 'center' }}>
+                {error}
+              </div>
+            )}
+
+            <p className="terms-info">
+              על ידי הרשמה, אתם מסכימים ל<a href="#">תנאים</a>, <a href="#">מדיניות פרטיות</a> ו<a href="#">מדיניות קוקיז</a> שלנו.
+            </p>
+
+            <button type="submit" className="signup-btn" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+              {isLoading ? 'נרשמים...' : 'הירשמו'}
+            </button>
+          </form>
+        </div>
+
+        {/* Login Card */}
+        <div className="login-card">
+          <p>
+            יש לכם חשבון? <Link to="/login">התחברו</Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 }

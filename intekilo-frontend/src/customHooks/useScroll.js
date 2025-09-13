@@ -14,7 +14,7 @@ export function useScroll(callback, options = {}) {
             const viewportHeight = window.innerHeight
 
             if (pageHeight > viewportHeight) {
-              console.log(' האלמנט האחרון:', entries[0].target)
+              // Last element reached
               callback()
             }
           }

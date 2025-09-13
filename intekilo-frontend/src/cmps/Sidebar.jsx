@@ -1,7 +1,20 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { logout } from '../store/user.actions'
 
 export function Sidebar() {
   const navClass = ({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`
+  const navigate = useNavigate()
+  const loggedinUser = useSelector(store => store.userModule.user)
+
+  async function handleLogout() {
+    try {
+      await logout()
+      navigate('/login')
+      } catch (err) {
+        // Logout failed
+      }
+  }
 
   return (
     <aside className="sidebar" role="navigation" aria-label="Primary">
@@ -77,14 +90,25 @@ export function Sidebar() {
       </nav>
 
       <div className="logout" data-mobile-hidden="true">
-        <NavLink to="/logout" className={navClass} data-tooltip="Logout">
-          <span className="icon" aria-hidden="true">
-            <svg height="24" viewBox="0 0 24 24" width="24">
-              <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-8v2h8v14h-8v2h8c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"></path>
-            </svg>
-          </span>
-          <span className="label">Logout</span>
-        </NavLink>
+        {loggedinUser ? (
+          <button onClick={handleLogout} className="nav-link" data-tooltip="Logout">
+            <span className="icon" aria-hidden="true">
+              <svg height="24" viewBox="0 0 24 24" width="24">
+                <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-8v2h8v14h-8v2h8c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"></path>
+              </svg>
+            </span>
+            <span className="label">Logout</span>
+          </button>
+        ) : (
+          <NavLink to="/login" className={navClass} data-tooltip="Login">
+            <span className="icon" aria-hidden="true">
+              <svg height="24" viewBox="0 0 24 24" width="24">
+                <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"></path>
+              </svg>
+            </span>
+            <span className="label">Login</span>
+          </NavLink>
+        )}
       </div>
     </aside>
   )

@@ -14,6 +14,8 @@ import { postRoutes } from './api/post/post.routes.js'
 import { setupSocketAPI } from './services/socket.service.js'
 import { setupAsyncLocalStorage } from './middlewares/setupAls.middleware.js'
 import { loggerService as logger } from './services/logger.service.js'
+import { commentRoutes } from './api/comment/comment.routes.js'
+
 const app = express()
 const server = http.createServer(app)
 
@@ -30,12 +32,18 @@ if (process.env.NODE_ENV === 'production') {
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://localhost:5173',
+      'http://localhost:3030',
     ],
     credentials: true,
   }))
 }
 
+// API Routes
+app.use('/api/auth', authRoutes)
+app.use('/api/user', userRoutes)
 app.use('/api/post', postRoutes)
+app.use('/api/comment', commentRoutes)
+app.use('/api/review', reviewRoutes)
 
 // setupSocketAPI(server)
 

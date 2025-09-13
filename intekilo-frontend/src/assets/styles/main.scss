@@ -16,6 +16,8 @@
 @import "pages/homePage.scss";
 @import "pages/modalPost.scss";
 @import "pages/login.scss";
+@import "pages/signup.scss";
+@import "pages/profile.scss";
 // Components
 // @import "cmps/sidebar.scss";
 
@@ -23,6 +25,7 @@
 @import "cmps/postList.scss";
 @import "cmps/rightSidebar.scss";
 @import '../styles/cmps/_LeftNav';
+@import 'cmps/CommentsModal.scss';
 
 
 

@@ -4,7 +4,6 @@ import { logger } from '../../services/logger.service.js'
 import { makeId } from '../../services/util.service.js'
 import { dbService } from '../../services/db.service.js'
 import { asyncLocalStorage } from '../../services/als.service.js'
-import { Post } from '../../models/post.model.js'
 
 const PAGE_SIZE = 3
 
@@ -28,10 +27,12 @@ async function query(filterBy = { txt: '' }) {
         console.log('📋 criteria:', criteria)
         console.log('📋 sort:', sort)
 
-        const posts = await Post.find(criteria)
+        const collection = await dbService.getCollection('posts')
+        const posts = await collection.find(criteria)
                                 .sort(sort)
                                 .skip(filterBy.pageIdx * PAGE_SIZE || 0)
                                 .limit(PAGE_SIZE)
+                                .toArray()
         
         console.log(`📊 Query returned ${posts.length} posts`)
         if (posts.length > 0) {
@@ -48,7 +49,8 @@ async function query(filterBy = { txt: '' }) {
 
 async function getById(postId) {
     try {
-        const post = await Post.findById(postId)
+        const collection = await dbService.getCollection('posts')
+        const post = await collection.findOne({ _id: ObjectId.createFromHexString(postId) })
         
         if (!post) {
             logger.error(`Post not found: ${postId}`)
@@ -73,7 +75,7 @@ async function remove(postId) {
 
         if (!isAdmin) criteria['owner._id'] = ownerId
 
-        const collection = await dbService.getCollection('post')
+        const collection = await dbService.getCollection('posts')
         const res = await collection.deleteOne(criteria)
 
         if (res.deletedCount === 0) throw ('Not your post')
@@ -86,7 +88,7 @@ async function remove(postId) {
 
 async function add(post) {
     try {
-        const collection = await dbService.getCollection('post')
+        const collection = await dbService.getCollection('posts')
         await collection.insertOne(post)
         return post
     } catch (err) {
@@ -100,7 +102,7 @@ async function update(post) {
 
     try {
         const criteria = { _id: ObjectId.createFromHexString(post._id) }
-        const collection = await dbService.getCollection('post')
+        const collection = await dbService.getCollection('posts')
         await collection.updateOne(criteria, { $set: postToSave })
 
         return post
@@ -115,7 +117,7 @@ async function addPostMsg(postId, msg) {
         const criteria = { _id: ObjectId.createFromHexString(postId) }
         msg.id = makeId()
 
-        const collection = await dbService.getCollection('post')
+        const collection = await dbService.getCollection('posts')
         await collection.updateOne(criteria, { $push: { msgs: msg } })
 
         return msg
@@ -129,7 +131,7 @@ async function removePostMsg(postId, msgId) {
     try {
         const criteria = { _id: ObjectId.createFromHexString(postId) }
 
-        const collection = await dbService.getCollection('post')
+        const collection = await dbService.getCollection('posts')
         await collection.updateOne(criteria, { $pull: { msgs: { id: msgId } } })
 
         return msgId

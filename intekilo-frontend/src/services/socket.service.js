@@ -69,10 +69,10 @@ function createDummySocketService() {
             this.setup()
         },
         login() {
-            console.log('Dummy socket service here, login - got it')
+            // Dummy socket service login
         },
         logout() {
-            console.log('Dummy socket service here, logout - got it')
+            // Dummy socket service logout
         },
         on(eventName, cb) {
             listenersMap[eventName] = [...(listenersMap[eventName]) || [], cb]
@@ -99,7 +99,7 @@ function createDummySocketService() {
             this.emit(SOCKET_EVENT_ADD_MSG, { from: 'Someone', txt: 'Aha it worked!' })
         },
         testUserUpdate() {
-            this.emit(SOCKET_EVENT_USER_UPDATED, { ...userService.getLoggedinUser(), score: 555 })
+            this.emit(SOCKET_EVENT_USER_UPDATED, { ...userService.getLoggedinUser() })
         }
     }
     window.listenersMap = listenersMap

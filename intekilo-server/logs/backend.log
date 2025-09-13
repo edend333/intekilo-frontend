@@ -42,3 +42,189 @@
 6.9.2025, 19:32:52 - INFO - /api/post | GET |  | {}
 6.9.2025, 20:47:45 - INFO - /api/post | GET |  | {}
 7.9.2025, 1:37:56 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:40:34 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:40:38 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:40:42 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:40:52 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:41:16 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:41:22 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:41:26 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:42:53 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:43:14 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:44:19 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:44:39 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:44:41 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:45:59 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:47:38 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:47:50 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:48:03 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:50:59 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:54:35 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 20:54:49 - INFO - /api/post | GET |  | {}
+11.9.2025, 20:59:56 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 21:00:07 - INFO - /api/post | GET |  | {}
+11.9.2025, 21:01:32 - INFO - Server is running on: http://localhost:3030/
+11.9.2025, 21:01:39 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:23:09 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:28:29 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:29:06 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:29:14 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:41:20 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:45:49 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:46:05 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:46:20 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:51:41 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:51:54 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:54:48 - INFO - /api/post | GET |  | {}
+12.9.2025, 11:56:11 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 11:59:58 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:00:03 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:12:40 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:13:59 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:14:04 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:15:50 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:16:18 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:16:27 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:16:31 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:23:14 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:30:04 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:41:10 - INFO - /api/post | GET |  | {}
+12.9.2025, 12:57:04 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 12:57:19 - DEBUG - auth.service - login with username: alice_bloom
+12.9.2025, 12:57:20 - ERROR - Failed to Login Invalid username or password
+12.9.2025, 13:04:20 - DEBUG - auth.service - login with username: undefined
+12.9.2025, 13:04:20 - ERROR - Failed to Login Invalid username or password
+12.9.2025, 13:05:20 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 13:05:41 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 13:05:42 - ERROR - Failed to Login Invalid email or password
+12.9.2025, 13:07:36 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 13:07:54 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 13:07:54 - ERROR - Failed to Login Invalid email or password
+12.9.2025, 13:09:26 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 13:09:38 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 13:09:38 - ERROR - Failed to Login Invalid email or password
+12.9.2025, 13:14:43 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 13:14:53 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 13:14:54 - ERROR - Failed to Login Invalid email or password
+12.9.2025, 18:06:04 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 18:06:26 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 18:06:27 - ERROR - Failed to Login Invalid email or password
+12.9.2025, 18:18:21 - INFO - /api/user | GET |  | {}
+12.9.2025, 18:22:25 - INFO - Server is running on: http://localhost:3030/
+12.9.2025, 18:24:03 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 18:24:04 - INFO - User login:  | {"_id":"u101","username":"alice_bloom","email":"alice.bloom@instakilo.com","fullname":"Alice Bloom","imgUrl":"https://randomuser.me/api/portraits/women/68.jpg","following":[],"followers":[],"likedStoryIds":[],"savedStoryIds":[],"ROUL":"admin"}
+12.9.2025, 18:27:40 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 18:27:40 - INFO - User login:  | {"_id":"u101","username":"alice_bloom","email":"alice.bloom@instakilo.com","fullname":"Alice Bloom","imgUrl":"https://randomuser.me/api/portraits/women/68.jpg","following":[],"followers":[],"likedStoryIds":[],"savedStoryIds":[],"ROUL":"admin"}
+12.9.2025, 18:29:34 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 18:29:34 - INFO - User login:  | {"_id":"u101","username":"alice_bloom","email":"alice.bloom@instakilo.com","fullname":"Alice Bloom","imgUrl":"https://randomuser.me/api/portraits/women/68.jpg","following":[],"followers":[],"likedStoryIds":[],"savedStoryIds":[],"ROUL":"admin"}
+12.9.2025, 18:29:34 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:31:24 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:31:36 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:33:28 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:33:38 - DEBUG - auth.service - login with email: alice.bloom@instakilo.com
+12.9.2025, 18:33:38 - INFO - User login:  | {"_id":"u101","username":"alice_bloom","email":"alice.bloom@instakilo.com","fullname":"Alice Bloom","imgUrl":"https://randomuser.me/api/portraits/women/68.jpg","following":[],"followers":[],"likedStoryIds":[],"savedStoryIds":[],"ROUL":"admin"}
+12.9.2025, 18:33:38 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:36:25 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:36:35 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:37:39 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:37:42 - INFO - /api/post | GET |  | {}
+12.9.2025, 18:46:23 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:03:30 - DEBUG - auth.service - signup with username: edend333, fullname: עדן דוד
+12.9.2025, 20:03:30 - DEBUG - auth.route - new account created: {"username":"edend333","password":"$2b$10$xv/SfSt9ZHX3EuA95KSmWexY2atZVhfQiHZ4SXMR8jO.kOIzKKhbK","fullname":"עדן דוד","imgUrl":"https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png","_id":"68c452624186a1b2a878aedc"}
+12.9.2025, 20:03:30 - DEBUG - auth.service - login with email: edend333
+12.9.2025, 20:03:30 - ERROR - Failed to signup Invalid email or password
+12.9.2025, 20:07:35 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:07:40 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:07:44 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:07:57 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:08:37 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:08:46 - INFO - /api/post | GET |  | {}
+12.9.2025, 20:09:08 - DEBUG - auth.service - signup with username: edend333, fullname: עדן דוד
+12.9.2025, 20:09:08 - ERROR - Failed to signup Username already taken
+12.9.2025, 20:12:16 - DEBUG - auth.service - signup with username: edend333, fullname: עדן דוד
+12.9.2025, 20:12:16 - ERROR - Failed to signup Username already taken
+12.9.2025, 20:14:07 - DEBUG - auth.service - signup with username: testuser, fullname: Test User
+12.9.2025, 20:14:07 - DEBUG - auth.route - new account created: {"username":"testuser","password":"$2b$10$hn/O0Bz0asqmU56koHANj.7PHAxheu95t/P0oXT1PAabzIgDKqD9W","fullname":"Test User","imgUrl":"https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png","_id":"68c454df4186a1b2a878aedd"}
+12.9.2025, 20:14:07 - DEBUG - auth.service - login with email: testuser
+12.9.2025, 20:14:07 - ERROR - Failed to signup Invalid email or password
+13.9.2025, 1:23:09 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 1:26:27 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 1:26:42 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:27:07 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:27:13 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:27:14 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:27:21 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:29:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:29:46 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:30:01 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:30:03 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:30:15 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:30:21 - INFO - /api/post | GET |  | {}
+13.9.2025, 1:31:08 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:35:53 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:36:00 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:36:18 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:36:32 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:36:36 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:38:00 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:38:09 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:41:09 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:41:11 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:41:15 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:41:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:41:22 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:42:01 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:42:32 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:44:02 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:44:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:45:22 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:46:22 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:47:14 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:11 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:18 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:25 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:29 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:31 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:34 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:50:53 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:51:00 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:51:03 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:51:09 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:51:12 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:51:53 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:53:15 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:53:52 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:54:00 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:54:45 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:54:47 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:55:04 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:55:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:55:55 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:55:55 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:56:30 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:56:42 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:56:44 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:57:58 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:57:59 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:58:00 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:58:13 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 10:58:22 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:58:26 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:58:29 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:20 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:34 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:37 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:40 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:43 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:46 - INFO - /api/post | GET |  | {}
+13.9.2025, 10:59:53 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:00:10 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:00:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:00:17 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:01:02 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:01:06 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:01:12 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:03:15 - INFO - Server is running on: http://localhost:3030/
+13.9.2025, 11:03:32 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:03:42 - INFO - /api/post | GET |  | {}
+13.9.2025, 11:13:43 - INFO - /api/post | GET |  | {}

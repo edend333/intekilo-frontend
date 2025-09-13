@@ -17,44 +17,32 @@ const connectDB = async () => {
             throw new Error('DB_NAME is not defined in environment variables')
         }
 
-        console.log('🔄 Connecting to MongoDB...')
-        
-        const conn = await mongoose.connect(mongoUrl, {
-            dbName: 'Intekilo', // Use exact case from MongoDB
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-
-        console.log(`✅ MongoDB Connected: ${conn.connection.host}`)
-        console.log(`📊 Database: ${dbName}`)
+        console.log('✅ MongoDB Connected!')
 
         // Handle connection events
         mongoose.connection.on('error', (err) => {
-            console.error('❌ MongoDB connection error:', err)
+            // Silent error handling
         })
 
         mongoose.connection.on('disconnected', () => {
-            console.log('⚠️ MongoDB disconnected')
+            // Silent disconnect handling
         })
 
         mongoose.connection.on('reconnected', () => {
-            console.log('🔄 MongoDB reconnected')
+            // Silent reconnect handling
         })
 
         // Graceful shutdown
         process.on('SIGINT', async () => {
             try {
                 await mongoose.connection.close()
-                console.log('🔒 MongoDB connection closed through app termination')
                 process.exit(0)
             } catch (err) {
-                console.error('❌ Error closing MongoDB connection:', err)
                 process.exit(1)
             }
         })
 
     } catch (error) {
-        console.error('❌ MongoDB connection failed:', error.message)
         process.exit(1)
     }
 }

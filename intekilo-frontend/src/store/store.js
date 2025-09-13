@@ -1,4 +1,5 @@
-import { legacy_createStore as createStore, combineReducers } from 'redux'
+import { legacy_createStore as createStore, combineReducers, applyMiddleware, compose } from 'redux'
+import { thunk } from 'redux-thunk'
 
 import { userReducer } from './user.reducer'
 import { reviewReducer } from './review.reducer'
@@ -12,12 +13,10 @@ const rootReducer = combineReducers({
     // reviewModule: reviewReducer,
     postModule: postReducer,
     commentModule: commentReducer,
-
 })
 
-
-const middleware = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__() : undefined
-export const store = createStore(rootReducer, middleware)
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 
 // For debug:
 // store.subscribe(() => {
@@ -25,6 +24,3 @@ export const store = createStore(rootReducer, middleware)
 //     console.log('storeState:\n', store.getState())
 //     console.log('*******************************')
 // })
-
-
-

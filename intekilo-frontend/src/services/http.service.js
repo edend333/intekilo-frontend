@@ -1,51 +1,45 @@
+const BASE_URL = 'http://localhost:3030/api'
+
 export const httpService = {
     get(endpoint, data) {
-        console.log('MOCK GET:', endpoint, data)
-        return Promise.resolve(_mockData(endpoint))
+        return ajax(endpoint, 'GET', data)
     },
     post(endpoint, data) {
-        console.log('MOCK POST:', endpoint, data)
-        return Promise.resolve(data)
+        return ajax(endpoint, 'POST', data)
     },
     put(endpoint, data) {
-        console.log('MOCK PUT:', endpoint, data)
-        return Promise.resolve(data)
+        return ajax(endpoint, 'PUT', data)
     },
     delete(endpoint, data) {
-        console.log('MOCK DELETE:', endpoint, data)
-        return Promise.resolve()
+        return ajax(endpoint, 'DELETE', data)
     }
 }
 
-function _mockData(endpoint) {
-  if (endpoint === 'user') {
-    return [
-      {
-        _id: 'u101',
-        username: 'eden',
-        fullname: 'Eden Dev',
-      },
-      {
-        _id: 'u102',
-        username: 'bat',
-        fullname: 'Bat Sheva',
-      }
-    ]
-  }
+async function ajax(endpoint, method = 'GET', data = null) {
+    try {
+        const url = `${BASE_URL}/${endpoint}`
+        const options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies for authentication
+        }
 
-  if (endpoint === 'review') {
-    return [
-      { _id: 'r1', txt: 'Great!', byUser: { username: 'eden' } },
-      { _id: 'r2', txt: 'Nice app', byUser: { username: 'bat' } }
-    ]
-  }
+        if (data) {
+            options.body = JSON.stringify(data)
+        }
 
-  if (endpoint === 'car') {
-    return [
-      { _id: 'c1', model: 'Tesla', price: 100 },
-      { _id: 'c2', model: 'Mazda', price: 70 }
-    ]
-  }
+        const response = await fetch(url, options)
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.err || `HTTP ${response.status}: ${response.statusText}`)
+        }
 
-  return [] 
+        const result = await response.json()
+        return result
+    } catch (error) {
+        throw error
+    }
 }

@@ -3,21 +3,24 @@ import { PostPreview } from './PostPreview.jsx'
 import { useScroll } from '../../customHooks/useScroll.js'
 import { useNavigate } from 'react-router'
 import { api } from '../../lib/api.js'
+import { useDispatch } from 'react-redux'
+import { loadAllComments } from '../../store/comments/comment.actions'
 
 export function PostList() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadPosts() {
       try {
-        console.log('🔄 PostList: Starting to load posts from server...')
         setLoading(true)
         const postsData = await api('/api/post')
-        console.log('📊 PostList: Received posts from server:', postsData)
-        console.log('📈 PostList: Number of posts:', postsData.length)
         setPosts(postsData)
+        
+        // טען תגובות אוטומטית
+        dispatch(loadAllComments())
       } catch (error) {
         console.error('❌ PostList: Failed to load posts:', error)
       } finally {
@@ -26,11 +29,10 @@ export function PostList() {
     }
     
     loadPosts()
-  }, [])
+  }, [dispatch])
 
   const lastElementRef = useScroll(() => {
     // בעתיד, כאן תקרי לשרת עם page/limit מהפג'ינציה בצד שרת
-    console.log('Reached bottom - load more from server')
   })
 
   if (loading) return <div>Loading posts...</div>

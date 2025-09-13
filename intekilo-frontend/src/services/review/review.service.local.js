@@ -27,8 +27,12 @@ async function add({ txt, aboutUserId }) {
 		},
 	}
 
-	reviewToAdd.byUser.score += 10
-	await userService.update(reviewToAdd.byUser)
+	reviewToAdd.byUser = {
+		_id: reviewToAdd.byUser._id,
+		fullname: reviewToAdd.byUser.fullname,
+		imgUrl: reviewToAdd.byUser.imgUrl,
+		isAdmin: reviewToAdd.byUser.isAdmin
+	}
 
 	const addedReview = await storageService.post('review', reviewToAdd)
 	return addedReview

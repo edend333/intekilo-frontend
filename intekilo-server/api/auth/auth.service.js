@@ -13,51 +13,82 @@ export const authService = {
 	validateToken,
 }
 
-async function login(username, password) {
-	logger.debug(`auth.service - login with username: ${username}`)
+async function login(email, password) {
+	const user = await userService.getByEmail(email)
+	if (!user) return Promise.reject('Invalid email or password')
 
-	const user = await userService.getByUsername(username)
-	if (!user) return Promise.reject('Invalid username or password')
-
-	// TODO: un-comment for real login
-	// const match = await bcrypt.compare(password, user.password)
-	// if (!match) return Promise.reject('Invalid username or password')
+	// Check password using bcrypt.compare for hashed passwords
+	const isPasswordValid = await bcrypt.compare(password, user.password)
+	if (!isPasswordValid) {
+		return Promise.reject('Invalid email or password')
+	}
 
 	delete user.password
 	user._id = user._id.toString()
 	return user
 }
 
-async function signup({ username, password, fullname, imgUrl, isAdmin }) {
+async function signup({ email, username, password, fullname, imgUrl }) {
 	const saltRounds = 10
 
-	logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
-	if (!username || !password || !fullname) return Promise.reject('Missing required signup information')
+	if (!email || !username || !password || !fullname) {
+		return Promise.reject('Missing required signup information')
+	}
 
-	const userExist = await userService.getByUsername(username)
-	if (userExist) return Promise.reject('Username already taken')
+	// Check if email already exists
+	const emailExist = await userService.getByEmail(email)
+	if (emailExist) {
+		return Promise.reject('Email already taken')
+	}
+
+	// Check if username already exists
+	const usernameExist = await userService.getByUsername(username)
+	if (usernameExist) {
+		return Promise.reject('Username already taken')
+	}
 
 	const hash = await bcrypt.hash(password, saltRounds)
-	return userService.add({ username, password: hash, fullname, imgUrl, isAdmin })
+	const newUser = { 
+		email, 
+		username, 
+		password: hash, 
+		fullname, 
+		imgUrl, 
+		ROUL: 'user',
+		following: [],
+		followers: [],
+		likedStoryIds: [],
+		savedStoryIds: []
+	}
+	
+	const result = await userService.add(newUser)
+	return result
 }
 
 function getLoginToken(user) {
-	const userInfo = { 
+    const userInfo = { 
         _id: user._id, 
         fullname: user.fullname, 
-        score: user.score,
-        isAdmin: user.isAdmin,
+        isAdmin: user.ROUL === 'admin',
+        exp: Date.now() + (24 * 60 * 60 * 1000) // Add expiration: 24 hours from now
+        // exp: Date.now() + (1 * 60 * 1000 ) // Add expiration: 24 hours from now
     }
-	return cryptr.encrypt(JSON.stringify(userInfo))
+    return cryptr.encrypt(JSON.stringify(userInfo))
 }
 
 function validateToken(loginToken) {
-	try {
-		const json = cryptr.decrypt(loginToken)
-		const loggedinUser = JSON.parse(json)
-		return loggedinUser
-	} catch (err) {
-		console.log('Invalid login token')
-	}
-	return null
+    try {
+        const json = cryptr.decrypt(loginToken)
+        const loggedinUser = JSON.parse(json)
+        
+        // Check if token is expired
+        if (loggedinUser.exp && Date.now() > loggedinUser.exp) {
+            return null // Token expired
+        }
+        
+        return loggedinUser
+    } catch (err) {
+        // Invalid login token
+    }
+    return null
 }
