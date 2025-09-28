@@ -9,10 +9,12 @@ export async function login(req, res) {
         const loginToken = authService.getLoginToken(user)
 
 
-        // Fix: Remove secure: true for localhost development
         res.cookie('loginToken', loginToken, { 
-            sameSite: 'None',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+            sameSite: 'Lax',
+            secure: false, // Keep false for localhost development
+            path: '/',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+            httpOnly: false // Allow client-side access
         })
         res.json({ user, loginToken })
     } catch (err) {
@@ -20,8 +22,7 @@ export async function login(req, res) {
     }
 }
 
-export async function 
-signup(req, res) {
+export async function signup(req, res) {
     try {
         const credentials = req.body
 
@@ -31,8 +32,11 @@ signup(req, res) {
 
         const loginToken = authService.getLoginToken(user)
         res.cookie('loginToken', loginToken, { 
-            sameSite: 'None',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+            sameSite: 'Lax',
+            secure: false, // Keep false for localhost development
+            path: '/',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+            httpOnly: false // Allow client-side access
         })
         res.json({ user, loginToken })
     } catch (err) {
@@ -42,7 +46,11 @@ signup(req, res) {
 
 export async function logout(req, res) {
     try {
-        res.clearCookie('loginToken')
+        res.clearCookie('loginToken', { 
+            sameSite: 'Lax',
+            secure: false, // Keep false for localhost development
+            path: '/'
+        })
         res.send({ msg: 'Logged out successfully' })
     } catch (err) {
         res.status(400).send({ err: 'Failed to logout' })
@@ -51,7 +59,7 @@ export async function logout(req, res) {
 
 export async function validateToken(req, res) {
     try {
-        const { loggedinUser } = asyncLocalStorage.getStore() || {}
+        const { loggedinUser } = req
         if (loggedinUser) {
             res.json({ valid: true, user: loggedinUser })
         } else {

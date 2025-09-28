@@ -1,0 +1,331 @@
+.video-player {
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  
+  &:focus {
+    outline: 2px solid #0095f6;
+    outline-offset: 2px;
+  }
+  
+  .video-element {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000;
+    
+    &[poster] {
+      background-image: attr(poster);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+  
+  .video-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  .play-badge-corner {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.9);
+      transform: scale(1.05);
+    }
+    
+    .play-icon-small {
+      font-size: 14px;
+      color: #fff;
+      margin-left: 2px; // Slight offset to center the play icon visually
+    }
+  }
+  
+  .mute-button-floating {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    
+    .mute-btn-floating {
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      border-radius: 6px;
+      padding: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      min-height: 36px;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: scale(1.05);
+      }
+      
+      &:focus {
+        outline: 2px solid #0095f6;
+        outline-offset: 2px;
+      }
+    }
+  }
+  
+  .video-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    background: #f5f5f5;
+    color: #666;
+    
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+  
+  .video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 16px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    .video-player:hover &,
+    .video-player:focus & {
+      opacity: 1;
+    }
+  }
+  
+  .progress-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    
+    &:hover {
+      height: 6px;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: #0095f6;
+      border-radius: 2px;
+      transition: width 0.1s ease;
+    }
+  }
+  
+  .controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .controls-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .controls-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .control-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    &:focus {
+      outline: 2px solid #0095f6;
+      outline-offset: 2px;
+    }
+  }
+  
+  .time-display {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 80px;
+  }
+  
+  .playback-rate {
+    display: flex;
+    gap: 4px;
+    
+    .rate-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      
+      &.active {
+        background: #0095f6;
+        border-color: #0095f6;
+      }
+      
+      &:focus {
+        outline: 2px solid #0095f6;
+        outline-offset: 2px;
+      }
+    }
+  }
+  
+  .keyboard-hints {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    .video-player:hover & {
+      opacity: 1;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .video-player {
+    .video-controls {
+      padding: 12px;
+    }
+    
+    .controls-row {
+      gap: 8px;
+    }
+    
+    .controls-left {
+      gap: 4px;
+    }
+    
+    .control-btn {
+      font-size: 16px;
+      padding: 6px;
+    }
+    
+    .time-display {
+      font-size: 12px;
+      min-width: 60px;
+    }
+    
+    .playback-rate {
+      .rate-btn {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+    }
+    
+    .keyboard-hints {
+      display: none; // Hide on mobile
+    }
+  }
+}
+
+// Animation
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+  .video-player {
+    .video-controls,
+    .progress-bar,
+    .control-btn,
+    .rate-btn,
+    .keyboard-hints {
+      transition: none;
+    }
+    
+    .loading-spinner {
+      animation: none;
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .video-player {
+    .video-controls {
+      background: rgba(0, 0, 0, 0.9);
+    }
+    
+    .control-btn {
+      border: 1px solid #fff;
+    }
+    
+    .rate-btn {
+      border: 2px solid #fff;
+    }
+  }
+}

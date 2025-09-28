@@ -9,11 +9,39 @@ export async function getPosts(req, res) {
             sortField: req.query.sortField || '',
             sortDir: req.query.sortDir || 1,
             pageIdx: req.query.pageIdx,
+            ownerId: req.query.ownerId || '',
         }
+        
+        console.log('🔍 Raw query params:', req.query)
+        console.log('🔍 ownerId from query:', req.query.ownerId)
         console.log('📋 filterBy:', filterBy)
+        
+        // Validate ownerId if provided
+        if (filterBy.ownerId && filterBy.ownerId.trim() === '') {
+            console.log('❌ Empty ownerId provided, returning 400')
+            return res.status(400).send({ err: 'Invalid ownerId parameter' })
+        }
         
         const posts = await postService.query(filterBy)
         console.log(`📊 Found ${posts.length} posts`)
+        
+        if (filterBy.ownerId) {
+            console.log('📊 Posts owner IDs:', posts.map(p => p.owner?._id).slice(0, 3))
+            console.log('📊 Expected owner ID:', filterBy.ownerId)
+            
+            // Validate that all returned posts belong to the requested owner
+            const invalidPosts = posts.filter(post => post.owner?._id !== filterBy.ownerId)
+            if (invalidPosts.length > 0) {
+                console.error('❌ Server: Found posts from other users!', {
+                    invalidPosts: invalidPosts.map(p => ({ id: p._id, ownerId: p.owner?._id })),
+                    expectedOwnerId: filterBy.ownerId
+                })
+                // Filter out invalid posts before sending response
+                const validPosts = posts.filter(post => post.owner?._id === filterBy.ownerId)
+                console.log(`📊 Filtered to ${validPosts.length} valid posts`)
+                return res.json(validPosts)
+            }
+        }
         
         res.json(posts)
     } catch (err) {
@@ -38,10 +66,45 @@ export async function addPost(req, res) {
     const { loggedinUser, body: post } = req
 
     try {
-        post.owner = loggedinUser
+        // Security: Always set owner from token, never trust client
+        post.owner = {
+            _id: loggedinUser._id,
+            fullname: loggedinUser.fullname,
+            imgUrl: loggedinUser.imgUrl,
+            username: loggedinUser.username
+        }
+        
+        // Add creation timestamp
+        post.createdAt = new Date()
+        
+        // Initialize arrays for likes and messages
+        post.likedBy = []
+        post.msgs = []
+        post.tags = []
+        
+        // Validate required fields
+        if (!post.txt && !post.imgUrl && !post.videoUrl) {
+            return res.status(400).send({ err: 'Post must have text, image, or video' })
+        }
+        
+        // Set post type based on content
+        if (post.videoUrl) {
+            post.type = 'video'
+        } else if (post.imgUrl) {
+            post.type = 'image'
+        } else {
+            post.type = 'text'
+        }
+        
+        console.log('📝 Creating post for user:', loggedinUser._id)
+        console.log('📝 Post data:', { txt: post.txt, imgUrl: post.imgUrl, ownerId: post.owner._id })
+        
         const addedPost = await postService.add(post)
+        
+        console.log('✅ Post created successfully:', addedPost._id)
         res.json(addedPost)
     } catch (err) {
+        console.error('❌ Error creating post:', err)
         logger.error('Failed to add post', err)
         res.status(400).send({ err: 'Failed to add post' })
     }
@@ -102,5 +165,38 @@ export async function removePostMsg(req, res) {
     } catch (err) {
         logger.error('Failed to remove post msg', err)
         res.status(400).send({ err: 'Failed to remove post msg' })
+    }
+}
+
+export async function addPostLike(req, res) {
+    const { loggedinUser } = req
+
+    try {
+        console.log('❤️ addPostLike called by user:', loggedinUser._id)
+        const postId = req.params.id
+        const like = {
+            _id: loggedinUser._id,
+            fullname: loggedinUser.fullname,
+            imgUrl: loggedinUser.imgUrl
+        }
+        const savedLike = await postService.addPostLike(postId, like)
+        res.json(savedLike)
+    } catch (err) {
+        logger.error('Failed to add post like', err)
+        res.status(400).send({ err: 'Failed to add post like' })
+    }
+}
+
+export async function removePostLike(req, res) {
+    const { loggedinUser } = req
+
+    try {
+        console.log('💔 removePostLike called by user:', loggedinUser._id)
+        const postId = req.params.id
+        const removedId = await postService.removePostLike(postId, loggedinUser._id)
+        res.json({ removedId })
+    } catch (err) {
+        logger.error('Failed to remove post like', err)
+        res.status(400).send({ err: 'Failed to remove post like' })
     }
 }

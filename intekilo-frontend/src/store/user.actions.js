@@ -6,6 +6,20 @@ import { showErrorMsg } from '../services/event-bus.service'
 import { LOADING_DONE, LOADING_START } from './system.reducer'
 import { REMOVE_USER, SET_USER, SET_USERS, SET_WATCHED_USER } from './user.reducer'
 
+export function setUser(user) {
+    return {
+        type: SET_USER,
+        user
+    }
+}
+
+export function updateUser(user) {
+    return {
+        type: SET_USER,
+        user
+    }
+}
+
 export async function loadUsers() {
     try {
         store.dispatch({ type: LOADING_START })

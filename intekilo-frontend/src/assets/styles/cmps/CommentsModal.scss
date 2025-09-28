@@ -30,13 +30,80 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: #f8f9fa;
+  padding: 20px;
+  min-height: 0; /* Allow flex item to shrink */
   
   .modal-post-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  .modal-post-video {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #000;
+  }
+  
+  /* Skeleton loading state */
+  &.loading {
+    .modal-post-image {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+  }
+  
+  /* Error state */
+  .image-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8e8e8e;
+    text-align: center;
+    
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+  
+  /* Zoom state */
+  &.zoomed {
+    .modal-post-image {
+      transform: scale(1.5);
+      cursor: zoom-out;
+    }
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 
@@ -64,10 +131,22 @@
     object-fit: cover;
   }
   
+  .modal-user-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
   .modal-username {
     font-weight: 600;
     font-size: 14px;
-    flex: 1;
+    line-height: 1.2;
+  }
+  
+  .modal-post-time {
+    font-size: 12px;
+    color: #8e8e8e;
+    margin-top: 2px;
   }
   
   .modal-close-btn {
@@ -164,9 +243,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.1s ease;
     
     &:hover {
       opacity: 0.7;
+    }
+    
+    &:active {
+      transform: scale(0.95);
     }
     
     svg {
@@ -175,8 +259,33 @@
     }
   }
   
+  .like-btn {
+    &.liked {
+      svg {
+        animation: heartBeat 0.3s ease-in-out;
+      }
+    }
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+  
   .modal-save-btn {
     margin-left: auto;
+  }
+}
+
+/* Animations */
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
@@ -253,15 +362,61 @@
   .instagram-modal {
     width: 95%;
     height: 90vh;
+    max-height: none;
     flex-direction: column;
     
     .modal-image-section {
       height: 50%;
+      min-height: 200px;
+      padding: 16px;
     }
     
     .modal-comments-section {
       width: 100%;
       height: 50%;
+      min-height: 300px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .instagram-modal {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    
+    .modal-image-section {
+      height: 40%;
+      min-height: 180px;
+      padding: 12px;
+    }
+    
+    .modal-comments-section {
+      height: 60%;
+      min-height: 250px;
+    }
+  }
+}
+
+/* Tablet landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .instagram-modal {
+    width: 85%;
+    max-width: 800px;
+    
+    .modal-comments-section {
+      width: 300px;
+    }
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .instagram-modal {
+    max-width: 1000px;
+    
+    .modal-comments-section {
+      width: 360px;
     }
   }
 }

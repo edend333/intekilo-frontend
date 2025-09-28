@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439020",
+    "byUserId": "507f1f77bcf86cd799439011",
+    "txt": "Morning coffee vibes ☕✨",
+    "mediaUrl": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+    "type": "image",
+    "loc": {
+      "lat": 34.0522,
+      "lng": -118.2437,
+      "name": "Los Angeles, CA"
+    },
+    "createdAt": 1737744000000,
+    "expiresAt": 1737830400000,
+    "likesCount": 3,
+    "viewersCount": 8,
+    "viewersPreview": ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013", "507f1f77bcf86cd799439014"],
+    "tags": ["coffee", "morning", "lifestyle"]
+  },
+  {
+    "_id": "507f1f77bcf86cd799439021",
+    "byUserId": "507f1f77bcf86cd799439015",
+    "txt": "Surf's up! 🏄‍♂️🌊",
+    "mediaUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
+    "type": "video",
+    "loc": {
+      "lat": 25.7617,
+      "lng": -80.1918,
+      "name": "Miami Beach, FL"
+    },
+    "createdAt": 1737744000000,
+    "expiresAt": 1737830400000,
+    "likesCount": 5,
+    "viewersCount": 12,
+    "viewersPreview": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012", "507f1f77bcf86cd799439016"],
+    "tags": ["surfing", "beach", "ocean"]
+  },
+  {
+    "_id": "507f1f77bcf86cd799439022",
+    "byUserId": "507f1f77bcf86cd799439014",
+    "txt": "Homemade pasta night 🍝❤️",
+    "mediaUrl": "https://images.unsplash.com/photo-1551183053-bf91a1d81141",
+    "type": "image",
+    "loc": {
+      "lat": 40.7128,
+      "lng": -74.006,
+      "name": "New York City"
+    },
+    "createdAt": 1737744000000,
+    "expiresAt": 1737830400000,
+    "likesCount": 7,
+    "viewersCount": 15,
+    "viewersPreview": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439013", "507f1f77bcf86cd799439017"],
+    "tags": ["cooking", "pasta", "food"]
+  },
+  {
+    "_id": "507f1f77bcf86cd799439023",
+    "byUserId": "507f1f77bcf86cd799439017",
+    "txt": "Winter wonderland ❄️🏔️",
+    "mediaUrl": "https://images.unsplash.com/photo-1608889178690-96b44e2a3b3b",
+    "type": "image",
+    "loc": {
+      "lat": 40.7128,
+      "lng": -74.006,
+      "name": "New York City"
+    },
+    "createdAt": 1737744000000,
+    "expiresAt": 1737830400000,
+    "likesCount": 4,
+    "viewersCount": 9,
+    "viewersPreview": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439015", "507f1f77bcf86cd799439016"],
+    "tags": ["winter", "snow", "travel"]
+  },
+  {
+    "_id": "507f1f77bcf86cd799439024",
+    "byUserId": "507f1f77bcf86cd799439016",
+    "txt": "Debugging session at 2 AM 💻🔧",
+    "mediaUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+    "type": "image",
+    "loc": {
+      "lat": 37.7749,
+      "lng": -122.4194,
+      "name": "San Francisco, CA"
+    },
+    "createdAt": 1737744000000,
+    "expiresAt": 1737830400000,
+    "likesCount": 2,
+    "viewersCount": 6,
+    "viewersPreview": ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"],
+    "tags": ["coding", "debugging", "nightshift"]
+  }
+]

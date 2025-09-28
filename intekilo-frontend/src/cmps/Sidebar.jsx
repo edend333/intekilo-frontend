@@ -1,19 +1,53 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useState, useEffect } from 'react'
 import { logout } from '../store/user.actions'
+import { userService } from '../services/user'
 
 export function Sidebar() {
   const navClass = ({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`
   const navigate = useNavigate()
-  const loggedinUser = useSelector(store => store.userModule.user)
+  const [hasToken, setHasToken] = useState(false)
+  const [loggedinUser, setLoggedinUser] = useState(null)
+
+  // Check for token on component mount
+  useEffect(() => {
+    const checkToken = () => {
+      const token = userService.getLoginToken()
+      setHasToken(!!token)
+      
+      // Also get the logged-in user for profile link
+      const user = userService.getLoggedinUser()
+      setLoggedinUser(user)
+    }
+    
+    checkToken()
+  }, [])
+
+  // Listen for avatar updates to refresh user data
+  useEffect(() => {
+    const handleAvatarUpdate = (event) => {
+      const { updatedUser } = event.detail
+      if (updatedUser && loggedinUser && updatedUser._id === loggedinUser._id) {
+        console.log('🔄 Sidebar: Avatar updated for logged-in user, refreshing user data')
+        // Update the loggedinUser state
+        setLoggedinUser(updatedUser)
+      }
+    }
+
+    window.addEventListener('avatarUpdated', handleAvatarUpdate)
+    return () => {
+      window.removeEventListener('avatarUpdated', handleAvatarUpdate)
+    }
+  }, [loggedinUser?._id])
 
   async function handleLogout() {
     try {
       await logout()
+      setHasToken(false) // Update state immediately
       navigate('/login')
-      } catch (err) {
-        // Logout failed
-      }
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
   }
 
   return (
@@ -70,16 +104,20 @@ export function Sidebar() {
           <span className="label">Notifications</span>
         </NavLink>
 
-        <NavLink to="/create" className={navClass} data-tooltip="Create" data-mobile-hidden="true">
+        <NavLink to="/create-post" className={navClass} data-tooltip="Create" data-mobile-hidden="true">
           <span className="icon" aria-hidden="true">
             <svg height="24" viewBox="0 0 24 24" width="24">
-              <path d="M12 2.25a.75.75 0 0 1 .75.75v8.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM6.75 12a.75.75 0 0 1 .75-.75H18a.75.75 0 0 1 0 1.5H7.5a.75.75 0 0 1-.75-.75ZM6.75 18a.75.75 0 0 1 .75-.75H18a.75.75 0 0 1 0 1.5H7.5a.75.75 0 0 1-.75-.75Z"></path>
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
             </svg>
           </span>
           <span className="label">Create</span>
         </NavLink>
 
-        <NavLink to="/profile" className={navClass} data-tooltip="Profile">
+        <NavLink 
+          to={loggedinUser ? `/profile/${loggedinUser._id}` : '/profile'} 
+          className={navClass} 
+          data-tooltip="Profile"
+        >
           <span className="icon" aria-hidden="true">
             <svg height="24" viewBox="0 0 24 24" width="24">
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
@@ -90,7 +128,7 @@ export function Sidebar() {
       </nav>
 
       <div className="logout" data-mobile-hidden="true">
-        {loggedinUser ? (
+        {hasToken ? (
           <button onClick={handleLogout} className="nav-link" data-tooltip="Logout">
             <span className="icon" aria-hidden="true">
               <svg height="24" viewBox="0 0 24 24" width="24">

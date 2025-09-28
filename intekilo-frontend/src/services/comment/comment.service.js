@@ -1,18 +1,4 @@
-import { storageService } from '../async-storage.service'
-import { makeId } from '../util.service'
-import { userService } from '../user'
-import { comments } from './comments.js' 
-
-const STORAGE_KEY = 'comment'
-
-_initComments()
-
-function _initComments() {
-  const initialComments = JSON.parse(localStorage.getItem(STORAGE_KEY))
-  if (!initialComments || !initialComments.length) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(comments))
-  }
-}
+import { httpService } from '../http.service'
 
 export const commentService = {
   query,
@@ -22,27 +8,48 @@ export const commentService = {
 }
 
 async function query() {
-  return await storageService.query(STORAGE_KEY)
+  try {
+    console.log('🔍 Fetching all comments from API')
+    return await httpService.get('comments')
+  } catch (error) {
+    console.error('❌ Error fetching comments:', error)
+    throw error
+  }
 }
 
 async function getByPostId(postId) {
-  const comments = await storageService.query(STORAGE_KEY)
-  return comments.filter(comment => comment.postId === postId)
+  try {
+    console.log('🔍 Fetching comments for post:', postId)
+    return await httpService.get(`comments?postId=${postId}`)
+  } catch (error) {
+    console.error('❌ Error fetching comments for post:', error)
+    throw error
+  }
 }
 
 async function add(postId, txt) {
-  const comment = {
-    id: makeId(),
-    postId,
-    txt,
-    by: userService.getLoggedinUser(),
-    createdAt: Date.now(),
+  try {
+    console.log('➕ Adding comment to post:', postId)
+    const comment = {
+      postId,
+      txt
+    }
+    const savedComment = await httpService.post('comments', comment)
+    console.log('✅ Comment added successfully:', savedComment)
+    return savedComment
+  } catch (error) {
+    console.error('❌ Error adding comment:', error)
+    throw error
   }
-
-  const savedComment = await storageService.post(STORAGE_KEY, comment)
-  return savedComment
 }
 
 async function remove(commentId) {
-  await storageService.remove(STORAGE_KEY, commentId)
+  try {
+    console.log('🗑️ Removing comment:', commentId)
+    await httpService.delete(`comments/${commentId}`)
+    console.log('✅ Comment removed successfully')
+  } catch (error) {
+    console.error('❌ Error removing comment:', error)
+    throw error
+  }
 }

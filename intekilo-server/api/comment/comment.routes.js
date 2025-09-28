@@ -3,7 +3,7 @@ import express from 'express'
 import { requireAuth } from '../../middlewares/requireAuth.middleware.js'
 import { log } from '../../middlewares/logger.middleware.js'
 
-import { getComments, getCommentById, addComment, updateComment, removeComment, addCommentLike, removeCommentLike } from './comment.controller.js'
+import { getComments, getCommentById, addComment, updateComment, removeComment, addCommentLike, removeCommentLike, migrateOldComments } from './comment.controller.js'
 
 const router = express.Router()
 
@@ -18,5 +18,8 @@ router.delete('/:id', requireAuth, removeComment)
 
 router.post('/:id/like', requireAuth, addCommentLike)
 router.delete('/:id/like', requireAuth, removeCommentLike)
+
+// Migration endpoint (admin only)
+router.post('/migrate', requireAuth, migrateOldComments)
 
 export const commentRoutes = router

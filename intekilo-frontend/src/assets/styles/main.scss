@@ -18,14 +18,24 @@
 @import "pages/login.scss";
 @import "pages/signup.scss";
 @import "pages/profile.scss";
+@import "pages/createPost.scss";
+@import "pages/discover.scss";
 // Components
 // @import "cmps/sidebar.scss";
 
 @import "cmps/post-preview.scss";
 @import "cmps/postList.scss";
 @import "cmps/rightSidebar.scss";
+@import "cmps/AvatarLightbox.scss";
+@import "cmps/AvatarCropper.scss";
 @import '../styles/cmps/_LeftNav';
 @import 'cmps/CommentsModal.scss';
+@import 'cmps/OnboardingModal.scss';
+@import 'cmps/EmptyState.scss';
+@import 'cmps/ImgUploader.scss';
+@import 'cmps/VideoPlayer.scss';
+@import 'cmps/EmojiPicker.scss';
+@import 'cmps/FollowersFollowingModal.scss';
 
 
 

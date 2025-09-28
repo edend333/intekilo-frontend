@@ -1,0 +1,512 @@
+.emoji-picker {
+  position: absolute;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  max-width: 320px;
+  max-height: 400px;
+  
+  // Dark mode support
+  &--dark {
+    background: #262626;
+    border-color: #363636;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    
+    :global(.epr-emoji-category-label) {
+      background: #262626 !important;
+      color: #a8a8a8 !important;
+    }
+
+    :global(.epr-search-container) {
+      background: #262626 !important;
+      border: 1px solid #404040 !important;
+      
+      input {
+        color: #ffffff !important;
+        
+        &::placeholder {
+          color: #a8a8a8 !important;
+        }
+      }
+    }
+
+    :global(.epr-emoji-category-content) {
+      background: #262626 !important;
+    }
+
+    :global(.epr-emoji) {
+      &:hover {
+        background: #363636 !important;
+      }
+    }
+  }
+
+  // Position variants
+  &--bottom-left {
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+  }
+
+  &--bottom-right {
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+  }
+
+  &--top-left {
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 8px;
+  }
+
+  &--top-right {
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+  }
+
+  // Mobile optimizations
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90vw;
+    max-height: 60vh;
+    width: 320px;
+    z-index: 10000;
+    
+    &--bottom-left,
+    &--bottom-right,
+    &--top-left,
+    &--top-right {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+    }
+    
+    // Ensure it's above mobile keyboards
+    @media (max-height: 600px) {
+      max-height: 50vh;
+      top: 40%;
+    }
+  }
+
+  // Override emoji-picker-react styles to match our theme
+  :global(.EmojiPickerReact) {
+    background: transparent !important;
+    border: none !important;
+    font-family: inherit !important;
+  }
+
+  :global(.epr-emoji-category-label) {
+    background: #fff !important;
+    color: #8e8e8e !important;
+  }
+
+  :global(.epr-search-container) {
+    background: #fff !important;
+    border: 1px solid #dbdbdb !important;
+    
+    input {
+      color: #262626 !important;
+      
+      &::placeholder {
+        color: #8e8e8e !important;
+      }
+    }
+  }
+
+  :global(.epr-emoji-category-content) {
+    background: #fff !important;
+  }
+
+  :global(.epr-emoji) {
+    &:hover {
+      background: #f5f5f5 !important;
+    }
+  }
+
+  // RTL support
+  [dir="rtl"] & {
+    :global(.epr-search-container) {
+      text-align: right;
+      direction: rtl;
+    }
+    
+    :global(.epr-emoji-category-label) {
+      text-align: right;
+    }
+    
+    :global(.epr-category-nav) {
+      direction: rtl;
+    }
+  }
+}
+
+// Emoji button styles
+.emoji-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #8e8e8e;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    background: #f5f5f5;
+    color: #262626;
+  }
+
+  &:focus {
+    outline: 2px solid #0095f6;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  // Active state when picker is open
+  &.emoji-button--active {
+    background: #0095f6;
+    color: white;
+  }
+
+  // Dark mode support for button
+  .emoji-picker--dark & {
+    color: #a8a8a8;
+    
+    &:hover {
+      background: #363636;
+      color: #ffffff;
+    }
+    
+    &:focus {
+      outline: 2px solid #0095f6;
+      outline-offset: 2px;
+    }
+    
+    &.emoji-button--active {
+      background: #0095f6;
+      color: white;
+    }
+  }
+}
+
+// Container for text input with emoji button
+.text-input-with-emoji {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+
+  .text-input {
+    flex: 1;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    background: #fff;
+    color: #262626;
+    font-size: 14px;
+    line-height: 1.4;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: #0095f6;
+    }
+
+    &::placeholder {
+      color: #8e8e8e;
+    }
+  }
+
+  // Dark mode support for text input
+  .emoji-picker--dark & {
+    .text-input {
+      background: #262626;
+      border-color: #404040;
+      color: #ffffff;
+      
+      &:focus {
+        border-color: #0095f6;
+      }
+      
+      &::placeholder {
+        color: #a8a8a8;
+      }
+    }
+  }
+
+  .emoji-button {
+    flex-shrink: 0;
+  }
+
+  // Specific styles for different contexts
+  &.create-post-caption {
+    .text-input {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1.5;
+      resize: none;
+      min-height: auto;
+      
+      &:focus {
+        border: none;
+        outline: none;
+      }
+    }
+  }
+
+  &.modal-comment-input {
+    .text-input {
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      font-size: 14px;
+      resize: none;
+      min-height: auto;
+      
+      &:focus {
+        border: none;
+        outline: none;
+      }
+    }
+  }
+
+  &.bio-textarea,
+  &.edit-form-bio {
+    .text-input {
+      width: 100%;
+      min-height: 80px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Loading state for emoji picker
+.emoji-picker-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  text-align: center;
+  min-width: 200px;
+  
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0095f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #8e8e8e;
+  }
+  
+  // Dark mode support
+  .emoji-picker--dark & {
+    background: #262626;
+    color: #a8a8a8;
+    border-color: #363636;
+    
+    p {
+      color: #a8a8a8;
+    }
+    
+    .loading-spinner {
+      border-color: #363636;
+      border-top-color: #0095f6;
+    }
+  }
+}
+
+// Error state for emoji picker
+.emoji-picker-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  text-align: center;
+  min-width: 200px;
+  
+  p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #ed4956;
+  }
+  
+  button {
+    background: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: #1877f2;
+    }
+  }
+  
+  // Dark mode support
+  .emoji-picker--dark & {
+    background: #262626;
+    border-color: #363636;
+    
+    p {
+      color: #ed4956;
+    }
+    
+    button {
+      background: #0095f6;
+      
+      &:hover {
+        background: #1877f2;
+      }
+    }
+  }
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Fallback emoji picker styles
+.emoji-picker-fallback {
+  background: #fff;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  margin: 0 auto;
+
+  .emoji-picker-fallback-content {
+    text-align: center;
+
+    h3 {
+      color: #262626;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #8e8e8e;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .emoji-fallback-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+
+      button {
+        background: #f8f9fa;
+        border: 1px solid #e1e5e9;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #e9ecef;
+          transform: scale(1.1);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+
+    .close-button {
+      background: #0095f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #0080d6;
+      }
+    }
+  }
+}
+
+// Dark mode support for fallback
+[data-theme="dark"] .emoji-picker-fallback {
+  background: #262626;
+  border-color: #363636;
+
+  .emoji-picker-fallback-content {
+    h3 {
+      color: #ffffff;
+    }
+
+    p {
+      color: #a8a8a8;
+    }
+
+    .emoji-fallback-buttons button {
+      background: #363636;
+      border-color: #404040;
+      color: #ffffff;
+
+      &:hover {
+        background: #404040;
+      }
+    }
+  }
+}

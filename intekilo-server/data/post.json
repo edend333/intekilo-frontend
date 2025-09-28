@@ -3,7 +3,7 @@
     "txt": "Sunset hike 🌄",
     "imgUrl": "https://images.unsplash.com/photo-1518837695005-2083093ee35b",
     "owner": {
-      "_id": "u101",
+      "_id": "507f1f77bcf86cd799439011",
       "fullname": "Alice Bloom",
       "imgUrl": "https://randomuser.me/api/portraits/women/68.jpg"
     },
@@ -14,20 +14,20 @@
     },
     "likedBy": [
       {
-        "_id": "u103",
+        "_id": "507f1f77bcf86cd799439013",
         "fullname": "Rita Moss",
         "imgUrl": "https://randomuser.me/api/portraits/women/55.jpg"
       }
     ],
     "tags": ["nature", "hiking", "sunset"],
     "msgs": [],
-    "_id": "p101"
+    "_id": "507f1f77bcf86cd799439040"
   },
   {
     "txt": "Brunch with friends 🥐☕",
     "imgUrl": "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
     "owner": {
-      "_id": "u102",
+      "_id": "507f1f77bcf86cd799439012",
       "fullname": "John Maverick",
       "imgUrl": "https://randomuser.me/api/portraits/men/32.jpg"
     },
@@ -39,13 +39,13 @@
     "likedBy": [],
     "tags": ["brunch", "friends", "coffee"],
     "msgs": [],
-    "_id": "p102"
+    "_id": "507f1f77bcf86cd799439041"
   },
   {
     "txt": "Throwback to the beach 🏖️",
     "imgUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
     "owner": {
-      "_id": "u105",
+      "_id": "507f1f77bcf86cd799439015",
       "fullname": "sea_soul",
       "imgUrl": "https://randomuser.me/api/portraits/men/25.jpg"
     },
@@ -56,33 +56,33 @@
     },
     "likedBy": [
       {
-        "_id": "u104",
+        "_id": "507f1f77bcf86cd799439014",
         "fullname": "foodie_girl",
         "imgUrl": "https://randomuser.me/api/portraits/women/19.jpg"
       }
     ],
     "tags": ["beach", "vacation"],
     "msgs": [],
-    "_id": "p103"
+    "_id": "507f1f77bcf86cd799439042"
   },
   {
     "txt": "Late night coding 💻",
     "imgUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
     "owner": {
-      "_id": "u107",
+      "_id": "507f1f77bcf86cd799439016",
       "fullname": "dev_dude",
       "imgUrl": "https://randomuser.me/api/portraits/men/30.jpg"
     },
     "likedBy": [],
     "tags": ["coding", "nightshift"],
     "msgs": [],
-    "_id": "p104"
+    "_id": "507f1f77bcf86cd799439043"
   },
   {
     "txt": "First snowfall ❄️",
     "imgUrl": "https://images.unsplash.com/photo-1608889178690-96b44e2a3b3b",
     "owner": {
-      "_id": "u108",
+      "_id": "507f1f77bcf86cd799439017",
       "fullname": "winter_wanderer",
       "imgUrl": "https://randomuser.me/api/portraits/women/32.jpg"
     },
@@ -93,18 +93,62 @@
     },
     "likedBy": [
       {
-        "_id": "u102",
-        "fullname": "Alex",
-        "imgUrl": "https://randomuser.me/api/portraits/men/12.jpg"
+        "_id": "507f1f77bcf86cd799439012",
+        "fullname": "John Maverick",
+        "imgUrl": "https://randomuser.me/api/portraits/men/32.jpg"
       },
       {
-        "_id": "u105",
+        "_id": "507f1f77bcf86cd799439015",
         "fullname": "sea_soul",
         "imgUrl": "https://randomuser.me/api/portraits/men/25.jpg"
       }
     ],
     "tags": ["snow", "winter", "nyc"],
     "msgs": [],
-    "_id": "p105"
+    "_id": "507f1f77bcf86cd799439044"
+  },
+  {
+    "txt": "Morning coffee routine ☕️",
+    "type": "video",
+    "videoUrl": "https://res.cloudinary.com/dxeibnzt3/video/upload/v1758983000/sample_video.mp4",
+    "posterUrl": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+    "duration": 45,
+    "width": 1920,
+    "height": 1080,
+    "format": "mp4",
+    "owner": {
+      "_id": "507f1f77bcf86cd799439018",
+      "fullname": "coffee_lover",
+      "imgUrl": "https://randomuser.me/api/portraits/women/28.jpg"
+    },
+    "likedBy": [
+      {
+        "_id": "507f1f77bcf86cd799439011",
+        "fullname": "Alice Bloom",
+        "imgUrl": "https://randomuser.me/api/portraits/women/68.jpg"
+      }
+    ],
+    "tags": ["coffee", "morning", "routine"],
+    "msgs": [],
+    "_id": "507f1f77bcf86cd799439045"
+  },
+  {
+    "txt": "Sunset timelapse 🌅",
+    "type": "video",
+    "videoUrl": "https://res.cloudinary.com/dxeibnzt3/video/upload/v1758983000/sunset_timelapse.mp4",
+    "posterUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+    "duration": 30,
+    "width": 1280,
+    "height": 720,
+    "format": "mp4",
+    "owner": {
+      "_id": "507f1f77bcf86cd799439019",
+      "fullname": "nature_photographer",
+      "imgUrl": "https://randomuser.me/api/portraits/men/35.jpg"
+    },
+    "likedBy": [],
+    "tags": ["sunset", "timelapse", "nature"],
+    "msgs": [],
+    "_id": "507f1f77bcf86cd799439046"
   }
 ]

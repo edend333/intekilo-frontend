@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { validateToken } from '../store/user.actions'
+import { validateToken, setUser } from '../store/user.actions'
 import { userService } from '../services/user'
 
 const AUTH_INITIALIZED_KEY = 'authInitialized'
@@ -12,27 +12,30 @@ export function AuthInitializer({ children }) {
     const location = useLocation()
 
     useEffect(() => {
-        // Check if auth was already initialized in this session
-        const hasInitialized = sessionStorage.getItem(AUTH_INITIALIZED_KEY)
-        if (hasInitialized) return
-        
+        // Always run auth initialization on page load
         const initializeAuth = async () => {
-            // Mark as initialized
-            sessionStorage.setItem(AUTH_INITIALIZED_KEY, 'true')
-            
-            // Check if there's a token in sessionStorage or cookie
+            // Check if there's a token in localStorage or cookie
             const existingUser = userService.getLoggedinUser()
+            const existingToken = userService.getLoginToken()
             
-            if (!existingUser) {
-                // No token anywhere, redirect to login if not already there
+            console.log('🔍 AuthInitializer - existingUser:', existingUser ? 'EXISTS' : 'NOT FOUND')
+            console.log('🔍 AuthInitializer - existingToken:', existingToken ? 'EXISTS' : 'NOT FOUND')
+            
+            // Only proceed if we have BOTH user and token
+            if (!existingUser || !existingToken) {
+                console.log('❌ AuthInitializer - Missing user or token, redirecting to login')
+                // No user or token, redirect to login if not already there
                 if (!location.pathname.includes('/login') && !location.pathname.includes('/signup')) {
                     navigate('/login')
                 }
                 return
             }
 
+            console.log('✅ AuthInitializer - Both user and token found, proceeding with auth')
+            // Set the existing user in Redux store immediately
+            dispatch(setUser(existingUser))
+
             // If we have user data, try to validate the token
-            // But don't redirect to login if validation fails - keep the user logged in with cached data
             try {
                 const user = await dispatch(validateToken())
                 
@@ -40,9 +43,8 @@ export function AuthInitializer({ children }) {
                 if (user && (location.pathname.includes('/login') || location.pathname.includes('/signup'))) {
                     navigate('/')
                 }
-                // If validation failed but we have cached user data, let them continue
-                // The token will be validated again when they make actual requests
             } catch (err) {
+                console.log('⚠️ Token validation failed, but keeping user logged in with cached data')
                 // Token validation failed, but keep user logged in with cached data
                 // If on login/signup pages, redirect to home since we have cached data
                 if (location.pathname.includes('/login') || location.pathname.includes('/signup')) {

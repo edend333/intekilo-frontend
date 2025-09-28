@@ -10,6 +10,7 @@ export const userService = {
     getById,
     remove,
     update,
+    updateBio,
     getLoggedinUser,
 }
 
@@ -36,6 +37,20 @@ async function update({ _id }) {
     return user
 }
 
+async function updateBio(userId, bio) {
+    const user = await storageService.get('user', userId)
+    user.bio = bio
+    await storageService.put('user', user)
+    
+    // Update loggedinUser if it's the same user
+    const loggedinUser = getLoggedinUser()
+    if (loggedinUser && loggedinUser._id === userId) {
+        _saveLocalUser(user)
+    }
+    
+    return user
+}
+
 async function login(userCred) {
     const users = await storageService.query('user')
  const user = users.find(user =>
@@ -53,7 +68,44 @@ async function signup(userCred) {
 }
 
 async function logout() {
+    // Clear localStorage FIRST (this is where the token is stored via async-storage)
+    localStorage.removeItem('loggedinUser')
+    localStorage.removeItem('loginToken')
+    localStorage.removeItem('user')
+    localStorage.removeItem('review')
+    localStorage.removeItem('comment')
+    localStorage.removeItem('authInitialized')
+    localStorage.removeItem('token')
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('accessToken')
+    localStorage.clear()
+    
+    // Clear sessionStorage
     sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+    sessionStorage.removeItem('loginToken')
+    sessionStorage.removeItem('authInitialized')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('authToken')
+    sessionStorage.removeItem('accessToken')
+    sessionStorage.clear()
+    
+    // Clear cookies
+    document.cookie = 'loggedinUser=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    document.cookie = 'loginToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    document.cookie = 'authInitialized=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    document.cookie = 'accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=None; secure=false'
+    
+    document.cookie = 'loggedinUser=; Path=/; Max-Age=0; sameSite=None; secure=false'
+    document.cookie = 'loginToken=; Path=/; Max-Age=0; sameSite=None; secure=false'
+    document.cookie = 'loggedinUser=; Path=/; Max-Age=-1; sameSite=None; secure=false'
+    document.cookie = 'loginToken=; Path=/; Max-Age=-1; sameSite=None; secure=false'
+    
+    document.cookie = 'loggedinUser=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax; secure=false'
+    document.cookie = 'loginToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax; secure=false'
+    document.cookie = 'loggedinUser=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict; secure=false'
+    document.cookie = 'loginToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict; secure=false'
 }
 
 function getLoggedinUser() {

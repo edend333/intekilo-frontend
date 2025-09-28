@@ -15,6 +15,8 @@ export const commentService = {
     update,
     addCommentLike,
     removeCommentLike,
+    updateUserAvatarInComments,
+    migrateOldComments,
 }
 
 async function query(filterBy = { txt: '', postId: '' }) {
@@ -50,7 +52,12 @@ async function query(filterBy = { txt: '', postId: '' }) {
 async function getById(commentId) {
     try {
         const collection = await dbService.getCollection('comments')
-        const comment = await collection.findOne({ _id: ObjectId.createFromHexString(commentId) })
+        // Handle both string IDs and ObjectId
+        const criteria = commentId.match(/^[0-9a-fA-F]{24}$/) 
+            ? { _id: new ObjectId(commentId) }
+            : { _id: commentId }
+        
+        const comment = await collection.findOne(criteria)
         
         if (!comment) {
             logger.error(`Comment not found: ${commentId}`)
@@ -69,8 +76,11 @@ async function remove(commentId) {
     const { _id: ownerId, isAdmin } = loggedinUser
 
     try {
+        // Handle both string IDs and ObjectId
         const criteria = {
-            _id: ObjectId.createFromHexString(commentId),
+            _id: commentId.match(/^[0-9a-fA-F]{24}$/) 
+                ? new ObjectId(commentId)
+                : commentId
         }
 
         if (!isAdmin) criteria['by._id'] = ownerId
@@ -88,7 +98,7 @@ async function remove(commentId) {
 
 async function add(comment) {
     try {
-        comment._id = makeId()
+        // Don't set _id - let MongoDB create ObjectId automatically
         comment.createdAt = new Date()
         comment.likedBy = []
         
@@ -105,7 +115,12 @@ async function update(comment) {
     const commentToSave = { txt: comment.txt }
 
     try {
-        const criteria = { _id: ObjectId.createFromHexString(comment._id) }
+        // Handle both string IDs and ObjectId
+        const criteria = { 
+            _id: comment._id.match(/^[0-9a-fA-F]{24}$/) 
+                ? new ObjectId(comment._id)
+                : comment._id
+        }
         const collection = await dbService.getCollection('comments')
         await collection.updateOne(criteria, { $set: commentToSave })
 
@@ -118,7 +133,12 @@ async function update(comment) {
 
 async function addCommentLike(commentId, like) {
     try {
-        const criteria = { _id: ObjectId.createFromHexString(commentId) }
+        // Handle both string IDs and ObjectId
+        const criteria = { 
+            _id: commentId.match(/^[0-9a-fA-F]{24}$/) 
+                ? new ObjectId(commentId)
+                : commentId
+        }
         
         const collection = await dbService.getCollection('comments')
         await collection.updateOne(criteria, { $push: { likedBy: like.by } })
@@ -135,7 +155,12 @@ async function removeCommentLike(commentId) {
     const { _id: userId } = loggedinUser
 
     try {
-        const criteria = { _id: ObjectId.createFromHexString(commentId) }
+        // Handle both string IDs and ObjectId
+        const criteria = { 
+            _id: commentId.match(/^[0-9a-fA-F]{24}$/) 
+                ? new ObjectId(commentId)
+                : commentId
+        }
 
         const collection = await dbService.getCollection('comments')
         await collection.updateOne(criteria, { $pull: { likedBy: { _id: userId } } })
@@ -151,7 +176,12 @@ function _buildCriteria(filterBy) {
     const criteria = {}
     
     if (filterBy.postId) {
-        criteria.postId = filterBy.postId
+        // Handle both ObjectId and string formats for postId
+        if (filterBy.postId.match(/^[0-9a-fA-F]{24}$/)) {
+            criteria.postId = filterBy.postId
+        } else {
+            criteria.postId = filterBy.postId
+        }
     }
     
     if (filterBy.txt) {
@@ -167,4 +197,83 @@ function _buildCriteria(filterBy) {
 function _buildSort(filterBy) {
     if (!filterBy.sortField) return { createdAt: -1 } // Default sort by newest first
     return { [filterBy.sortField]: filterBy.sortDir }
+}
+
+async function updateUserAvatarInComments(userId, newImgUrl) {
+    try {
+        console.log('🔄 Updating user avatar in all comments:', userId, newImgUrl)
+        
+        const collection = await dbService.getCollection('comments')
+        
+        // Update all comments where this user is the author
+        const result = await collection.updateMany(
+            { 'by._id': userId },
+            { 
+                $set: { 
+                    'by.imgUrl': newImgUrl,
+                    updatedAt: new Date()
+                } 
+            }
+        )
+        
+        console.log(`✅ Updated ${result.modifiedCount} comments with new avatar for user ${userId}`)
+        return result.modifiedCount
+    } catch (err) {
+        logger.error(`cannot update user avatar in comments for user ${userId}`, err)
+        throw err
+    }
+}
+
+async function migrateOldComments() {
+    try {
+        console.log('🔄 Migrating old comments to include user data...')
+        
+        const collection = await dbService.getCollection('comments')
+        const userCollection = await dbService.getCollection('users')
+        
+        // Find comments where 'by' is just an ID (string)
+        const oldComments = await collection.find({
+            'by': { $type: 'string' }
+        }).toArray()
+        
+        console.log(`📊 Found ${oldComments.length} old comments to migrate`)
+        
+        let migratedCount = 0
+        
+        for (const comment of oldComments) {
+            try {
+                // Get user data
+                const user = await userCollection.findOne({ _id: comment.by })
+                
+                if (user) {
+                    // Update comment with full user object
+                    await collection.updateOne(
+                        { _id: comment._id },
+                        { 
+                            $set: { 
+                                'by': {
+                                    _id: user._id,
+                                    username: user.username,
+                                    fullname: user.fullname,
+                                    imgUrl: user.imgUrl
+                                },
+                                migratedAt: new Date()
+                            } 
+                        }
+                    )
+                    migratedCount++
+                } else {
+                    console.log(`⚠️ User not found for comment ${comment._id}: ${comment.by}`)
+                }
+            } catch (err) {
+                console.error(`❌ Error migrating comment ${comment._id}:`, err)
+            }
+        }
+        
+        console.log(`✅ Migrated ${migratedCount} comments successfully`)
+        return migratedCount
+    } catch (err) {
+        logger.error('cannot migrate old comments', err)
+        throw err
+    }
 }

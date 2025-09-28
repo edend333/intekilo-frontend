@@ -1,185 +1,44 @@
 [
-    {
-      "_id": "p106",
-      "txt": "Morning coffee vibes ☕✨",
-      "imgUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
-      "by": {
-        "_id": "u201",
-        "fullname": "coffee_addict",
-        "imgUrl": "https://randomuser.me/api/portraits/women/45.jpg"
-      },
-      "loc": {
-        "lat": 40.7128,
-        "lng": -74.0060,
-        "name": "Brooklyn, NY"
-      },
-      "likedBy": [
-        {
-          "_id": "u202",
-          "fullname": "morning_person",
-          "imgUrl": "https://randomuser.me/api/portraits/men/33.jpg"
-        },
-        {
-          "_id": "u203",
-          "fullname": "coffee_lover",
-          "imgUrl": "https://randomuser.me/api/portraits/women/28.jpg"
-        }
-      ],
-      "tags": ["coffee", "morning", "brooklyn", "vibes"]
-    },
-    {
-      "_id": "p107",
-      "txt": "Weekend adventure awaits! 🏔️",
-      "imgUrl": "https://images.unsplash.com/photo-1464822759844-d150baec7b4b",
-      "by": {
-        "_id": "u204",
-        "fullname": "adventure_seeker",
-        "imgUrl": "https://randomuser.me/api/portraits/men/41.jpg"
-      },
-      "loc": {
-        "lat": 37.7749,
-        "lng": -122.4194,
-        "name": "San Francisco, CA"
-      },
-      "likedBy": [
-        {
-          "_id": "u205",
-          "fullname": "outdoor_enthusiast",
-          "imgUrl": "https://randomuser.me/api/portraits/women/52.jpg"
-        }
-      ],
-      "tags": ["adventure", "weekend", "mountains", "hiking"]
-    },
-    {
-      "_id": "p108",
-      "txt": "Art gallery opening tonight ��",
-      "imgUrl": "https://images.unsplash.com/photo-1541961017774-22349e4a1262",
-      "by": {
-        "_id": "u206",
-        "fullname": "art_gallery_curator",
-        "imgUrl": "https://randomuser.me/api/portraits/women/37.jpg"
-      },
-      "loc": {
-        "lat": 34.0522,
-        "lng": -118.2437,
-        "name": "Los Angeles, CA"
-      },
-      "likedBy": [
-        {
-          "_id": "u207",
-          "fullname": "art_collector",
-          "imgUrl": "https://randomuser.me/api/portraits/men/29.jpg"
-        },
-        {
-          "_id": "u208",
-          "fullname": "creative_soul",
-          "imgUrl": "https://randomuser.me/api/portraits/women/44.jpg"
-        },
-        {
-          "_id": "u209",
-          "fullname": "gallery_visitor",
-          "imgUrl": "https://randomuser.me/api/portraits/men/36.jpg"
-        }
-      ],
-      "tags": ["art", "gallery", "opening", "culture", "losangeles"]
-    },
-    {
-      "_id": "p109",
-      "txt": "Fresh pasta making session 🍝",
-      "imgUrl": "https://images.unsplash.com/photo-1551892374-ecf8754cf8b0",
-      "by": {
-        "_id": "u210",
-        "fullname": "italian_chef",
-        "imgUrl": "https://randomuser.me/api/portraits/men/48.jpg"
-      },
-      "loc": {
-        "lat": 41.8781,
-        "lng": -87.6298,
-        "name": "Chicago, IL"
-      },
-      "likedBy": [
-        {
-          "_id": "u211",
-          "fullname": "foodie_forever",
-          "imgUrl": "https://randomuser.me/api/portraits/women/31.jpg"
-        },
-        {
-          "_id": "u212",
-          "fullname": "cooking_enthusiast",
-          "imgUrl": "https://randomuser.me/api/portraits/men/42.jpg"
-        }
-      ],
-      "tags": ["cooking", "pasta", "italian", "homemade", "food"]
-    },
-    {
-      "_id": "p110",
-      "txt": "Beach sunset meditation 🧘‍♀️🌅",
-      "imgUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
-      "by": {
-        "_id": "u213",
-        "fullname": "zen_master",
-        "imgUrl": "https://randomuser.me/api/portraits/women/39.jpg"
-      },
-      "loc": {
-        "lat": 25.7617,
-        "lng": -80.1918,
-        "name": "Miami Beach, FL"
-      },
-      "likedBy": [
-        {
-          "_id": "u214",
-          "fullname": "mindfulness_practitioner",
-          "imgUrl": "https://randomuser.me/api/portraits/women/46.jpg"
-        },
-        {
-          "_id": "u215",
-          "fullname": "beach_yogi",
-          "imgUrl": "https://randomuser.me/api/portraits/men/35.jpg"
-        },
-        {
-          "_id": "u216",
-          "fullname": "sunset_lover",
-          "imgUrl": "https://randomuser.me/api/portraits/women/43.jpg"
-        }
-      ],
-      "tags": ["meditation", "sunset", "beach", "mindfulness", "zen"]
-    },
-    {
-      "_id": "p111",
-      "txt": "Concert night with amazing vibes 🎵🎤",
-      "imgUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f",
-      "by": {
-        "_id": "u217",
-        "fullname": "music_lover_nyc",
-        "imgUrl": "https://randomuser.me/api/portraits/men/38.jpg"
-      },
-      "loc": {
-        "lat": 40.7589,
-        "lng": -73.9851,
-        "name": "Times Square, NYC"
-      },
-      "likedBy": [
-        {
-          "_id": "u218",
-          "fullname": "concert_goer",
-          "imgUrl": "https://randomuser.me/api/portraits/women/47.jpg"
-        },
-        {
-          "_id": "u219",
-          "fullname": "music_fanatic",
-          "imgUrl": "https://randomuser.me/api/portraits/men/44.jpg"
-        },
-        {
-          "_id": "u220",
-          "fullname": "nyc_native",
-          "imgUrl": "https://randomuser.me/api/portraits/women/49.jpg"
-        },
-        {
-          "_id": "u221",
-          "fullname": "live_music_fan",
-          "imgUrl": "https://randomuser.me/api/portraits/men/31.jpg"
-        }
-      ],
-      "tags": ["music", "concert", "nyc", "live", "vibes", "timesquare"]
-    }
-  ]
+  {
+    "_id": "507f1f77bcf86cd799439030",
+    "postId": "507f1f77bcf86cd799439040",
+    "by": "507f1f77bcf86cd799439012",
+    "text": "Amazing sunset! 🌅"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439031", 
+    "postId": "507f1f77bcf86cd799439040",
+    "by": "507f1f77bcf86cd799439013",
+    "text": "Love this view! 😍"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439032",
+    "postId": "507f1f77bcf86cd799439041", 
+    "by": "507f1f77bcf86cd799439011",
+    "text": "Looks delicious! 🥐"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439033",
+    "postId": "507f1f77bcf86cd799439042",
+    "by": "507f1f77bcf86cd799439014", 
+    "text": "Beach vibes! 🏖️"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439034",
+    "postId": "507f1f77bcf86cd799439043",
+    "by": "507f1f77bcf86cd799439015",
+    "text": "Keep coding! 💻"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439035",
+    "postId": "507f1f77bcf86cd799439044",
+    "by": "507f1f77bcf86cd799439011",
+    "text": "Beautiful snow! ❄️"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439036",
+    "postId": "507f1f77bcf86cd799439044",
+    "by": "507f1f77bcf86cd799439016",
+    "text": "Winter wonderland! 🏔️"
+  }
+]

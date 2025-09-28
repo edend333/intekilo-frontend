@@ -27,12 +27,29 @@
   object-fit: cover;
 }
 
+.post-header-info {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+}
+
 .username {
   font-weight: 600;
   font-size: 14px;
   color: vars.$instagram-text-primary;
-  margin-right: auto;
   text-decoration: none;
+  line-height: 1.2;
+}
+
+.post-time {
+  font-size: 12px;
+  color: vars.$instagram-text-secondary;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.post-menu {
+  position: relative;
 }
 
 .dot-menu {
@@ -43,10 +60,240 @@
   line-height: 1;
 }
 
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid vars.$instagram-border;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  min-width: 160px;
+  padding: 8px 0;
+  
+  .menu-item {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: #f8f9fa;
+    }
+    
+    svg {
+      flex-shrink: 0;
+    }
+    
+    &.edit-btn {
+      color: vars.$instagram-text-primary;
+    }
+    
+    &.delete-btn {
+      color: #ed4956;
+      
+      &:hover {
+        background: #fef2f2;
+      }
+    }
+  }
+}
+
+.delete-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: vars.$instagram-text-primary;
+  }
+  
+  p {
+    margin: 0 0 24px 0;
+    font-size: 14px;
+    color: vars.$instagram-text-secondary;
+  }
+  
+  .dialog-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    
+    button {
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+    
+    .cancel-btn {
+      background: #f5f5f5;
+      border: 1px solid vars.$instagram-border;
+      color: vars.$instagram-text-primary;
+      
+      &:hover:not(:disabled) {
+        background: #e8e8e8;
+      }
+    }
+    
+    .delete-confirm-btn {
+      background: #ed4956;
+      border: 1px solid #ed4956;
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background: #d73527;
+      }
+    }
+  }
+}
+
+.edit-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: vars.$instagram-text-primary;
+    text-align: center;
+  }
+  
+  .edit-form {
+    .edit-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid vars.$instagram-border;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 16px;
+      
+      &:focus {
+        outline: none;
+        border-color: #0095f6;
+        box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.1);
+      }
+    }
+    
+    .edit-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      
+      button {
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .cancel-btn {
+        background: #f5f5f5;
+        border: 1px solid vars.$instagram-border;
+        color: vars.$instagram-text-primary;
+        
+        &:hover {
+          background: #e8e8e8;
+        }
+      }
+      
+      .save-btn {
+        background: #0095f6;
+        border: 1px solid #0095f6;
+        color: white;
+        
+        &:hover {
+          background: #0084d4;
+        }
+      }
+    }
+  }
+}
+
 .post-img {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.post-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #000;
+  border-radius: 0;
+  
+  .video-element {
+    object-fit: cover;
+    background: #000;
+  }
+  
+  .play-badge-corner {
+    top: 12px;
+    right: 12px;
+  }
+  
+  .mute-button-floating {
+    top: 12px;
+    left: 12px;
+  }
 }
 
 .post-actions {
@@ -89,18 +336,41 @@
   transition: all 0.2s ease;
 }
 
-.action-btn:hover svg {
-  opacity: 0.7;
-}
-
-.action-btn:focus {
-  outline: 2px solid #0095f6;
-  outline-offset: 2px;
+.save-btn {
+  &:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+  }
+  
+  &.saved {
+    &:hover {
+      background-color: rgba(212, 175, 55, 0.15);
+    }
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    
+    &:hover {
+      background-color: transparent;
+    }
+  }
 }
 
 /* Like button specific styles */
-.like-btn {
-  position: relative;
+.like-btn svg {
+  stroke-width: 1.6;
+}
+
+.like-btn .like-icon-filled {
+  fill: #ed4956;
+  stroke: none;
+}
+
+.like-btn .like-icon-outline {
+  fill: none;
+  stroke: #262626;
+  stroke-width: 1.6;
 }
 
 .like-icon-outline,
@@ -110,14 +380,6 @@
 
 .like-btn.liked .like-icon-filled {
   animation: likeScale 0.2s ease-out;
-}
-
-.like-btn:hover .like-icon-outline {
-  opacity: 0.7;
-}
-
-.like-btn:hover .like-icon-filled {
-  opacity: 0.8;
 }
 
 @keyframes likeScale {
@@ -130,6 +392,15 @@
   100% {
     transform: scale(1);
   }
+}
+
+.action-btn:hover svg {
+  opacity: 0.7;
+}
+
+.action-btn:focus {
+  outline: 2px solid #0095f6;
+  outline-offset: 2px;
 }
 
 .post-details {

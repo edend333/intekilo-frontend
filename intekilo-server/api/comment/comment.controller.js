@@ -39,7 +39,9 @@ export async function addComment(req, res) {
     const { loggedinUser, body: comment } = req
 
     try {
+        console.log('🔍 loggedinUser in addComment:', loggedinUser)
         comment.by = loggedinUser
+        console.log('📝 Comment with user info:', comment)
         const addedComment = await commentService.add(comment)
         res.json(addedComment)
     } catch (err) {
@@ -101,5 +103,20 @@ export async function removeCommentLike(req, res) {
     } catch (err) {
         logger.error('Failed to remove comment like', err)
         res.status(400).send({ err: 'Failed to remove comment like' })
+    }
+}
+
+export async function migrateOldComments(req, res) {
+    try {
+        console.log('🔄 Starting comment migration...')
+        const migratedCount = await commentService.migrateOldComments()
+        res.json({ 
+            success: true, 
+            message: `Migrated ${migratedCount} comments successfully`,
+            migratedCount 
+        })
+    } catch (err) {
+        logger.error('Failed to migrate old comments', err)
+        res.status(500).send({ err: 'Failed to migrate old comments' })
     }
 }

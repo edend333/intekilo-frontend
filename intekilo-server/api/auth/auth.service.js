@@ -54,6 +54,7 @@ async function signup({ email, username, password, fullname, imgUrl }) {
 		password: hash, 
 		fullname, 
 		imgUrl, 
+		bio: '',
 		ROUL: 'user',
 		following: [],
 		followers: [],
@@ -69,6 +70,8 @@ function getLoginToken(user) {
     const userInfo = { 
         _id: user._id, 
         fullname: user.fullname, 
+        imgUrl: user.imgUrl,
+        username: user.username,
         isAdmin: user.ROUL === 'admin',
         exp: Date.now() + (24 * 60 * 60 * 1000) // Add expiration: 24 hours from now
         // exp: Date.now() + (1 * 60 * 1000 ) // Add expiration: 24 hours from now

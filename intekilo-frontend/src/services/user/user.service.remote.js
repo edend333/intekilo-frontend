@@ -11,7 +11,7 @@ function _setCookie(name, value, days = 7) {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000))
         expires = "; expires=" + date.toUTCString()
     }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/"
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; sameSite=Lax; secure=false"
 }
 
 function _getCookie(name) {
@@ -26,7 +26,8 @@ function _getCookie(name) {
 }
 
 function _deleteCookie(name) {
-    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=Lax; secure=false'
+    document.cookie = name + '=; Path=/; Max-Age=0; sameSite=Lax; secure=false'
 }
 
 export const userService = {
@@ -37,33 +38,144 @@ export const userService = {
 	getById,
 	remove,
 	update,
+	updateBio,
+	updateAvatar,
+	addSavedPost,
+	removeSavedPost,
+	getSavedPosts,
     getLoggedinUser,
     validateToken,
     getLoginToken,
     saveLoginToken,
+    followUser,
+    unfollowUser,
+    getFollowers,
+    getFollowing,
+    isFollowing,
+    removeFollower,
+    getProfileWithCounts
 }
 
 function getUsers() {
-	return httpService.get(`user`)
+	return httpService.get(`users`)
 }
 
 async function getById(userId) {
-	const user = await httpService.get(`user/${userId}`)
-	return user
+	try {
+		return await httpService.get(`users/${userId}`)
+	} catch (error) {
+		if (error.response?.status === 404) {
+			console.log('❌ User not found with ID:', userId)
+			return null
+		}
+		throw error
+	}
 }
 
-function remove(userId) {
-	return httpService.delete(`user/${userId}`)
+async function remove(userId) {
+	return httpService.delete(`users/${userId}`)
 }
 
-async function update({ _id }) {
-	const user = await httpService.put(`user/${_id}`, { _id })
+async function update(user) {
+	const updatedUser = await httpService.put(`users/${user._id}`, user)
+	
+	// If this is the logged-in user, update localStorage
+	const loggedinUser = getLoggedinUser()
+	if (loggedinUser && loggedinUser._id === user._id) {
+		_saveLocalUser(updatedUser)
+	}
+	
+	return updatedUser
+}
 
-	// When admin updates other user's details, do not update loggedinUser
-    const loggedinUser = getLoggedinUser() // Might not work because its defined in the main service???
-    if (loggedinUser._id === user._id) _saveLocalUser(user)
+async function updateBio(userId, bio) {
+	return httpService.put(`users/${userId}/bio`, { bio })
+}
 
-	return user
+// Follow/Unfollow functions
+async function followUser(userId) {
+	try {
+		console.log('👥 followUser called for user:', userId)
+		console.log('📋 Request details:', {
+			method: 'POST',
+			url: `users/${userId}/follow`,
+			userId: userId
+		})
+		
+		const response = await httpService.post(`users/${userId}/follow`)
+		console.log('✅ Follow successful:', response)
+		return response
+	} catch (err) {
+		console.error('❌ Follow failed:', err)
+		throw err
+	}
+}
+
+async function unfollowUser(userId) {
+	try {
+		console.log('👥 unfollowUser called for user:', userId)
+		const response = await httpService.delete(`users/${userId}/follow`)
+		console.log('✅ Unfollow successful:', response)
+		return response
+	} catch (err) {
+		console.error('❌ Unfollow failed:', err)
+		throw err
+	}
+}
+
+async function getFollowers(userId) {
+	try {
+		console.log('👥 getFollowers called for user:', userId)
+		const followers = await httpService.get(`users/${userId}/followers`)
+		console.log('📊 Found followers:', followers.length)
+		return followers
+	} catch (err) {
+		console.error('❌ Get followers failed:', err)
+		throw err
+	}
+}
+
+async function getFollowing(userId) {
+	try {
+		console.log('👥 getFollowing called for user:', userId)
+		const following = await httpService.get(`users/${userId}/following`)
+		console.log('📊 Found following:', following.length)
+		return following
+	} catch (err) {
+		console.error('❌ Get following failed:', err)
+		throw err
+	}
+}
+
+async function isFollowing(userId) {
+	try {
+		console.log('👥 isFollowing called for user:', userId)
+		console.log('📋 Request details:', {
+			method: 'GET',
+			url: `users/${userId}/is-following`,
+			userId: userId
+		})
+		
+		const response = await httpService.get(`users/${userId}/is-following`)
+		console.log('✅ isFollowing successful:', response)
+		console.log('📊 Is following:', response.isFollowing)
+		return response.isFollowing
+	} catch (err) {
+		console.error('❌ Check following failed:', err)
+		throw err
+	}
+}
+
+async function removeFollower(followerId) {
+	try {
+		console.log('👥 removeFollower called for follower:', followerId)
+		const response = await httpService.delete(`users/${followerId}/follower`)
+		console.log('✅ Remove follower successful:', response)
+		return response
+	} catch (err) {
+		console.error('❌ Remove follower failed:', err)
+		throw err
+	}
 }
 
 async function login(userCred) {
@@ -80,7 +192,7 @@ async function login(userCred) {
 async function signup(userCred) {
 	if (!userCred.imgUrl) userCred.imgUrl = 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png'
 
-    const response = await httpService.post('auth/signup', userCred)
+	const response = await httpService.post('auth/signup', userCred)
 	if (response.user) {
 		// Save the token from the response
 		if (response.loginToken) {
@@ -91,17 +203,47 @@ async function signup(userCred) {
 }
 
 async function logout() {
+	try {
+		await httpService.post('auth/logout')
+	} catch (err) {
+		console.error('Server logout failed:', err)
+		throw err
+	}
+	
+	localStorage.removeItem('loggedinUser')
+	localStorage.removeItem('loginToken')
+	localStorage.removeItem('user')
+	localStorage.removeItem('review')
+	localStorage.removeItem('comment')
+	localStorage.removeItem('authInitialized')
+	localStorage.removeItem('token')
+	localStorage.removeItem('authToken')
+	localStorage.removeItem('accessToken')
+	localStorage.clear()
+	
 	sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
 	sessionStorage.removeItem(STORAGE_KEY_LOGIN_TOKEN)
-	sessionStorage.removeItem('authInitialized') // Clear auth initialization flag
-	_deleteCookie(STORAGE_KEY_LOGGEDIN_USER)
-	_deleteCookie(STORAGE_KEY_LOGIN_TOKEN)
-	return await httpService.post('auth/logout')
+	sessionStorage.removeItem('authInitialized')
+	sessionStorage.removeItem('token')
+	sessionStorage.removeItem('authToken')
+	sessionStorage.removeItem('accessToken')
+	sessionStorage.clear()
+	
+	document.cookie = STORAGE_KEY_LOGGEDIN_USER + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=Lax; secure=false'
+	document.cookie = STORAGE_KEY_LOGIN_TOKEN + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=Lax; secure=false'
+	document.cookie = STORAGE_KEY_LOGGEDIN_USER + '=; Path=/; Max-Age=0; sameSite=Lax; secure=false'
+	document.cookie = STORAGE_KEY_LOGIN_TOKEN + '=; Path=/; Max-Age=0; sameSite=Lax; secure=false'
 }
 
 function getLoggedinUser() {
-    // Try sessionStorage first
-    let user = sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER)
+    // Try localStorage first (persists across page refreshes)
+    let user = localStorage.getItem(STORAGE_KEY_LOGGEDIN_USER)
+    if (user) {
+        return JSON.parse(user)
+    }
+    
+    // If not in localStorage, try sessionStorage
+    user = sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER)
     if (user) {
         return JSON.parse(user)
     }
@@ -110,8 +252,6 @@ function getLoggedinUser() {
     user = _getCookie(STORAGE_KEY_LOGGEDIN_USER)
     if (user) {
         const parsedUser = JSON.parse(user)
-        // Save back to sessionStorage for faster access
-        sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, user)
         return parsedUser
     }
     
@@ -122,32 +262,32 @@ async function validateToken() {
 	try {
 		const response = await httpService.get('auth/validate')
 		if (response.valid) {
-			return _saveLocalUser(response.user)
-		} else {
-			// Token is invalid, but don't clear local data immediately
-			// Let the user continue with cached data until they try to make a request
-			return null
+			return response.user
 		}
 	} catch (err) {
-		// Token validation failed, but don't clear local data immediately
-		// Let the user continue with cached data until they try to make a request
-		return null
+		throw err
 	}
 }
 
-// Login token management functions
 function getLoginToken() {
-    // Try sessionStorage first
-    let token = sessionStorage.getItem(STORAGE_KEY_LOGIN_TOKEN)
+    // Try localStorage first (persists across page refreshes)
+    let token = localStorage.getItem(STORAGE_KEY_LOGIN_TOKEN)
+    
+    if (token) {
+        return token
+    }
+    
+    // If not in localStorage, try sessionStorage
+    token = sessionStorage.getItem(STORAGE_KEY_LOGIN_TOKEN)
+    
     if (token) {
         return token
     }
     
     // If not in sessionStorage, try cookie
     token = _getCookie(STORAGE_KEY_LOGIN_TOKEN)
+    
     if (token) {
-        // Save back to sessionStorage for faster access
-        sessionStorage.setItem(STORAGE_KEY_LOGIN_TOKEN, token)
         return token
     }
     
@@ -155,24 +295,71 @@ function getLoginToken() {
 }
 
 function saveLoginToken(token) {
-    // Save to both sessionStorage and cookie
+    // Save to both localStorage and sessionStorage
+    localStorage.setItem(STORAGE_KEY_LOGIN_TOKEN, token)
     sessionStorage.setItem(STORAGE_KEY_LOGIN_TOKEN, token)
-    _setCookie(STORAGE_KEY_LOGIN_TOKEN, token, 1) // 1 day (same as server)
+    _setCookie(STORAGE_KEY_LOGIN_TOKEN, token, 1) // 1 day
 }
 
 function _saveLocalUser(user) {
-	user = { 
-		_id: user._id, 
-		fullname: user.fullname, 
-		imgUrl: user.imgUrl, 
-		isAdmin: user.ROUL === 'admin' // Fix: Use ROUL instead of isAdmin
-	}
-	
-	const userString = JSON.stringify(user)
-	
-	// Save to both sessionStorage and cookie
-	sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, userString)
-	_setCookie(STORAGE_KEY_LOGGEDIN_USER, userString, 7) // 7 days
-	
-	return user
+    // Save to both localStorage and sessionStorage
+    localStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
+    sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
+    _setCookie(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user), 1) // 1 day
+    return user
+}
+
+async function updateAvatar(avatarData) {
+    try {
+        const updatedUser = await httpService.patch('users/me/avatar', avatarData)
+        _saveLocalUser(updatedUser)
+        return updatedUser
+    } catch (err) {
+        console.error('Failed to update avatar:', err)
+        throw err
+    }
+}
+
+async function addSavedPost(postId) {
+    try {
+        const updatedUser = await httpService.put(`users/me/saved-posts/${postId}`)
+        _saveLocalUser(updatedUser)
+        return updatedUser
+    } catch (err) {
+        console.error('Failed to add saved post:', err)
+        throw err
+    }
+}
+
+async function removeSavedPost(postId) {
+    try {
+        const updatedUser = await httpService.delete(`users/me/saved-posts/${postId}`)
+        _saveLocalUser(updatedUser)
+        return updatedUser
+    } catch (err) {
+        console.error('Failed to remove saved post:', err)
+        throw err
+    }
+}
+
+async function getSavedPosts(offset = 0, limit = 20) {
+    try {
+        const savedPosts = await httpService.get(`users/me/saved-posts?offset=${offset}&limit=${limit}`)
+        return savedPosts
+    } catch (err) {
+        console.error('Failed to get saved posts:', err)
+        throw err
+    }
+}
+
+async function getProfileWithCounts(userId) {
+    try {
+        console.log('🔍 getProfileWithCounts called with userId:', userId)
+        const profileData = await httpService.get(`users/${userId}/profile`)
+        console.log('📊 Profile data with counts:', profileData)
+        return profileData
+    } catch (err) {
+        console.error('Failed to get profile with counts:', err)
+        throw err
+    }
 }

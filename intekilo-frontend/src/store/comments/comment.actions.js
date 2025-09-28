@@ -36,7 +36,9 @@ export function loadComments(postId) {
 export function addComment(postId, txt) {
   return async (dispatch) => {
     try {
+      console.log('🚀 addComment action - sending to API:', { postId, txt })
       const savedComment = await commentService.add(postId, txt)
+      console.log('✅ addComment action - received from API:', savedComment)
       dispatch({ type: ADD_COMMENT, comment: savedComment })
       return savedComment
     } catch (err) {

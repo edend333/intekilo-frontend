@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useDispatch } from 'react-redux'
 import { login } from '../store/user.actions'
+import { Link } from 'react-router-dom'
 
 export function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' })
@@ -77,7 +78,7 @@ export function Login() {
         <a className="forgot-password" href="#">שכחת את הסיסמה?</a>
 
         <div className="signup-prompt">
-          אין לך חשבון? <a href="/signup">הרשמה</a>
+          אין לך חשבון? <Link to="/signup">הרשמה</Link>
         </div>
 
         <footer className="login-footer">
