@@ -66,9 +66,9 @@ app.use('/api/stories', storyRoutes)
 // setupSocketAPI(server)
 
 // fallback – לשים בסוף
-// app.get('/*', (req, res) => {
-//   res.sendFile(path.resolve('public/index.html'))
-// })
+app.get('/*', (req, res) => {
+  res.sendFile(path.resolve('public/index.html'))
+})
 
 const port = process.env.PORT || 3030
 const host = '0.0.0.0'
