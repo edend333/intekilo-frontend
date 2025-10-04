@@ -40,7 +40,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve('dist')))
+  app.use(express.static(path.resolve('public')))
 }
 
 // Add logging for all API requests
@@ -66,7 +66,7 @@ app.use('/api/stories', storyRoutes)
 // setupSocketAPI(server)
 
 // fallback – לשים בסוף
-app.get('/*', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.resolve('public/index.html'))
 })
 
