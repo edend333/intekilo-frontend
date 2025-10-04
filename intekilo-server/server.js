@@ -67,7 +67,7 @@ app.use('/api/stories', storyRoutes)
 
 // fallback – לשים בסוף
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve('public/index.html'))
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
 })
 
 const port = process.env.PORT || 3030
