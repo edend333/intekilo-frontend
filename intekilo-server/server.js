@@ -40,7 +40,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve('public')))
+  app.use(express.static(path.resolve('dist')))
 }
 
 // Add logging for all API requests
