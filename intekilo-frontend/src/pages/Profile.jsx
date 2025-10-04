@@ -9,14 +9,18 @@ import { EmptyState } from '../cmps/EmptyState.jsx'
 import { AvatarLightbox } from '../cmps/AvatarLightbox.jsx'
 import { FollowersModal } from '../cmps/FollowersModal.jsx'
 import { FollowingModal } from '../cmps/FollowingModal.jsx'
-import { setUser } from '../store/user.actions'
+import { ProfileDropdown } from '../cmps/ProfileDropdown.jsx'
+import { setUser as setLoggedInUser } from '../store/user.actions'
 import TextInputWithEmoji from '../cmps/TextInputWithEmoji'
+
+
 
 export function Profile() {
     const { userId } = useParams()
-    console.log('🔍 Profile: userId from URL:', userId)
     const loggedinUser = useSelector(store => store.userModule.user)
     const dispatch = useDispatch()
+    
+    // 📦 תרחל כל ה-State לפני כל שימוש
     const [activeTab, setActiveTab] = useState('posts')
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -26,6 +30,8 @@ export function Profile() {
     const [showModal, setShowModal] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
     const [isFollowing, setIsFollowing] = useState(false)
+    const [optimisticFollowState, setOptimisticFollowState] = useState(null) // null, true, false
+    const [isFollowLoading, setIsFollowLoading] = useState(false)
     const [isEditingBio, setIsEditingBio] = useState(false)
     const [bioText, setBioText] = useState('')
     const [isEditingProfile, setIsEditingProfile] = useState(false)
@@ -34,28 +40,54 @@ export function Profile() {
     const [savedPostsLoading, setSavedPostsLoading] = useState(false)
     const [showFollowersModal, setShowFollowersModal] = useState(false)
     const [showFollowingModal, setShowFollowingModal] = useState(false)
+    const [isUpdatingFollowing, setIsUpdatingFollowing] = useState(false)
+    // Removed skipNextUserReload - was causing blocking on new profile loads
+    
+    // 🛡️ editForm יתראה בריק ויתעדכן רק אחרי טעינת user
     const [editForm, setEditForm] = useState({
         username: '',
         fullname: '',
         imgUrl: '',
         bio: ''
     })
+    
+    // 🎯 Target IDs - מזהה המשתמשים בעקביות
+    const targetUserId = user?._id  // מזהה המשתמש מהפרופיל (כלומר הקבוע שעל הטעון פרופיל שלו)
+    const loggedinUserId = loggedinUser?._id  // מזהה המשתמש המחובר (מגיע מה-Redux)
+    
 
-
+    // 🎯 Single source of truth: Always execute this when entering/changing profile
     useEffect(() => {
-        // Clear posts when userId changes to prevent showing posts from previous user
+        
+        // Clear previous state
         setPosts([])
         setSelectedPost(null)
         setShowModal(false)
-        loadUser()
-    }, [userId])
+        setIsFollowing(false)  // Reset following status - will be fetched from server
+        setOptimisticFollowState(null)  // Clear any optimistic state
+        setIsUpdatingFollowing(false)  // CRITICAL: Reset updating flag to prevent blocking
+        
+        if (!userId) {
+            return
+        }
+        
+        // Always load user data regardless of navigation source
+        const initializeProfile = async () => {
+            try {
+                await loadUser()
+            } catch (error) {
+                console.error('❌ DEBUG: Error initializing profile:', error)
+            }
+        }
+        
+        initializeProfile()
+    }, [userId, loggedinUser?._id])
 
     // Listen for avatar updates
     useEffect(() => {
         const handleAvatarUpdate = (event) => {
             const { updatedUser } = event.detail
             if (updatedUser && user && updatedUser._id === user._id) {
-                console.log('🔄 Profile: Avatar updated, refreshing user data')
                 setUser(updatedUser)
             }
         }
@@ -66,11 +98,16 @@ export function Profile() {
         }
     }, [user])
 
+    // 🔄 Handle profile loading based on user state (after user is loaded)
     useEffect(() => {
         if (user && loggedinUser) {
             setIsOwnProfile(user._id === loggedinUser._id)
-            checkFollowingStatus()
             loadUserPosts()
+            
+            // Add checkFollowingStatus for external profiles 
+            if (user._id !== loggedinUser._id) {
+                checkFollowingStatus()
+            }
         } else if (user && !loggedinUser) {
             // User exists but no logged-in user (public profile)
             setIsOwnProfile(false)
@@ -78,81 +115,93 @@ export function Profile() {
         }
     }, [user, loggedinUser])
 
-    // Listen for changes in saved posts and refresh if needed
+    // 🎯 CRITICAL FIX: Check following status whenever userId changes (for modal navigation)
+    useEffect(() => {
+        // Only check following status if:
+        // 1. We have a valid userId from URL
+        // 2. We have loaded user data
+        // 3. We have a logged-in user
+        // 4. It's not the same user (not own profile)
+        if (userId && user && loggedinUser && user._id !== loggedinUser._id) {
+            // Reset optimistic state when changing profiles
+            setOptimisticFollowState(null)
+            setIsUpdatingFollowing(false)
+            
+            checkFollowingStatus()
+        }
+    }, [userId, user?._id, loggedinUser?._id]) // Depend on userId and user IDs, not full objects
+
+    // Listen for changes in saved posts and refresh if needed (ONLY for own profile)
     useEffect(() => {
         if (isOwnProfile && activeTab === 'saved') {
-            console.log('🔄 Profile: Saved posts changed or tab switched to saved, refreshing...')
             loadSavedPosts()
+        } else if (!isOwnProfile && activeTab === 'saved') {
+            // If somehow we're on saved tab for external profile, redirect to posts
+            setActiveTab('posts')
         }
     }, [loggedinUser?.savedPostIds, isOwnProfile, activeTab])
 
-        const loadUser = async () => {
-            try {
-                setLoading(true)
-            console.log('🔄 Profile: Loading user with ID:', userId)
+    const loadUser = async () => {
+        // Remove skipNextUserReload protection - always load fresh data when needed
+        // Only skip if we're in the middle of a follow/unfollow operation
+        if (isUpdatingFollowing) {
+            return
+        }
+        
+        try {
+            setLoading(true)
             
             if (userId === 'me' || !userId) {
-                // Load logged-in user's profile
+                // Load logged-in user's profile from Redux (source of truth)
                 if (loggedinUser) {
                     setUser(loggedinUser)
                     setIsOwnProfile(true)
                 } else {
-                    console.log('❌ Profile: No logged-in user found')
+                    // No logged-in user found
+                    navigate('/login')
+                    return
                 }
             } else {
                 // Load specific user's profile with counts
                 const userData = await userService.getProfileWithCounts(userId)
-                console.log('📊 Profile: Loaded user data with counts:', userData)
                 
                 if (!userData) {
-                    console.error('❌ Profile: User not found with ID:', userId)
                     setUser(null)
                     return
                 }
                 
                 setUser(userData)
+                
+                // 🛡️ עדכון editForm אחרי טעינת user
+                setEditForm({
+                    username: userData.username || '',
+                    fullname: userData.fullname || '',
+                    imgUrl: userData.imgUrl || '',
+                    bio: userData.bio || ''
+                })
             }
         } catch (error) {
             console.error('❌ Profile: Error loading user:', error)
-            } finally {
-                setLoading(false)
+        } finally {
+            setLoading(false)
         }
     }
 
     const loadUserPosts = async () => {
         if (!user || !user._id) {
-            console.log('❌ Profile: Cannot load posts - no valid user')
             setPosts([])
             return
         }
         
         try {
             setPostsLoading(true)
-            console.log('📸 Profile: Loading posts for user:', user._id)
-            console.log('📸 Profile: userId from URL:', userId)
             
-            // Verify that we're loading posts for the correct user
-            if (userId !== 'me' && userId !== user._id) {
-                console.error('❌ Profile: URL userId mismatch!', {
-                    urlUserId: userId,
-                    userObjectId: user._id
-                })
-                setPosts([])
-                return
-            }
-            
+            // 📝 Always load posts for the user object (source of truth)
             const userPosts = await postService.getPostsByOwner(user._id)
-            console.log('📊 Profile: Loaded posts count:', userPosts.length)
-            console.log('📊 Profile: Posts owner IDs:', userPosts.map(p => p.owner?._id).slice(0, 3))
-            console.log('📊 Profile: Expected owner ID:', user._id)
             
             // Validate that all posts belong to the correct user
             const invalidPosts = userPosts.filter(post => post.owner?._id !== user._id)
             if (invalidPosts.length > 0) {
-                console.error('❌ Profile: Found posts from other users!', {
-                    invalidPosts: invalidPosts.map(p => ({ id: p._id, ownerId: p.owner?._id })),
-                    expectedOwnerId: user._id
-                })
                 // Filter out invalid posts
                 const validPosts = userPosts.filter(post => post.owner?._id === user._id)
                 setPosts(validPosts)
@@ -168,19 +217,27 @@ export function Profile() {
     }
 
     const checkFollowingStatus = async () => {
-        if (!isOwnProfile && user && loggedinUser) {
+        // Check if we have all required data and it's not own profile
+        if (user && loggedinUser && targetUserId && user._id !== loggedinUser._id) {
             try {
-                console.log('👥 Profile: Checking following status for user:', user._id)
-                const followingStatus = await userService.isFollowing(user._id)
-                setIsFollowing(followingStatus)
-                console.log('📊 Profile: Following status:', followingStatus)
+                // 🎯 Get accurate status from server instead of local state
+                const actualStatus = await userService.isFollowing(targetUserId)
+                setIsFollowing(actualStatus)
             } catch (error) {
-                console.error('❌ Profile: Error checking following status:', error)
+                // Fallback to Redux/local state
+                const followingArr = Array.isArray(loggedinUser?.following) ? loggedinUser.following : []
+                const userFollowingStatus = followingArr.includes(targetUserId)
+                setIsFollowing(userFollowingStatus)
             }
         }
     }
 
     const handleTabChange = (tab) => {
+        // Block saved tab access for external profiles
+        if (tab === 'saved' && !isOwnProfile) {
+            return // Don't allow tab switch
+        }
+        
         setActiveTab(tab)
         if (tab === 'saved' && isOwnProfile) {
             loadSavedPosts()
@@ -242,7 +299,7 @@ export function Profile() {
             
             // Update Redux store if this is the logged-in user's profile
             if (isOwnProfile) {
-                dispatch(setUser(updatedUser))
+                dispatch(setLoggedInUser(updatedUser))
             }
             
             setIsEditingProfile(false)
@@ -277,103 +334,131 @@ export function Profile() {
     }
 
     const handleFollowersUpdate = () => {
-        // Reload user data to update follower count
-        loadUser()
+        // Profile component manages its own state - no external intervention needed
+        // The follow/unfollow action already updates the state correctly
     }
 
     const handleFollowingUpdate = () => {
-        // Reload user data to update following count
-        loadUser()
+        // Profile component manages its own state - no external intervention needed
+        // The follow/unfollow action already updates the state correctly
     }
 
     const handleFollowToggle = async () => {
-        if (!user || !loggedinUser) {
-            console.log('❌ Profile: Cannot follow - no user or not logged in')
+        // ✅ 1. Guard - בדיקת תנאים מקדימה
+        if (!loggedinUser || !user || isFollowLoading) {
             return
         }
 
-        console.log('👤 Current logged-in user details:', {
-            _id: loggedinUser._id,
-            username: loggedinUser.username,
-            fullname: loggedinUser.fullname,
-            email: loggedinUser.email
-        })
+        // ✅ 2.Set loading: setIsFollowLoading(true)
+        setIsFollowLoading(true)
         
-        console.log('👤 Target user details:', {
-            _id: user._id,
-            username: user.username,
-            fullname: user.fullname,
-            email: user.email
-        })
+        // 🛡️ Mark that we're updating following status to prevent useEffect interference
+        setIsUpdatingFollowing(true)
         
-        console.log('🔄 Follow action:', {
-            action: isFollowing ? 'UNFOLLOW' : 'FOLLOW',
-            followerId: loggedinUser._id,
-            followingId: user._id,
-            followerUsername: loggedinUser.username,
-            followingUsername: user.username
-        })
+        // ✅ 3. Snapshot (ל-rollback)
+        const originalIsFollowing = isFollowing
+        const originalFollowersCount = user.followersCount || 0
+        const originalFollowingArr = loggedinUser.following || []
+        const originalFollowingCount = loggedinUser.followingCount || 0
 
         try {
-            console.log('👥 Profile: Follow toggle called - isFollowing:', isFollowing, 'userId:', user._id)
-            
-            // Optimistic update for counts
-            const currentFollowersCount = user?.followersCount || 0
-            const currentFollowingCount = loggedinUser?.followingCount || 0
+            // Set loading state for optimistic UI
+            setIsFollowLoading(true)
             
             if (isFollowing) {
-                // Optimistic unfollow
+                // Optimistic UI: Show "Follow" immediately for unfollow action
+                setOptimisticFollowState(false)  // ✅ Use optimistic state for immediate UI update
+                
+                // 🔽 Optimistic update for counts
                 setUser(prev => ({
                     ...prev,
-                    followersCount: Math.max(0, currentFollowersCount - 1)
+                    followersCount: Math.max(0, (prev.followersCount || 0) - 1)
                 }))
                 
-                // Update logged-in user's following count
-                if (loggedinUser) {
-                    dispatch(setUser({
-                        ...loggedinUser,
-                        followingCount: Math.max(0, currentFollowingCount - 1)
-                    }))
-                }
+                // 🔽 Update logged-in user's following array and count
+                const updatedFollowing = originalFollowingArr.filter(id => id !== targetUserId)
+                // Prepare action for later dispatch - dispatch called after API
                 
-                console.log('🔄 Profile: Unfollowing user...')
-                await userService.unfollowUser(user._id)
-                setIsFollowing(false)
-                console.log('✅ Profile: Successfully unfollowed user')
+                // Debug: Log what we're about to dispatch
+                const actionToDispatch = setLoggedInUser({
+                    ...loggedinUser,
+                    following: updatedFollowing,
+                    followingCount: Math.max(0, (loggedinUser.followingCount || 0) - 1)
+                })
+                
+                const response = await userService.unfollowUser(targetUserId)
+                
+                // ✅ Now dispatch after successful API
+                dispatch(actionToDispatch)
+                
+                // ✅ Always re-check status from server to ensure UI sync
+                await checkFollowingStatus()
+                setOptimisticFollowState(null)  // Clear optimistic state, use server state
+                
+                // No longer blocking user reloads - let fresh data load when needed
             } else {
-                // Optimistic follow
+                // Optimistic UI: Immediate state update for better UX
+                setOptimisticFollowState(true)  // ✅ Use optimistic state for immediate UI update
+                
+                // 🔥 Optimistic update for counts  
                 setUser(prev => ({
                     ...prev,
-                    followersCount: currentFollowersCount + 1
+                    followersCount: (prev.followersCount || 0) + 1
                 }))
                 
-                // Update logged-in user's following count
-                if (loggedinUser) {
-                    dispatch(setUser({
-                        ...loggedinUser,
-                        followingCount: currentFollowingCount + 1
-                    }))
-                }
+                // 🔥 Update logged-in user's following array...
+                const updatedFollowing = [...originalFollowingArr, targetUserId]
+                // Prepare action for later dispatch
+                const actionToDispatch = setLoggedInUser({
+                    ...loggedinUser,
+                    following: updatedFollowing,
+                    followingCount: (loggedinUser.followingCount || 0) + 1
+                })
                 
-                console.log('🔄 Profile: Following user...')
-                await userService.followUser(user._id)
-                setIsFollowing(true)
-                console.log('✅ Profile: Successfully followed user')
+                const response = await userService.followUser(targetUserId)
+                
+                // ✅ Now dispatch after successful API
+                dispatch(actionToDispatch)
+                
+                // ✅ Always re-check status from server to ensure UI sync
+                await checkFollowingStatus()
+                setOptimisticFollowState(null)  // Clear optimistic state, use server state
+                
+                // No longer blocking user reloads - let fresh data load when needed
             }
+
         } catch (error) {
+            // ✅ 5. Catch (Rollback)
             console.error('❌ Profile: Error toggling follow status:', error)
-            // Revert optimistic updates on error
-            loadUser()
+            
+            // Rollback UI state
+            setIsFollowing(originalIsFollowing)
+            setOptimisticFollowState(null)  // Clear optimistic state on error
+            setUser(prev => ({ ...prev, followersCount: originalFollowersCount }))
+            
+            // Rollback Redux state
+            dispatch(setLoggedInUser({
+                ...loggedinUser,
+                following: originalFollowingArr,
+                followingCount: originalFollowingCount
+            }))
+            
+            // Friendly error toast
+            alert(`Failed to ${!originalIsFollowing ? 'follow' : 'unfollow'} user: ${error.response?.data?.err || error.message}`)
+        } finally {
+            // ✅ 6. Finally: setIsFollowLoading(false)
+            setIsFollowLoading(false)
+            
+            // 🛡️ Reset the update flag
+            setIsUpdatingFollowing(false)
         }
     }
 
     if (loading) {
-        console.log('🔄 Profile: Rendering loading state')
         return <div>Loading...</div>
     }
 
     if (!user) {
-        console.log('❌ Profile: No user found, rendering error')
         return (
             <div className="profile-error">
                 <h2>User not found</h2>
@@ -381,8 +466,6 @@ export function Profile() {
             </div>
         )
     }
-
-    console.log('✅ Profile: Rendering profile for user:', user)
 
     return (
         <div className="profile-page">
@@ -407,18 +490,23 @@ export function Profile() {
                                     <button className="btn-edit" onClick={handleEditProfile}>
                                         Edit Profile
                                     </button>
-                                    <button className="btn-settings">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                                        </svg>
-                                    </button>
+                                    <ProfileDropdown isOwnProfile={true} />
                                 </>
                             ) : (
                                 <>
-                                    {isFollowing ? (
+                                    {(() => {
+                                        // 🎯 Display optimistic state if available, otherwise server state
+                                        const displayFollowing = optimisticFollowState !== null ? optimisticFollowState : isFollowing
+                                        console.log('🚨 DEBUG: Button render - isFollowing:', isFollowing, 'optimisticFollowState:', optimisticFollowState, 'displayFollowing:', displayFollowing, 'isOwnProfile:', isOwnProfile, 'targetUserId:', targetUserId)
+                                        return displayFollowing ? (
                                         <>
-                                            <button className="btn-following" onClick={handleFollowToggle}>
-                                                Following
+                                            <button 
+                                                className="btn-following" 
+                                                onClick={handleFollowToggle}
+                                                disabled={isFollowLoading}
+                                                title={isFollowLoading ? "Processing..." : "Click to unfollow (hover)"}
+                                            >
+                                                {isFollowLoading ? "Following…" : "Following"}
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: '4px' }}>
                                                     <path d="M7 10l5 5 5-5z"/>
                                                 </svg>
@@ -426,13 +514,16 @@ export function Profile() {
                                             <button className="btn-message">Message</button>
                                         </>
                                     ) : (
-                                        <button className="btn-follow-blue" onClick={handleFollowToggle}>Follow</button>
-                                    )}
-                                    <button className="btn-more">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                                        </svg>
-                                    </button>
+                                        <button 
+                                            className="btn-follow-blue" 
+                                            onClick={handleFollowToggle}
+                                            disabled={isFollowLoading}
+                                        >
+                                            {isFollowLoading ? "Following…" : "Follow"}
+                                        </button>
+                                        )
+                                    })()}
+                                    <ProfileDropdown isOwnProfile={false} />
                                 </>
                             )}
                         </div>
@@ -509,6 +600,8 @@ export function Profile() {
                     </svg>
                     POSTS
                 </button>
+                {/* Only show SAVED tab for own profile */}
+                {isOwnProfile && (
                 <button 
                     className={`tab ${activeTab === 'saved' ? 'active' : ''}`}
                     onClick={() => handleTabChange('saved')}
@@ -518,6 +611,7 @@ export function Profile() {
                     </svg>
                     SAVED
                 </button>
+                )}
                 <button 
                     className={`tab ${activeTab === 'tagged' ? 'active' : ''}`}
                     onClick={() => handleTabChange('tagged')}
@@ -544,12 +638,41 @@ export function Profile() {
                             <div className="posts-grid">
                                 {posts.map(post => (
                                 <div key={post._id} className="post-thumbnail" onClick={() => handlePostClick(post)}>
-                            <img src={post.imgUrl} alt="Post" />
+                                    {/* Conditionally render image vs video */}
+                                    {post.type === 'video' ? (
+                                        <video 
+                                            src={post.videoUrl} 
+                                            poster={post.posterUrl || post.imgUrl} 
+                                            preload="none"
+                                            muted
+                                            className="post-media"
+                                            alt={`Video by ${post.owner?.fullname || 'User'}`}
+                                        >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ) : (
+                                        <img 
+                                            src={post.imgUrl} 
+                                            alt={`Post by ${post.owner?.fullname || 'User'}`} 
+                                            className="post-media"
+                                            loading="lazy"
+                                        />
+                                    )}
+                                    
+                                    {/* Video play overlay indicator */}
+                                    {post.type === 'video' && (
+                                        <div className="video-play-overlay">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </div>
+                                    )}
+                                    
                             <div className="post-overlay">
                                 <div className="post-stats">
                                             <span>
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                                 </svg>
                                                 {post.likedBy?.length || 0}
                                             </span>
@@ -568,13 +691,9 @@ export function Profile() {
                     </>
                 )}
                 
-                {activeTab === 'saved' && (
+                {activeTab === 'saved' && isOwnProfile && (
                     <>
-                        {!isOwnProfile ? (
-                            <div className="saved-content">
-                                <EmptyState type="saved" variant="profile" />
-                            </div>
-                        ) : savedPostsLoading ? (
+                        {savedPostsLoading ? (
                             <div className="saved-loading">Loading saved posts...</div>
                         ) : savedPosts.length === 0 ? (
                             <div className="saved-empty-container">
@@ -584,7 +703,35 @@ export function Profile() {
                             <div className="saved-posts-grid">
                                 {savedPosts.map(post => (
                                     <div key={post._id} className="saved-post-item" onClick={() => handlePostClick(post)}>
-                                        <img src={post.imgUrl} alt="Saved post" />
+                                        {/* Conditionally render image vs video */}
+                                        {post.type === 'video' ? (
+                                            <video 
+                                                src={post.videoUrl} 
+                                                poster={post.posterUrl || post.imgUrl} 
+                                                preload="none"
+                                                muted
+                                                className="post-media"
+                                                alt={`Video by ${post.owner?.fullname || 'User'}`}
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        ) : (
+                                            <img 
+                                                src={post.imgUrl} 
+                                                alt={`Saved post by ${post.owner?.fullname || 'User'}`} 
+                                                className="post-media"
+                                                loading="lazy"
+                                            />
+                                        )}
+                                        
+                                        {/* Video play overlay indicator for saved posts */}
+                                        {post.type === 'video' && (
+                                            <div className="video-play-overlay">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M8 5v14l11-7z"/>
+                                                </svg>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -660,8 +807,9 @@ export function Profile() {
             {showModal && selectedPost && (
             <CommentsModal 
                 postId={selectedPost?._id}
-                    isOpen={showModal}
-                    onClose={handleCloseModal}
+                post={selectedPost}
+                isOpen={showModal}
+                onClose={handleCloseModal}
             />
             )}
 
@@ -679,6 +827,7 @@ export function Profile() {
                 onClose={() => setShowFollowersModal(false)}
                 userId={user?._id}
                 isOwnProfile={isOwnProfile}
+                currentUserId={loggedinUser?._id}
                 onFollowersUpdate={handleFollowersUpdate}
             />
 
@@ -688,6 +837,7 @@ export function Profile() {
                 onClose={() => setShowFollowingModal(false)}
                 userId={user?._id}
                 isOwnProfile={isOwnProfile}
+                currentUserId={loggedinUser?._id}
                 onFollowingUpdate={handleFollowingUpdate}
             />
         </div>

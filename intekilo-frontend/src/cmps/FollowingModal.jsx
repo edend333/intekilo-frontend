@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { userService } from '../services/user'
 
-export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, onFollowingUpdate }) {
+export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, currentUserId, onFollowingUpdate }) {
     const [following, setFollowing] = useState([])
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [filteredFollowing, setFilteredFollowing] = useState([])
+    const [counts, setCounts] = useState({ followers: 0, following: 0 })
     const navigate = useNavigate()
 
     useEffect(() => {
         if (isOpen && userId) {
-            loadFollowing()
+            loadRelationships()
+        } else if (!isOpen) {
+            // Clear search when modal closes
+            setSearchTerm('')
         }
     }, [isOpen, userId])
 
@@ -20,29 +24,34 @@ export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, onFollow
             setFilteredFollowing(following)
         } else {
             const filtered = following.filter(user => 
-                user.username.toLowerCase().includes(searchTerm.toLowerCase())
+                user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.fullname?.toLowerCase().includes(searchTerm.toLowerCase())
             )
             setFilteredFollowing(filtered)
         }
     }, [following, searchTerm])
 
-    const loadFollowing = async () => {
+    const loadRelationships = async () => {
         try {
             setLoading(true)
-            console.log('👥 Loading following for user:', userId)
-            const followingData = await userService.getFollowing(userId)
-            console.log('📊 Loaded following:', followingData.length)
+            console.log('🔗 Loading relationships for profileId:', userId)
             
-            // Add following status for each user (should always be true for following list)
-            const followingWithStatus = followingData.map(user => ({
+            // Use the new relationships endpoint that ensures profileId-based data
+            const relationships = await userService.getRelationships(userId)
+            console.log('📊 Loaded relationships:', relationships)
+            
+            // Set following data from relationships (always true since these are people the profile follows)
+            const followingWithStatus = (relationships.following || []).map(user => ({
                 ...user,
                 isFollowing: true
             }))
             
             setFollowing(followingWithStatus)
+            setCounts(relationships.counts || { followers: 0, following: 0 })
         } catch (error) {
-            console.error('❌ Error loading following:', error)
+            console.error('❌ Error loading relationships:', error)
             setFollowing([])
+            setCounts({ followers: 0, following: 0 })
         } finally {
             setLoading(false)
         }
@@ -58,8 +67,8 @@ export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, onFollow
         try {
             await userService.unfollowUser(followingId)
             console.log('✅ Unfollowed user:', followingId)
-            // Reload following to update the list
-            loadFollowing()
+            // Reload relationships to update the list
+            await loadRelationships()
             // Notify parent component to update stats
             if (onFollowingUpdate) {
                 onFollowingUpdate()
@@ -75,7 +84,7 @@ export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, onFollow
         <div className="modal-overlay" onClick={onClose}>
             <div className="following-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>עוקב אחרי</h2>
+                    <h2>עוקב אחרי ({counts.following})</h2>
                     <button className="close-btn" onClick={onClose}>✖</button>
                 </div>
                 
@@ -128,7 +137,7 @@ export function FollowingModal({ isOpen, onClose, userId, isOwnProfile, onFollow
                                     </div>
                                     
                                     <div className="following-actions">
-                                        {isOwnProfile && (
+                                        {isOwnProfile && currentUserId && user._id !== currentUserId && (
                                             <button 
                                                 className="unfollow-btn"
                                                 onClick={() => handleUnfollow(user._id)}

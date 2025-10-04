@@ -12,6 +12,7 @@ export const VideoPlayer = forwardRef(({
   onPlay,
   onPause,
   onEnded,
+  onClick,
   className = '',
   style = {}
 }, ref) => {
@@ -55,6 +56,26 @@ export const VideoPlayer = forwardRef(({
       onPlay?.()
     }
   }, [isPlaying, onPlay, onPause])
+
+  // Handle click - either external onClick or toggle play
+  const handleVideoClick = useCallback((e) => {
+    e.stopPropagation()
+    
+    if (onClick) {
+      // External onClick handler (like opening modal)
+      onClick(e)
+    } else {
+      // Default behavior: toggle play
+      togglePlay()
+    }
+  }, [onClick, togglePlay])
+
+  // Handle modal click overlay (non-interfering)
+  const handleModalClick = useCallback((e) => {
+    if (onClick) {
+      onClick(e)
+    }
+  }, [onClick])
 
   // Handle mute toggle
   const toggleMute = useCallback(() => {
@@ -108,6 +129,17 @@ export const VideoPlayer = forwardRef(({
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback((e) => {
     if (!videoRef.current) return
+    
+    // Check if user is typing in input fields
+    const el = e.target
+    const isTyping = 
+      el?.tagName === 'INPUT' ||
+      el?.tagName === 'TEXTAREA' ||
+      el?.isContentEditable ||
+      el?.contentEditable === 'true'
+    
+    // Don't interfere with typing
+    if (isTyping) return
     
     switch (e.key.toLowerCase()) {
       case 'k':
@@ -260,7 +292,7 @@ export const VideoPlayer = forwardRef(({
         playsInline
         controls={false}
         className="video-element"
-        onClick={togglePlay}
+        onClick={handleVideoClick}
       />
       
       {isLoading && (
@@ -363,6 +395,24 @@ export const VideoPlayer = forwardRef(({
         <div className="keyboard-hints">
           <span>k/space: נגן/השהה | m: השתק | j: חזור 10s | ←→: 5s | Shift+./,: מהירות</span>
         </div>
+      )}
+      
+      {/* Modal click overlay - but only when video is not playing */}
+      {onClick && !isPlaying && (
+        <div 
+          className="modal-click-overlay"
+          onClick={handleModalClick}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000,
+            cursor: 'pointer',
+            background: 'transparent'
+          }}
+        />
       )}
     </div>
   )

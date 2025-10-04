@@ -39,6 +39,13 @@ if (process.env.NODE_ENV === 'production') {
   }))
 }
 
+// Add logging for all API requests
+app.use('/api', (req, res, next) => {
+    console.log('🌐 API Request:', req.method, req.url)
+    logger.info(`API ${req.method} ${req.url}`)
+    next()
+})
+
 // API Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
@@ -55,6 +62,8 @@ app.use('/api/stories', storyRoutes)
 // })
 
 const port = process.env.PORT || 3030
+console.log('port conection', port );
+
 
 const startServer = async () => {
   try {

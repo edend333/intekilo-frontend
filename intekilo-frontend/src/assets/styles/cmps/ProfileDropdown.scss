@@ -1,0 +1,125 @@
+/* Profile Dropdown Styles */
+.profile-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-dropdown-container .btn-more {
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.profile-dropdown-container .btn-more:hover {
+    background: #f5f5f5;
+    transform: scale(1.05);
+}
+
+.profile-dropdown-container .btn-more:active {
+    transform: scale(0.95);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    min-width: 200px;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.2s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-content {
+    padding: 8px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    color: #262626;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: right;
+    direction: rtl;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+.dropdown-item svg {
+    flex-shrink: 0;
+    color: #8e8e8e;
+}
+
+.dropdown-item.logout-item {
+    color: #ed4956;
+    font-weight: 500;
+}
+
+.dropdown-item.logout-item:hover {
+    background: #fef2f2;
+}
+
+.dropdown-item.logout-item svg {
+    color: #ed4956;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #dbdbdb;
+    margin: 8px 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .profile-dropdown {
+        right: -10px;
+        min-width: 180px;
+    }
+    
+    .dropdown-item {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .dropdown-item svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 375px) {
+    .profile-dropdown {
+        right: -15px;
+        min-width: 160px;
+    }
+    
+    .dropdown-item {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}

@@ -53,7 +53,10 @@ export const userService = {
     getFollowing,
     isFollowing,
     removeFollower,
-    getProfileWithCounts
+    getProfileWithCounts,
+    getRelationships,
+    getFollowingStats,
+    getSuggestedUsers
 }
 
 function getUsers() {
@@ -65,7 +68,6 @@ async function getById(userId) {
 		return await httpService.get(`users/${userId}`)
 	} catch (error) {
 		if (error.response?.status === 404) {
-			console.log('❌ User not found with ID:', userId)
 			return null
 		}
 		throw error
@@ -95,85 +97,54 @@ async function updateBio(userId, bio) {
 // Follow/Unfollow functions
 async function followUser(userId) {
 	try {
-		console.log('👥 followUser called for user:', userId)
-		console.log('📋 Request details:', {
-			method: 'POST',
-			url: `users/${userId}/follow`,
-			userId: userId
-		})
-		
 		const response = await httpService.post(`users/${userId}/follow`)
-		console.log('✅ Follow successful:', response)
 		return response
 	} catch (err) {
-		console.error('❌ Follow failed:', err)
 		throw err
 	}
 }
 
 async function unfollowUser(userId) {
 	try {
-		console.log('👥 unfollowUser called for user:', userId)
 		const response = await httpService.delete(`users/${userId}/follow`)
-		console.log('✅ Unfollow successful:', response)
 		return response
 	} catch (err) {
-		console.error('❌ Unfollow failed:', err)
 		throw err
 	}
 }
 
 async function getFollowers(userId) {
 	try {
-		console.log('👥 getFollowers called for user:', userId)
 		const followers = await httpService.get(`users/${userId}/followers`)
-		console.log('📊 Found followers:', followers.length)
 		return followers
 	} catch (err) {
-		console.error('❌ Get followers failed:', err)
 		throw err
 	}
 }
 
 async function getFollowing(userId) {
 	try {
-		console.log('👥 getFollowing called for user:', userId)
 		const following = await httpService.get(`users/${userId}/following`)
-		console.log('📊 Found following:', following.length)
 		return following
 	} catch (err) {
-		console.error('❌ Get following failed:', err)
 		throw err
 	}
 }
 
 async function isFollowing(userId) {
 	try {
-		console.log('👥 isFollowing called for user:', userId)
-		console.log('📋 Request details:', {
-			method: 'GET',
-			url: `users/${userId}/is-following`,
-			userId: userId
-		})
-		
 		const response = await httpService.get(`users/${userId}/is-following`)
-		console.log('✅ isFollowing successful:', response)
-		console.log('📊 Is following:', response.isFollowing)
 		return response.isFollowing
 	} catch (err) {
-		console.error('❌ Check following failed:', err)
 		throw err
 	}
 }
 
 async function removeFollower(followerId) {
 	try {
-		console.log('👥 removeFollower called for follower:', followerId)
 		const response = await httpService.delete(`users/${followerId}/follower`)
-		console.log('✅ Remove follower successful:', response)
 		return response
 	} catch (err) {
-		console.error('❌ Remove follower failed:', err)
 		throw err
 	}
 }
@@ -185,6 +156,9 @@ async function login(userCred) {
 		if (response.loginToken) {
 			saveLoginToken(response.loginToken)
 		}
+		// Set authInitialized flag to prevent auto-logout issues
+		localStorage.setItem('authInitialized', 'true')
+		sessionStorage.setItem('authInitialized', 'true')
 		return _saveLocalUser(response.user)
 	}
 }
@@ -198,6 +172,9 @@ async function signup(userCred) {
 		if (response.loginToken) {
 			saveLoginToken(response.loginToken)
 		}
+		// Set authInitialized flag to prevent auto-logout issues
+		localStorage.setItem('authInitialized', 'true')
+		sessionStorage.setItem('authInitialized', 'true')
 		return _saveLocalUser(response.user)
 	}
 }
@@ -206,33 +183,70 @@ async function logout() {
 	try {
 		await httpService.post('auth/logout')
 	} catch (err) {
-		console.error('Server logout failed:', err)
-		throw err
+		// Continue with client-side cleanup even if server fails
 	}
 	
+	// Complete localStorage cleanup
 	localStorage.removeItem('loggedinUser')
 	localStorage.removeItem('loginToken')
 	localStorage.removeItem('user')
 	localStorage.removeItem('review')
 	localStorage.removeItem('comment')
-	localStorage.removeItem('authInitialized')
+	localStorage.removeItem('authInitialized') // CRITICAL: prevents auto-reauth
 	localStorage.removeItem('token')
 	localStorage.removeItem('authToken')
 	localStorage.removeItem('accessToken')
-	localStorage.clear()
-	
+	// Additional cleanup for any other possible storage keys
+	localStorage.removeItem('intekilo_onboarding')
+	localStorage.removeItem('INTEKILO_STORAGE_KEY_PREFS')
+	// Don't use localStorage.clear() as it might interfere with other apps
+
+	// Complete sessionStorage cleanup
 	sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
 	sessionStorage.removeItem(STORAGE_KEY_LOGIN_TOKEN)
-	sessionStorage.removeItem('authInitialized')
+	sessionStorage.removeItem('authInitialized') // CRITICAL: prevents auto-reauth
 	sessionStorage.removeItem('token')
 	sessionStorage.removeItem('authToken')
 	sessionStorage.removeItem('accessToken')
-	sessionStorage.clear()
+	// Don't use sessionStorage.clear() as it might interfere with other apps
+
+	// Enhanced cookie cleanup
+	_clearAllCookies()
+}
+
+function _clearAllCookies() {
+	// Get current domain
+	const domain = window.location.hostname
+	const pathOptions = ['/', '/api', '/frontend']
 	
-	document.cookie = STORAGE_KEY_LOGGEDIN_USER + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=Lax; secure=false'
-	document.cookie = STORAGE_KEY_LOGIN_TOKEN + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; sameSite=Lax; secure=false'
-	document.cookie = STORAGE_KEY_LOGGEDIN_USER + '=; Path=/; Max-Age=0; sameSite=Lax; secure=false'
-	document.cookie = STORAGE_KEY_LOGIN_TOKEN + '=; Path=/; Max-Age=0; sameSite=Lax; secure=false'
+	// Common cookie names we might have
+	const cookieNames = [
+		STORAGE_KEY_LOGGEDIN_USER, 
+		STORAGE_KEY_LOGIN_TOKEN,
+		'loginToken',
+		'authInitialized',
+		'loggedinUser',
+		'loginToken'
+	]
+	
+	// Clear cookies with different domain/path combinations
+	cookieNames.forEach(name => {
+		pathOptions.forEach(path => {
+			// Clear for current domain
+			document.cookie = `${name}=; Path=${path}; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax`
+			document.cookie = `${name}=; Path=${path}; Max-Age=0; SameSite=Lax`
+			document.cookie = `${name}=; Domain=${domain}; Path=${path}; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax`
+			document.cookie = `${name}=; Domain=${domain}; Path=${path}; Max-Age=0; SameSite=Lax`
+			
+			// Clear for parent domain (in case app is on subdomain)
+			const domainParts = domain.split('.')
+			if (domainParts.length > 1) {
+				const parentDomain = '.' + domainParts.slice(-2).join('.')
+				document.cookie = `${name}=; Domain=${parentDomain}; Path=${path}; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax`
+				document.cookie = `${name}=; Domain=${parentDomain}; Path=${path}; Max-Age=0; SameSite=Lax`
+			}
+		})
+	})
 }
 
 function getLoggedinUser() {
@@ -302,11 +316,20 @@ function saveLoginToken(token) {
 }
 
 function _saveLocalUser(user) {
+    // 🛡️ Ensure user has proper default structure for follow functionality
+    const userWithDefaults = {
+        ...user,
+        following: user.following || [],
+        followingCount: user.followingCount || 0,
+        followers: user.followers || [],
+        followersCount: user.followersCount || 0
+    }
+    
     // Save to both localStorage and sessionStorage
-    localStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
-    sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
-    _setCookie(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user), 1) // 1 day
-    return user
+    localStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userWithDefaults))
+    sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userWithDefaults))
+    _setCookie(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userWithDefaults), 1) // 1 day
+    return userWithDefaults
 }
 
 async function updateAvatar(avatarData) {
@@ -354,12 +377,36 @@ async function getSavedPosts(offset = 0, limit = 20) {
 
 async function getProfileWithCounts(userId) {
     try {
-        console.log('🔍 getProfileWithCounts called with userId:', userId)
         const profileData = await httpService.get(`users/${userId}/profile`)
-        console.log('📊 Profile data with counts:', profileData)
         return profileData
     } catch (err) {
-        console.error('Failed to get profile with counts:', err)
+        throw err
+    }
+}
+
+async function getRelationships(profileId) {
+    try {
+        const relationships = await httpService.get(`users/relationships/${profileId}`)
+        return relationships
+    } catch (err) {
+        throw err
+    }
+}
+
+async function getFollowingStats(userId) {
+    try {
+        const stats = await httpService.get(`users/${userId}/following-stats`)
+        return stats
+    } catch (err) {
+        throw err
+    }
+}
+
+async function getSuggestedUsers(limit = 5) {
+    try {
+        const suggestedUsers = await httpService.get(`users/me/suggested?limit=${limit}`)
+        return suggestedUsers
+    } catch (err) {
         throw err
     }
 }

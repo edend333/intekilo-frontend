@@ -23,7 +23,9 @@ export const userService = {
     getFollowing,
     removeFollower,
     isFollowing,
-    getProfileWithCounts
+    getProfileWithCounts,
+    getFollowingStats,
+    getSuggestedUsers
 }
 
 async function query() {
@@ -658,8 +660,17 @@ async function getFollowers(userId) {
         console.log('🔍 User followers array:', followersIds)
         console.log('🔍 Followers IDs type:', typeof followersIds[0])
         
+        // Convert string IDs to ObjectId for proper matching
+        const objectIds = followersIds.map(id => {
+            if (id.match(/^[0-9a-fA-F]{24}$/)) {
+                return new ObjectId(id)
+            }
+            return id
+        })
+        console.log('🔧 Converted followers IDs to ObjectIds:', objectIds)
+        
         const followers = await collection.find({ 
-            _id: { $in: followersIds } 
+            _id: { $in: objectIds } 
         }).toArray()
 
         console.log(`📊 Found ${followers.length} followers`)
@@ -697,8 +708,17 @@ async function getFollowing(userId) {
         console.log('🔍 User following array:', followingIds)
         console.log('🔍 Following IDs type:', typeof followingIds[0])
         
+        // Convert string IDs to ObjectId for proper matching
+        const objectIds = followingIds.map(id => {
+            if (id.match(/^[0-9a-fA-F]{24}$/)) {
+                return new ObjectId(id)
+            }
+            return id
+        })
+        console.log('🔧 Converted following IDs to ObjectIds:', objectIds)
+        
         const following = await collection.find({ 
-            _id: { $in: followingIds } 
+            _id: { $in: objectIds } 
         }).toArray()
 
         console.log(`📊 Found ${following.length} following`)
@@ -826,6 +846,188 @@ async function getProfileWithCounts(userId) {
         }
     } catch (err) {
         logger.error('Cannot get profile with counts', err)
+        throw err
+    }
+}
+async function getFollowingStats(userId) {
+    try {
+        console.log('📊 getFollowingStats called for user:', userId)
+        
+        const collection = await dbService.getCollection('users')
+        const postsCollection = await dbService.getCollection('posts')
+        
+        // Handle both ObjectId and string formats
+        const userCriteria = userId.match(/^[0-9a-fA-F]{24}$/) 
+            ? { _id: new ObjectId(userId) }
+            : { _id: userId }
+        
+        console.log('📊 User search criteria:', userCriteria)
+        
+        // Get user's following list
+        const user = await collection.findOne(userCriteria)
+        if (!user) {
+            console.log('❌ User not found with criteria:', userCriteria)
+            throw new Error('User not found')
+        }
+
+        const followingIds = user.following || []
+        console.log('📊 User following IDs:', followingIds)
+        console.log('📊 Following count:', followingIds.length)
+        
+        // If user has no following, return empty stats
+        if (followingIds.length === 0) {
+            console.log('📭 User has no following, returning empty stats')
+            return {
+                followingCount: 0,
+                totalPostsFromFollowing: 0
+            }
+        }
+
+        // Convert all following IDs to strings (posts are stored with string owner._id)
+        const stringFollowingIds = followingIds.map(id => {
+            // If it's an ObjectId, convert to string
+            if (id && typeof id === 'object' && id.toString) {
+                return id.toString()
+            }
+            // If it's already a string, return as is
+            return String(id)
+        })
+        
+        console.log('🔧 Converted following IDs to strings:', stringFollowingIds)
+        
+        // Count total posts from following users using string IDs
+        const totalPostsFromFollowing = await postsCollection.countDocuments({ 
+            'owner._id': { $in: stringFollowingIds } 
+        })
+        
+        console.log('📊 Total posts from following users:', totalPostsFromFollowing)
+        
+        // Also check individual counts for debugging
+        for (const followingId of stringFollowingIds) {
+            const stringCount = await postsCollection.countDocuments({ 'owner._id': followingId })
+            console.log(`📊 Posts count for user ${followingId}: ${stringCount}`)
+        }
+        
+        return {
+            followingCount: followingIds.length,
+            totalPostsFromFollowing
+        }
+    } catch (err) {
+        console.error('❌ Error in getFollowingStats:', err)
+        logger.error('Cannot get following stats', err)
+        throw err
+    }
+}
+
+async function getSuggestedUsers(userId, limit = 5) {
+    try {
+        console.log('🔍 getSuggestedUsers called for user:', userId, 'limit:', limit)
+        
+        const collection = await dbService.getCollection('users')
+        
+        // Handle both ObjectId and string formats
+        const userCriteria = userId.match(/^[0-9a-fA-F]{24}$/) 
+            ? { _id: new ObjectId(userId) }
+            : { _id: userId }
+        
+        console.log('🔍 User search criteria:', userCriteria)
+        
+        // Get current user to check their following list
+        const user = await collection.findOne(userCriteria)
+        if (!user) {
+            console.log('❌ User not found with criteria:', userCriteria)
+            throw new Error('User not found')
+        }
+
+        console.log('✅ Found user:', { _id: user._id, username: user.username })
+        
+        // Get user's following list (users they already follow)
+        const followingIds = user.following || []
+        console.log('🔍 User following IDs:', followingIds)
+        
+        // Build exclusion criteria: exclude current user and users they already follow
+        const excludeIds = [userId, ...followingIds]
+        console.log('🔍 Excluding user IDs:', excludeIds)
+        
+        // Convert exclude IDs to ObjectIds for proper matching
+        const excludeObjectIds = excludeIds.map(id => {
+            if (id.match(/^[0-9a-fA-F]{24}$/)) {
+                return new ObjectId(id)
+            }
+            return id
+        })
+        
+        console.log('🔧 Converted exclude IDs to ObjectIds:', excludeObjectIds)
+        
+        // Get suggested users (random selection, excluding current user and following)
+        const suggestedUsers = await collection
+            .aggregate([
+                {
+                    $match: {
+                        _id: { $nin: excludeObjectIds }
+                    }
+                },
+                {
+                    $sample: { size: limit }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        username: 1,
+                        fullname: 1,
+                        imgUrl: 1,
+                        bio: 1
+                    }
+                }
+            ])
+            .toArray()
+
+        // If we don't have enough users, get all available users (excluding current user and following)
+        if (suggestedUsers.length < limit) {
+            console.log(`📊 Only found ${suggestedUsers.length} users, getting all available users`)
+            const allAvailableUsers = await collection
+                .find(
+                    { _id: { $nin: excludeObjectIds } },
+                    {
+                        projection: {
+                            _id: 1,
+                            username: 1,
+                            fullname: 1,
+                            imgUrl: 1,
+                            bio: 1
+                        }
+                    }
+                )
+                .toArray()
+            
+            // Shuffle and take up to the limit
+            const shuffled = allAvailableUsers.sort(() => 0.5 - Math.random())
+            const result = shuffled.slice(0, limit)
+            
+            // Ensure bio field exists for all users
+            result.forEach(user => {
+                if (!user.bio) {
+                    user.bio = ''
+                }
+            })
+            
+            return result
+        }
+
+        console.log(`📊 Found ${suggestedUsers.length} suggested users`)
+        console.log('🔍 Suggested users:', suggestedUsers.map(u => ({ _id: u._id, username: u.username })))
+        
+        // Ensure bio field exists for all suggested users
+        suggestedUsers.forEach(user => {
+            if (!user.bio) {
+                user.bio = ''
+            }
+        })
+        
+        return suggestedUsers
+    } catch (err) {
+        console.error('❌ Error in getSuggestedUsers:', err)
+        logger.error('Cannot get suggested users', err)
         throw err
     }
 }

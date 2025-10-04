@@ -1,5 +1,6 @@
 import { logger } from '../../services/logger.service.js'
 import { postService } from './post.service.js'
+import { asyncLocalStorage } from '../../services/als.service.js'
 
 export async function getPosts(req, res) {
     try {
@@ -48,6 +49,42 @@ export async function getPosts(req, res) {
         console.error('❌ Error in getPosts:', err)
         logger.error('Failed to get posts', err)
         res.status(400).send({ err: 'Failed to get posts' })
+    }
+}
+
+export async function getFeedPosts(req, res) {
+    try {
+        console.log('🔍 getFeedPosts called')
+        console.log('🔍 req.query:', req.query)
+        console.log('🔍 req.params:', req.params)
+        console.log('🔍 req.url:', req.url)
+        
+        // Get logged in user from asyncLocalStorage
+        const { loggedinUser } = asyncLocalStorage.getStore()
+        if (!loggedinUser) {
+            console.log('❌ No loggedinUser found in getFeedPosts')
+            return res.status(401).send({ err: 'Not authenticated' })
+        }
+        
+        console.log('👤 Logged in user:', loggedinUser._id)
+        
+        const filterBy = {
+            viewerId: loggedinUser._id,
+            cursor: req.query.cursor || undefined,
+            limit: Math.min(Math.max(Number(req.query.limit) || 10, 1), 20)
+        }
+        
+        console.log('🔍 Feed query params:', req.query)
+        console.log('📋 filterBy:', filterBy)
+        
+        const result = await postService.queryFeedPosts(filterBy)
+        console.log(`📊 Feed returned ${result.posts.length} posts, hasMore: ${result.hasMore}`)
+        
+        res.json(result)
+    } catch (err) {
+        console.error('❌ Error in getFeedPosts:', err)
+        logger.error('Failed to get feed posts', err)
+        res.status(400).send({ err: 'Failed to get feed posts' })
     }
 }
 
@@ -131,6 +168,20 @@ export async function updatePost(req, res) {
 export async function removePost(req, res) {
     try {
         const postId = req.params.id
+        const { loggedinUser } = req
+        const { _id: userId, isAdmin } = loggedinUser
+
+        // First, get the post to check ownership
+        const post = await postService.getById(postId)
+        if (!post) {
+            return res.status(404).send({ err: 'Post not found' })
+        }
+
+        // Check if user owns the post or is admin
+        if (!isAdmin && post.owner._id !== userId) {
+            return res.status(403).send({ err: 'Not your post...' })
+        }
+
         const removedId = await postService.remove(postId)
         res.send(removedId)
     } catch (err) {

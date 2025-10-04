@@ -2,6 +2,7 @@ import { httpService } from '../http.service'
 
 export const postService = {
   query,
+  queryFeed,
   getById,
   add,
   update,
@@ -21,10 +22,27 @@ async function query() {
   }
 }
 
+async function queryFeed(cursor = '', limit = 3) {
+  try {
+    console.log('🔍 Fetching feed posts from API', { cursor, limit })
+    const params = new URLSearchParams()
+    if (cursor) params.append('cursor', cursor)
+    if (limit) params.append('limit', limit.toString())
+    
+    const queryString = params.toString()
+    const url = queryString ? `posts/feed?${queryString}` : 'posts/feed'
+    
+    return await httpService.get(url)
+  } catch (error) {
+    console.error('❌ Error fetching feed posts:', error)
+    throw error
+  }
+}
+
 async function getById(postId) {
   try {
     console.log('🔍 Fetching post:', postId)
-    return await httpService.get(`post/${postId}`)
+    return await httpService.get(`posts/${postId}`)
   } catch (error) {
     console.error('❌ Error fetching post:', error)
     throw error

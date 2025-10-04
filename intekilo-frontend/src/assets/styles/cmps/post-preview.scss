@@ -222,6 +222,7 @@
       font-family: inherit;
       resize: vertical;
       margin-bottom: 16px;
+      white-space: pre-wrap; /* Preserve spaces and line breaks */
       
       &:focus {
         outline: none;
@@ -434,6 +435,7 @@
   font-size: 14px;
   color: vars.$instagram-text-primary;
   background: transparent;
+  white-space: pre-wrap; /* Preserve spaces and line breaks */
 }
 
 .comment-input input::placeholder {

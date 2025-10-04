@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { userService } from '../services/user'
 import { EmptyState } from '../cmps/EmptyState.jsx'
 
@@ -54,7 +54,10 @@ export function Discover() {
         loadUsers(true)
     }
 
-    const handleFollowToggle = async (userId) => {
+    const handleFollowToggle = async (userId, e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
         try {
             if (following.has(userId)) {
                 await userService.unfollowUser(userId)
@@ -104,7 +107,7 @@ export function Discover() {
 
             <div className="users-grid">
                 {users.map(user => (
-                    <div key={user._id} className="user-card">
+                    <Link key={user._id} to={`/profile/${user._id}`} className="user-card">
                         <div className="user-avatar">
                             <img src={user.imgUrl} alt={user.fullname} />
                         </div>
@@ -118,20 +121,12 @@ export function Discover() {
                         <div className="user-actions">
                             <button 
                                 className={`follow-btn ${following.has(user._id) ? 'following' : 'follow'}`}
-                                onClick={() => handleFollowToggle(user._id)}
+                                onClick={(e) => handleFollowToggle(user._id, e)}
                             >
-                                {following.has(user._id) ? 'בעקיבה ✓' : 'הוספה לעקיבה'}
+                                {following.has(user._id) ? 'Following' : 'Follow'}
                             </button>
-                            {following.has(user._id) && (
-                                <button 
-                                    className="cancel-btn"
-                                    onClick={() => handleFollowToggle(user._id)}
-                                >
-                                    בטל
-                                </button>
-                            )}
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

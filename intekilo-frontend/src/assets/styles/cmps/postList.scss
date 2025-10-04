@@ -60,3 +60,74 @@
   gap: 24px;
   padding: 0 1rem;
 }
+
+/* Loading and error states */
+.loading-more {
+  margin-top: 16px;
+}
+
+.no-more-posts {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.error-state h3 {
+  color: #e74c3c;
+  margin-bottom: 12px;
+}
+
+.error-state p {
+  margin-bottom: 20px;
+  color: #999;
+}
+
+.retry-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+  background: #0056b3;
+}
+
+/* RTL Support */
+[dir="rtl"] .no-more-posts,
+[dir="rtl"] .error-state {
+  text-align: center;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .no-more-posts {
+    color: #ccc;
+    border-top-color: #444;
+  }
+  
+  .error-state {
+    color: #ccc;
+  }
+  
+  .error-state h3 {
+    color: #ff6b6b;
+  }
+  
+  .error-state p {
+    color: #999;
+  }
+}

@@ -227,13 +227,42 @@ export async function followUser(req, res) {
             return res.status(400).send({ err: 'Following ID not found' })
         }
         
+        // Validation: Prevent self-follow
+        if (followerId === followingId) {
+            console.log('❌ Cannot follow yourself')
+            return res.status(409).send({ err: 'Cannot follow yourself' })
+        }
+        
         console.log('🔄 Calling userService.followUser...')
         const result = await userService.followUser(followerId, followingId)
         console.log('✅ followUser result:', result)
-        res.json(result)
+        
+        // Return formatted response with counters as specified
+        if (result.message === 'Already following this user') {
+            return res.status(409).send({ err: result.message })
+        }
+        
+        // Get updated counts and return them
+        const profileData = await userService.getProfileWithCounts(followingId)
+        const response = {
+            message: 'Successfully followed user',
+            followersCount: profileData.followersCount,
+            followingCount: profileData.followingCount
+        }
+        
+        res.status(201).json(response)
     } catch (err) {
         console.log('❌ followUser error:', err)
         logger.error('Failed to follow user', err)
+        
+        // Check for specific error types
+        if (err.message === 'Cannot follow yourself') {
+            return res.status(409).send({ err: 'Cannot follow yourself' })
+        }
+        if (err.message === 'Follower not found') {
+            return res.status(404).send({ err: 'User not found' })
+        }
+        
         res.status(400).send({ err: 'Failed to follow user' })
     }
 }
@@ -245,10 +274,42 @@ export async function unfollowUser(req, res) {
 
     try {
         console.log('👥 unfollowUser API called:', followerId, '->', followingId)
+        
+        // Validation: Prevent self-unfollow
+        if (followerId === followingId) {
+            console.log('❌ Cannot unfollow yourself')
+            return res.status(409).send({ err: 'Cannot unfollow yourself' })
+        }
+        
         const result = await userService.unfollowUser(followerId, followingId)
-        res.json(result)
+        console.log('✅ unfollowUser result:', result)
+        
+        // Return formatted response with counters as specified
+        if (result.message === 'Not following this user') {
+            return res.status(409).send({ err: result.message })
+        }
+        
+        // Get updated counts and return them
+        const profileData = await userService.getProfileWithCounts(followingId)
+        const response = {
+            message: 'Successfully unfollowed user',
+            followersCount: profileData.followersCount,
+            followingCount: profileData.followingCount
+        }
+        
+        res.status(200).json(response)
     } catch (err) {
+        console.log('❌ unfollowUser error:', err)
         logger.error('Failed to unfollow user', err)
+        
+        // Check for specific error types
+        if (err.message === 'Cannot unfollow yourself') {
+            return res.status(409).send({ err: 'Cannot unfollow yourself' })
+        }
+        if (err.message === 'Follower not found') {
+            return res.status(404).send({ err: 'User not found' })
+        }
+        
         res.status(400).send({ err: 'Failed to unfollow user' })
     }
 }
@@ -338,5 +399,105 @@ export async function getProfileWithCounts(req, res) {
         console.error('❌ Error in getProfileWithCounts:', err)
         logger.error('Failed to get profile with counts', err)
         res.status(400).send({ err: 'Failed to get profile with counts' })
+    }
+}
+
+export async function getRelationships(req, res) {
+    try {
+        const profileId = req.params.profileId
+        console.log('🔗 getRelationships called for profileId:', profileId)
+        
+        // Verify the user exists
+        const user = await userService.getById(profileId)
+        if (!user) {
+            console.log('❌ Profile not found with ID:', profileId)
+            return res.status(404).send({ err: 'Profile not found' })
+        }
+        
+        // Get followers data with minimal fields
+        const followersData = await userService.getFollowers(profileId)
+        const followers = followersData.map(follower => ({
+            _id: follower._id,
+            username: follower.username,
+            imgUrl: follower.imgUrl
+        }))
+        
+        // Get following data with minimal fields  
+        const followingData = await userService.getFollowing(profileId)
+        const following = followingData.map(followingUser => ({
+            _id: followingUser._id,
+            username: followingUser.username,
+            imgUrl: followingUser.imgUrl
+        }))
+        
+        const relationships = {
+            profileId,
+            followers,
+            following,
+            counts: {
+                followers: followers.length,
+                following: following.length
+            }
+        }
+        
+        console.log('✅ Relationships retrieved:', {
+            profileId,
+            followersCount: relationships.counts.followers,
+            followingCount: relationships.counts.following
+        })
+        
+        res.json(relationships)
+    } catch (err) {
+        console.error('❌ Error in getRelationships:', err)
+        logger.error('Failed to get relationships', err)
+        res.status(400).send({ err: 'Failed to get relationships' })
+    }
+}
+
+export async function getFollowingStats(req, res) {
+    try {
+        const userId = req.params.userId
+        console.log('📊 getFollowingStats called for userId:', userId)
+        
+        // Verify the user exists
+        const user = await userService.getById(userId)
+        if (!user) {
+            console.log('❌ User not found with ID:', userId)
+            return res.status(404).send({ err: 'User not found' })
+        }
+        
+        const stats = await userService.getFollowingStats(userId)
+        console.log('📊 Following stats result:', stats)
+        
+        res.json(stats)
+    } catch (err) {
+        console.error('❌ Error in getFollowingStats:', err)
+        logger.error('Failed to get following stats', err)
+        res.status(400).send({ err: 'Failed to get following stats' })
+    }
+}
+
+export async function getSuggestedUsers(req, res) {
+    try {
+        const { loggedinUser } = req
+        const { limit = 5 } = req.query
+        
+        // Check if user is authenticated
+        if (!loggedinUser || !loggedinUser._id) {
+            console.log('❌ getSuggestedUsers: No authenticated user found')
+            return res.status(401).send({ err: 'Authentication required' })
+        }
+        
+        const userId = loggedinUser._id
+        console.log('🔍 getSuggestedUsers called for user:', userId, 'limit:', limit)
+        
+        const suggestedUsers = await userService.getSuggestedUsers(userId, parseInt(limit))
+        
+        console.log('✅ getSuggestedUsers: Successfully retrieved', suggestedUsers.length, 'suggested users')
+        res.json(suggestedUsers)
+    } catch (err) {
+        console.error('❌ Error in getSuggestedUsers:', err)
+        logger.error('Failed to get suggested users', err)
+        res.status(400).send({ err: 'Failed to get suggested users' })
     }
 }

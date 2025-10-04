@@ -3,13 +3,14 @@ import express from 'express'
 import { requireAuth } from '../../middlewares/requireAuth.middleware.js'
 import { log } from '../../middlewares/logger.middleware.js'
 
-import { getPosts, getPostById, addPost, updatePost, removePost, addPostMsg, removePostMsg, addPostLike, removePostLike } from './post.controller.js'
+import { getPosts, getPostById, addPost, updatePost, removePost, addPostMsg, removePostMsg, addPostLike, removePostLike, getFeedPosts } from './post.controller.js'
 
 const router = express.Router()
 
 // We can add a middleware for the entire router:
 // router.use(requireAuth)
 
+router.get('/feed', log, requireAuth, getFeedPosts)
 router.get('/', log, getPosts)
 router.get('/:id', log, getPostById)
 router.post('/', log, requireAuth, addPost)

@@ -20,6 +20,45 @@
 @import "pages/profile.scss";
 @import "pages/createPost.scss";
 @import "pages/discover.scss";
+@import "pages/authWelcome.scss";
+
+/* Auth Loading State */
+.auth-loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-loading-container {
+    text-align: center;
+    color: white;
+}
+
+.auth-loading-logo {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    font-family: 'Grand Hotel', 'Billabong', 'Brush Script MT', cursive;
+    letter-spacing: -0.5px;
+}
+
+.auth-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 // Components
 // @import "cmps/sidebar.scss";
 
@@ -36,6 +75,9 @@
 @import 'cmps/VideoPlayer.scss';
 @import 'cmps/EmojiPicker.scss';
 @import 'cmps/FollowersFollowingModal.scss';
+@import 'cmps/PostSkeleton.scss';
+@import 'cmps/SuggestedUsers.scss';
+@import 'cmps/ProfileDropdown.scss';
 
 
 

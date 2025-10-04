@@ -1,3 +1,16 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
 /* Followers and Following Modal Styles */
 
 .followers-modal,
@@ -11,6 +24,7 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
 }
 
 .modal-header {
@@ -101,6 +115,7 @@
     flex: 1;
     overflow-y: auto;
     max-height: calc(80vh - 120px);
+    min-height: 0;
 }
 
 .loading-state,
@@ -232,52 +247,404 @@
 }
 
 /* Responsive Design */
+// Large screens (desktop)
+@media (min-width: 1200px) {
+  .modal-overlay {
+    padding: 24px;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    width: 450px;
+    max-height: 85vh;
+  }
+  
+  .modal-header {
+    padding: 20px 24px;
+    
+    h2 {
+      font-size: 20px;
+    }
+  }
+  
+  .close-btn {
+    font-size: 22px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .modal-search {
+    padding: 20px 24px;
+  }
+  
+  .search-input {
+    font-size: 15px;
+    padding: 10px 12px 10px 40px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 12px 24px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 15px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 15px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 8px 18px;
+    font-size: 15px;
+    min-width: 90px;
+  }
+}
+
+// Medium screens (tablet)
+@media (min-width: 768px) and (max-width: 1199px) {
+  .modal-overlay {
+    padding: 18px;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    width: 400px;
+    max-height: 80vh;
+  }
+  
+  .modal-header {
+    padding: 18px 22px;
+    
+    h2 {
+      font-size: 19px;
+    }
+  }
+  
+  .close-btn {
+    font-size: 21px;
+    width: 34px;
+    height: 34px;
+  }
+  
+  .modal-search {
+    padding: 18px 22px;
+  }
+  
+  .search-input {
+    font-size: 14px;
+    padding: 9px 11px 9px 38px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 10px 22px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 46px;
+    height: 46px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 14px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 14px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 7px 17px;
+    font-size: 14px;
+    min-width: 85px;
+  }
+}
+
+// Small screens (mobile)
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+    
+    h2 {
+      font-size: 18px;
+    }
+  }
+  
+  .close-btn {
+    font-size: 20px;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .modal-search {
+    padding: 16px 20px;
+  }
+  
+  .search-input {
+    font-size: 14px;
+    padding: 8px 12px 8px 36px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 12px 20px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 14px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 14px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    min-width: 80px;
+  }
+}
+
+// Extra small screens (small mobile)
 @media (max-width: 480px) {
-    .followers-modal,
-    .following-modal {
-        width: 100vw;
-        max-width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-    }
+  .modal-overlay {
+    padding: 0;
+    padding-top: 16px;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-header {
+    padding: 14px 16px;
     
-    .modal-header {
-        padding: 16px;
+    h2 {
+      font-size: 16px;
     }
+  }
+  
+  .close-btn {
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .modal-search {
+    padding: 12px 16px;
+  }
+  
+  .search-input {
+    font-size: 13px;
+    padding: 7px 10px 7px 32px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 10px 16px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 13px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 13px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 5px 12px;
+    font-size: 13px;
+    min-width: 70px;
+  }
+}
+
+// Landscape orientation (mobile)
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal-overlay {
+    padding: 8px;
+    align-items: center;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  .modal-header {
+    padding: 8px 16px;
     
-    .modal-search {
-        padding: 12px 16px;
+    h2 {
+      font-size: 14px;
     }
+  }
+  
+  .close-btn {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .modal-search {
+    padding: 8px 16px;
+  }
+  
+  .search-input {
+    font-size: 12px;
+    padding: 6px 8px 6px 28px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 6px 16px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 12px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 12px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    min-width: 60px;
+  }
+}
+
+// Ultra-wide screens
+@media (min-width: 1600px) {
+  .modal-overlay {
+    padding: 32px;
+  }
+  
+  .followers-modal,
+  .following-modal {
+    width: 500px;
+    max-height: 90vh;
+  }
+  
+  .modal-header {
+    padding: 24px 28px;
     
-    .follower-item,
-    .following-item {
-        padding: 12px 16px;
+    h2 {
+      font-size: 22px;
     }
-    
-    .follower-avatar,
-    .following-avatar {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .follower-username,
-    .following-username {
-        font-size: 13px;
-    }
-    
-    .follower-fullname,
-    .following-fullname {
-        font-size: 13px;
-    }
-    
-    .follow-btn,
-    .unfollow-btn,
-    .remove-btn {
-        padding: 5px 12px;
-        font-size: 13px;
-        min-width: 70px;
-    }
+  }
+  
+  .close-btn {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .modal-search {
+    padding: 24px 28px;
+  }
+  
+  .search-input {
+    font-size: 16px;
+    padding: 12px 14px 12px 44px;
+  }
+  
+  .follower-item,
+  .following-item {
+    padding: 14px 28px;
+  }
+  
+  .follower-avatar,
+  .following-avatar {
+    width: 52px;
+    height: 52px;
+  }
+  
+  .follower-username,
+  .following-username {
+    font-size: 16px;
+  }
+  
+  .follower-fullname,
+  .following-fullname {
+    font-size: 16px;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .remove-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    min-width: 100px;
+  }
 }
 
 /* Scrollbar Styling */

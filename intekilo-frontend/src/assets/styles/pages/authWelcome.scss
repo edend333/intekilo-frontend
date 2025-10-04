@@ -1,0 +1,824 @@
+/* Auth Welcome Screen */
+.auth-welcome {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    direction: rtl;
+    position: relative;
+    overflow-x: hidden;
+    
+    /* Prevent horizontal scroll */
+    max-width: 100vw;
+    box-sizing: border-box;
+    
+    /* Better text rendering for Hebrew */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.auth-welcome-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+    animation: slideUp 0.3s ease-out;
+    position: relative;
+    z-index: 1;
+    
+    /* Better centering and spacing */
+    margin: 0 auto;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.auth-welcome-header {
+    margin-bottom: 32px;
+}
+
+.auth-welcome-logo h1 {
+    font-size: 32px;
+    font-weight: 400;
+    color: #262626;
+    margin: 0 0 16px 0;
+    font-family: 'Grand Hotel', 'Billabong', 'Brush Script MT', cursive;
+    letter-spacing: -0.5px;
+}
+
+.auth-welcome-icon {
+    color: #0095f6;
+    margin-bottom: 8px;
+}
+
+.auth-welcome-icon svg {
+    opacity: 0.8;
+}
+
+/* Content */
+.auth-welcome-content {
+    margin-bottom: 32px;
+}
+
+.auth-welcome-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #262626;
+    margin: 0 0 16px 0;
+    line-height: 1.3;
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    
+    /* Better Hebrew text rendering */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+.auth-welcome-subtitle {
+    font-size: 15px;
+    color: #8e8e8e;
+    margin: 0 0 28px 0;
+    line-height: 1.5;
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    
+    /* Better Hebrew text rendering */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.005em;
+}
+
+/* Action Buttons */
+.auth-welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.auth-welcome-btn {
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    
+    /* Touch-friendly */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    
+    /* Prevent text overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    /* Better touch targets */
+    min-width: 120px;
+    width: 100%;
+    max-width: 100%;
+    
+    /* Better Hebrew text rendering */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.005em;
+}
+
+.auth-welcome-btn-primary {
+    background: linear-gradient(135deg, #0095f6 0%, #1877f2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 149, 246, 0.3);
+}
+
+.auth-welcome-btn-primary:hover {
+    background: linear-gradient(135deg, #1877f2 0%, #166fe5 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 149, 246, 0.4);
+}
+
+.auth-welcome-btn-secondary {
+    background: #fafafa;
+    color: #262626;
+    border: 1px solid #dbdbdb;
+}
+
+.auth-welcome-btn-secondary:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.auth-welcome-btn-sso {
+    background: #fafafa;
+    color: #8e8e8e;
+    border: 1px solid #dbdbdb;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.auth-welcome-coming-soon {
+    font-size: 12px;
+    color: #8e8e8e;
+    font-weight: 400;
+}
+
+/* SSO Section */
+.auth-welcome-sso {
+    margin-bottom: 28px;
+}
+
+.auth-welcome-divider {
+    position: relative;
+    margin: 18px 0;
+    text-align: center;
+}
+
+.auth-welcome-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dbdbdb;
+}
+
+.auth-welcome-divider span {
+    background: white;
+    padding: 0 16px;
+    color: #8e8e8e;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Footer */
+.auth-welcome-footer {
+    border-top: 1px solid #efefef;
+    padding-top: 24px;
+}
+
+.auth-welcome-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.auth-welcome-link {
+    color: #8e8e8e;
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.2s ease;
+}
+
+.auth-welcome-link:hover {
+    color: #262626;
+}
+
+.auth-welcome-separator {
+    color: #dbdbdb;
+    font-size: 12px;
+}
+
+.auth-welcome-copyright {
+    color: #8e8e8e;
+    font-size: 11px;
+    margin: 0;
+}
+
+/* Tablet Landscape (1024px and down) */
+@media (max-width: 1024px) {
+    .auth-welcome-container {
+        max-width: 400px;
+        padding: 22px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 30px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* Tablet Portrait (768px and down) */
+@media (max-width: 768px) {
+    .auth-welcome {
+        padding: 16px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    
+    .auth-welcome-container {
+        max-width: 380px;
+        padding: 20px;
+        margin: 0 auto;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 28px;
+        margin-bottom: 14px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 19px;
+        margin-bottom: 10px;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 11px 22px;
+        font-size: 15px;
+    }
+}
+
+/* Mobile Large (480px and down) */
+@media (max-width: 480px) {
+    .auth-welcome {
+        padding: 16px;
+        padding-top: 40px;
+    }
+    
+    .auth-welcome-container {
+        padding: 24px;
+        max-width: 90%;
+        border-radius: 12px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 28px;
+        margin-bottom: 16px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 16px;
+        margin-bottom: 12px;
+        line-height: 1.3;
+        letter-spacing: -0.008em;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
+        line-height: 1.4;
+        letter-spacing: -0.004em;
+    }
+    
+    .auth-welcome-actions {
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 12px 20px;
+        font-size: 15px;
+        min-height: 46px;
+        letter-spacing: -0.004em;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 24px;
+    }
+    
+    .auth-welcome-divider {
+        margin: 16px 0;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 20px;
+    }
+    
+    .auth-welcome-links {
+        margin-bottom: 12px;
+    }
+    
+    .auth-welcome-link {
+        font-size: 11px;
+    }
+    
+    .auth-welcome-copyright {
+        font-size: 10px;
+    }
+}
+
+/* Mobile Medium (400px and down) */
+@media (max-width: 400px) {
+    .auth-welcome {
+        padding: 12px;
+        padding-top: 30px;
+    }
+    
+    .auth-welcome-container {
+        padding: 20px;
+        max-width: 92%;
+        border-radius: 10px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 26px;
+        margin-bottom: 14px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 15px;
+        margin-bottom: 10px;
+        letter-spacing: -0.012em;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 13px;
+        margin-bottom: 22px;
+        letter-spacing: -0.006em;
+    }
+    
+    .auth-welcome-actions {
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        min-height: 44px;
+        letter-spacing: -0.006em;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 22px;
+    }
+    
+    .auth-welcome-divider {
+        margin: 14px 0;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 18px;
+    }
+    
+    .auth-welcome-links {
+        margin-bottom: 10px;
+    }
+    
+    .auth-welcome-link {
+        font-size: 10px;
+    }
+    
+    .auth-welcome-copyright {
+        font-size: 9px;
+    }
+}
+
+/* Mobile Small (375px and down) */
+@media (max-width: 375px) {
+    .auth-welcome {
+        padding: 10px;
+        padding-top: 25px;
+    }
+    
+    .auth-welcome-container {
+        padding: 18px;
+        max-width: 94%;
+        border-radius: 8px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 14px;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 12px;
+        margin-bottom: 20px;
+        letter-spacing: -0.005em;
+    }
+    
+    .auth-welcome-actions {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 9px 16px;
+        font-size: 13px;
+        min-height: 42px;
+        letter-spacing: -0.005em;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 20px;
+    }
+    
+    .auth-welcome-divider {
+        margin: 12px 0;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 16px;
+    }
+    
+    .auth-welcome-links {
+        margin-bottom: 8px;
+    }
+    
+    .auth-welcome-link {
+        font-size: 9px;
+    }
+    
+    .auth-welcome-copyright {
+        font-size: 8px;
+    }
+}
+
+/* Mobile Extra Small (320px and down) */
+@media (max-width: 320px) {
+    .auth-welcome {
+        padding: 8px;
+        padding-top: 20px;
+    }
+    
+    .auth-welcome-container {
+        padding: 16px;
+        max-width: 96%;
+        border-radius: 6px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 13px;
+        margin-bottom: 6px;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 11px;
+        margin-bottom: 18px;
+        line-height: 1.3;
+        letter-spacing: -0.008em;
+    }
+    
+    .auth-welcome-actions {
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+        min-height: 40px;
+        min-width: 100px;
+        max-width: 100%;
+        letter-spacing: -0.008em;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 18px;
+    }
+    
+    .auth-welcome-divider {
+        margin: 10px 0;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 14px;
+    }
+    
+    .auth-welcome-links {
+        margin-bottom: 6px;
+    }
+    
+    .auth-welcome-link {
+        font-size: 8px;
+    }
+    
+    .auth-welcome-copyright {
+        font-size: 7px;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .auth-welcome {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    .auth-welcome-container {
+        max-width: 90vw;
+        padding: 16px;
+        margin: 0 auto;
+    }
+    
+    .auth-welcome-header {
+        margin-bottom: 16px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .auth-welcome-content {
+        margin-bottom: 16px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .auth-welcome-actions {
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .auth-welcome-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+        min-height: 40px;
+        flex: 1;
+        max-width: 140px;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 16px;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 12px;
+    }
+}
+
+/* Very small screens (280px and down) */
+@media (max-width: 280px) {
+    .auth-welcome {
+        padding: 2px;
+        padding-top: 5px;
+    }
+    
+    .auth-welcome-container {
+        padding: 10px;
+        border-radius: 2px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 13px;
+        margin-bottom: 3px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 8px;
+        margin-bottom: 12px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+    }
+    
+    .auth-welcome-actions {
+        gap: 3px;
+        margin-bottom: 12px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 5px 10px;
+        font-size: 10px;
+        min-height: 34px;
+        min-width: 80px;
+        letter-spacing: -0.01em;
+    }
+    
+    .auth-welcome-sso {
+        margin-bottom: 12px;
+    }
+    
+    .auth-welcome-divider {
+        margin: 4px 0;
+    }
+    
+    .auth-welcome-footer {
+        padding-top: 8px;
+    }
+    
+    .auth-welcome-links {
+        margin-bottom: 3px;
+    }
+    
+    .auth-welcome-link {
+        font-size: 7px;
+    }
+    
+    .auth-welcome-copyright {
+        font-size: 6px;
+    }
+}
+
+/* Desktop Large (1440px and up) */
+@media (min-width: 1440px) {
+    .auth-welcome-container {
+        max-width: 480px;
+        padding: 32px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 38px;
+        margin-bottom: 22px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 95px;
+        height: 95px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 20px;
+        margin-bottom: 18px;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 16px 32px;
+        font-size: 18px;
+        min-height: 52px;
+    }
+    
+    .auth-welcome-actions {
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+}
+
+/* Ultra-wide screens (1920px and up) */
+@media (min-width: 1920px) {
+    .auth-welcome-container {
+        max-width: 520px;
+        padding: 36px;
+    }
+    
+    .auth-welcome-logo h1 {
+        font-size: 42px;
+        margin-bottom: 26px;
+    }
+    
+    .auth-welcome-icon svg {
+        width: 105px;
+        height: 105px;
+    }
+    
+    .auth-welcome-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    
+    .auth-welcome-subtitle {
+        font-size: 17px;
+        margin-bottom: 36px;
+    }
+    
+    .auth-welcome-btn {
+        padding: 16px 32px;
+        font-size: 18px;
+        min-height: 52px;
+    }
+    
+    .auth-welcome-actions {
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+}

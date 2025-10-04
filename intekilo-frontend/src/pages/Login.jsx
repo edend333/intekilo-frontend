@@ -75,14 +75,14 @@ export function Login() {
 
         <div className="divider">או</div>
 
-        <a className="forgot-password" href="#">שכחת את הסיסמה?</a>
+        {/* <a className="forgot-password" href="#">שכחת את הסיסמה?</a> */}
 
         <div className="signup-prompt">
           אין לך חשבון? <Link to="/signup">הרשמה</Link>
         </div>
 
         <footer className="login-footer">
-          עברית · הסכמי פשרה · Meta Verified · Instagram from Meta · Threads · תנאים · פרטיות · קוקיז · עוד
+          עברית · E.D · InstaKilo · תנאים · פרטיות · קוקיז · עוד
         </footer>
       </div>
 

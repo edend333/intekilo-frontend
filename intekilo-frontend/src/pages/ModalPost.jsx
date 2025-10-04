@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState, useRef } from 'react'
-import { loadPostById } from '../store/posts/post.actions'
+import { loadPostById, removePost, updatePost } from '../store/posts/post.actions'
 import { addPostLike, removePostLike } from '../store/posts/post.actions'
 import { isLikedByMe, getLikeCount } from '../utils/postUtils'
 import { VideoPlayer } from '../cmps/VideoPlayer'
@@ -15,7 +15,14 @@ export function ModalPost() {
   const comments = useSelector((store) => store.commentModule.comments)
   const loggedinUser = useSelector((store) => store.userModule.user)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editText, setEditText] = useState('')
   const videoRef = useRef(null)
+  const menuRef = useRef(null)
 
   // Get the updated post from store (in case likes changed)
   const currentPost = posts.find(p => p._id === postId)
@@ -34,6 +41,52 @@ export function ModalPost() {
       }
     }
   }, [])
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false)
+      }
+    }
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenu])
+
+  // Handle ESC key for closing modals
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        if (showEditModal) {
+          setShowEditModal(false)
+        } else if (showDeleteDialog) {
+          setShowDeleteDialog(false)
+        } else if (showMenu) {
+          setShowMenu(false)
+        } else {
+          navigate('/')
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showEditModal, showDeleteDialog, showMenu, navigate])
+
+  // Initialize edit text when edit modal opens
+  useEffect(() => {
+    if (showEditModal && currentPost) {
+      setEditText(currentPost.txt || currentPost.caption || '')
+    }
+  }, [showEditModal, currentPost])
 
   if (!currentPost) return <div className="modal-overlay">Loading...</div>
 
@@ -60,9 +113,118 @@ export function ModalPost() {
     }
   }
 
+  // Check if current user owns this post
+  const isOwner = loggedinUser && currentPost && (
+    loggedinUser._id === currentPost.owner?._id || 
+    loggedinUser._id === currentPost.by?._id ||
+    loggedinUser.ROUL === 'admin'
+  )
+
+  const handleMenuToggle = () => {
+    setShowMenu(!showMenu)
+  }
+
+  const handleEditPost = () => {
+    setShowEditModal(true)
+    setShowMenu(false)
+  }
+
+  const handleDeletePost = () => {
+    setShowDeleteDialog(true)
+    setShowMenu(false)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (isDeleting) return
+    
+    setIsDeleting(true)
+    try {
+      await dispatch(removePost(currentPost._id))
+      setShowDeleteDialog(false)
+      navigate('/') // Close modal after successful deletion
+    } catch (error) {
+      console.error('❌ Error deleting post:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false)
+  }
+
+  const handleSaveEdit = async () => {
+    if (isEditing) return
+    
+    setIsEditing(true)
+    try {
+      const updatedPost = {
+        ...currentPost,
+        txt: editText.trim()
+      }
+      await dispatch(updatePost(updatedPost))
+      setShowEditModal(false)
+    } catch (error) {
+      console.error('❌ Error updating post:', error)
+    } finally {
+      setIsEditing(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false)
+    setEditText('')
+  }
+
   return (
     <div className="modal-overlay" onClick={() => navigate('/')}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        {/* Fixed position menu button */}
+        {isOwner && (
+          <div className="modal-menu-container" ref={menuRef}>
+            <button 
+              className="menu-toggle-btn"
+              onClick={handleMenuToggle}
+              aria-label="פתח תפריט פעולות"
+              aria-expanded={showMenu}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="6" r="1" fill="currentColor"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                <circle cx="12" cy="18" r="1" fill="currentColor"/>
+              </svg>
+            </button>
+            
+            {showMenu && (
+              <div className="post-menu">
+                <button 
+                  className="menu-item edit-item"
+                  onClick={handleEditPost}
+                  aria-label="ערוך פוסט"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  ערוך
+                </button>
+                <button 
+                  className="menu-item delete-item"
+                  onClick={handleDeletePost}
+                  aria-label="מחק פוסט"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  מחק
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="modal-img-wrapper">
           {currentPost.type === 'video' ? (
             <VideoPlayer
@@ -82,8 +244,10 @@ export function ModalPost() {
 
         <div className="modal-info">
           <div className="modal-header">
-            <h4>{currentPost.by?.fullname || currentPost.username}</h4>
-            <span className="modal-time">{getTimeAgo(currentPost.createdAt)}</span>
+            <div className="modal-header-left">
+              <h4>{currentPost.by?.fullname || currentPost.username}</h4>
+              <span className="modal-time">{getTimeAgo(currentPost.createdAt)}</span>
+            </div>
           </div>
           <p>{currentPost.txt || currentPost.caption}</p>
 
@@ -132,6 +296,67 @@ export function ModalPost() {
 
         <button className="close-btn" onClick={() => navigate('/')}>✖</button>
       </div>
+
+      {/* Delete confirmation dialog */}
+      {showDeleteDialog && (
+        <div className="delete-dialog-overlay" onClick={handleCancelDelete}>
+          <div className="delete-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>למחוק את הפוסט?</h3>
+            <p>הפעולה בלתי הפיכה.</p>
+            <div className="dialog-buttons">
+              <button 
+                className="cancel-btn"
+                onClick={handleCancelDelete}
+                disabled={isDeleting}
+              >
+                בטל
+              </button>
+              <button 
+                className="delete-confirm-btn"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'מוחק...' : 'מחק'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit post modal */}
+      {showEditModal && (
+        <div className="edit-dialog-overlay" onClick={handleCancelEdit}>
+          <div className="edit-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>עריכת פוסט</h3>
+            <div className="edit-form">
+              <textarea 
+                className="edit-textarea"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                placeholder="מה אתה חושב?"
+                rows="4"
+                autoFocus
+              />
+              <div className="edit-buttons">
+                <button 
+                  className="cancel-btn"
+                  onClick={handleCancelEdit}
+                  disabled={isEditing}
+                >
+                  בטל
+                </button>
+                <button 
+                  className="save-btn"
+                  onClick={handleSaveEdit}
+                  disabled={isEditing || !editText.trim()}
+                >
+                  {isEditing ? 'שומר...' : 'שמור'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

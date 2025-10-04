@@ -8,7 +8,7 @@ import TextInputWithEmoji from './TextInputWithEmoji'
 import { isLikedByMe, getLikeCount, getPostComments, getRelativeTime } from '../utils/postUtils'
 import { getTimeAgo } from '../utils/timeUtils'
 
-export function CommentsModal({ postId, isOpen, onClose }) {
+export function CommentsModal({ postId, post: propPost, isOpen, onClose }) {
   const [newComment, setNewComment] = useState('')
   const [currentTime, setCurrentTime] = useState(Date.now())
   const [imageLoading, setImageLoading] = useState(true)
@@ -24,8 +24,9 @@ export function CommentsModal({ postId, isOpen, onClose }) {
   const posts = useSelector(store => store.postModule.posts)
   const loggedinUser = useSelector(store => store.userModule.user)
   
-  // Get the post from store using postId
-  const post = posts.find(p => p._id === postId)
+  // Get the post from store or use propPost if available
+  const storePost = posts.find(p => p._id === postId)
+  const post = propPost || storePost
   
   // Validate post ownership when modal opens
   useEffect(() => {
@@ -87,6 +88,17 @@ export function CommentsModal({ postId, isOpen, onClose }) {
   }, [isOpen, post?.imgUrl])
 
   const handleKeyDown = useCallback((e) => {
+    // Check if user is typing in input fields
+    const el = e.target
+    const isTyping = 
+      el?.tagName === 'INPUT' ||
+      el?.tagName === 'TEXTAREA' ||
+      el?.isContentEditable ||
+      el?.contentEditable === 'true'
+    
+    // Don't interfere with typing
+    if (isTyping) return
+    
     if (e.key === 'Escape') {
       if (isZoomed) {
         setIsZoomed(false)

@@ -35,6 +35,20 @@
     display: grid; place-items: center;
     transition: background-color 0.2s ease;
     
+    &.disabled {
+      cursor: default;
+      opacity: 0.6;
+      
+      &:hover {
+        background: transparent;
+      }
+      
+      &:focus {
+        outline: none;
+        background: transparent;
+      }
+    }
+    
     &:hover{ background:#f5f5f5; }
     
     &:focus {
@@ -60,6 +74,7 @@
   :where(.app, .main-container) > .sidebar .logo,
   :where(.app, .main-container) > .sidebar .logout,
   :where(.app, .main-container) > .sidebar [data-mobile-hidden="true"],
+  :where(.app, .main-container) > .sidebar [data-desktop-only="true"],
   :where(.app, .main-container) > .sidebar .notification-badge{ display:none !important; }
 }
 
@@ -94,6 +109,24 @@
     color:#262626; text-decoration:none; cursor:pointer;
     position: relative;
     transition: background-color 0.2s ease, color 0.2s ease;
+    
+    &.disabled {
+      cursor: default;
+      opacity: 0.6;
+      
+      &:hover {
+        background: transparent;
+        
+        &::after {
+          display: none;
+        }
+      }
+      
+      &:focus {
+        outline: none;
+        background: transparent;
+      }
+    }
     
     &:hover{ 
       background:#f5f5f5; 
@@ -176,6 +209,9 @@
   /* כפתור יציאה בתחתית, מוצג במצומצם */
   .sidebar .logout{ margin-top: auto; display:block; }
   .sidebar .logout .nav-link{ justify-content: center; }
+  
+  /* Hide mobile-only elements on desktop */
+  .sidebar [data-mobile-only="true"] { display: none !important; }
 }
 
 /* ≥1264px — מצב מורחב (244px, אייקון + טקסט + לוגו) */

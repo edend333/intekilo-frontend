@@ -11,7 +11,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
     const navigate = useNavigate()
     const [currentStep, setCurrentStep] = useState(0)
     const [progress, setProgress] = useState(0)
-    const [isLoading, setIsLoading] = useState(false)
+    const [showCompletion, setShowCompletion] = useState(false)
     const [onboardingData, setOnboardingData] = useState({
         dismissedAt: null,
         completedAt: null,
@@ -20,37 +20,39 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
     
     const loggedinUser = useSelector(store => store.userModule.user)
     const [userStats, setUserStats] = useState({
-        avatarDone: false,
         followedCount: 0,
         firstPostDone: false,
-        postsCount: 0
+        postsCount: 0,
+        profileComplete: false
     })
 
     const steps = [
         {
-            id: 'avatar',
-            title: 'תמונת פרופיל',
-            subtitle: 'תמונה עוזרת לאחרים לזהות את הפרופיל שלך',
-            icon: '👤',
-            action: 'upload_avatar',
-            hint: 'אפשר לשנות בכל זמן'
-        },
-        {
             id: 'follow',
             title: 'גילוי משתמשים',
             subtitle: 'בחירה מהירה של 3 משתמשים לעקיבה תמלא את הפיד בתוכן שמתאים לך',
+            description: 'אפשר לבחור לפי תחומי עניין',
             icon: '👥',
             action: 'follow_users',
             hint: 'אפשר לבחור לפי תחומי עניין'
         },
         {
             id: 'post',
-            title: 'פוסט ראשון',
+            title: 'יצירת פוסט ראשון',
             subtitle: 'ספר לנו מה אתה אוהב ✨',
+            description: 'העלה תמונה או סרטון וספר לנו על הרגעים שלך',
             icon: '📝',
             action: 'create_post',
-            hint: 'אופציונלי - אפשר לדלג',
-            optional: true
+            hint: 'אופציונלי - אפשר לדלג'
+        },
+        {
+            id: 'profile',
+            title: 'השלמת פרופיל',
+            subtitle: 'עדכן את הפרטים שלך',
+            description: 'הוסף תמונת פרופיל ופרטים נוספים כדי שאחרים יכירו אותך טוב יותר',
+            icon: '👤',
+            action: 'complete_profile',
+            hint: 'אפשר לשנות בכל זמן'
         }
     ]
 
@@ -99,9 +101,6 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         try {
             setIsLoading(true)
             
-            // Check avatar
-            const avatarDone = !!(loggedinUser.imgUrl && loggedinUser.imgUrl !== 'https://randomuser.me/api/portraits/women/45.jpg')
-            
             // Check following count
             const followedCount = loggedinUser.following?.length || 0
             
@@ -110,21 +109,26 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
             const postsCount = userPosts.length
             const firstPostDone = postsCount > 0
 
+            // Check profile completion
+            const hasCustomAvatar = !!(loggedinUser.imgUrl && loggedinUser.imgUrl !== 'https://randomuser.me/api/portraits/women/45.jpg')
+            const hasBio = !!(loggedinUser.bio && loggedinUser.bio.trim().length > 0)
+            const profileComplete = hasCustomAvatar && hasBio
+
             setUserStats({
-                avatarDone,
                 followedCount,
                 firstPostDone,
-                postsCount
+                postsCount,
+                profileComplete
             })
 
             // Auto-advance to next incomplete step
-            if (avatarDone && currentStep === 0) {
+            if (followedCount >= 3 && currentStep === 0) {
                 setCurrentStep(1)
             }
-            if (followedCount >= 3 && currentStep === 1) {
+            if (firstPostDone && currentStep === 1) {
                 setCurrentStep(2)
             }
-            if (firstPostDone && currentStep === 2) {
+            if (profileComplete && currentStep === 2) {
                 // All steps completed
                 handleComplete()
             }
@@ -138,9 +142,9 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
 
     const calculateProgress = () => {
         let completedSteps = 0
-        if (userStats.avatarDone) completedSteps++
         if (userStats.followedCount >= 3) completedSteps++
         if (userStats.firstPostDone) completedSteps++
+        if (userStats.profileComplete) completedSteps++
         
         const progressPercent = (completedSteps / steps.length) * 100
         setProgress(progressPercent)
@@ -150,9 +154,6 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         console.log('🔍 handleStepAction called with:', step.action)
         
         switch (step.action) {
-            case 'upload_avatar':
-                // This will be handled by the ImgUploader component
-                break
             case 'follow_users':
                 console.log('🔍 Navigating to discover page...')
                 // Navigate to discover page with onboarding parameter
@@ -162,6 +163,11 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                 console.log('🔍 Navigating to create post page...')
                 // Navigate to create post page
                 navigate('/create-post')
+                break
+            case 'complete_profile':
+                console.log('🔍 Navigating to profile page...')
+                // Navigate to profile page
+                navigate('/profile')
                 break
         }
     }
@@ -173,8 +179,12 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
 
     const handleComplete = () => {
         saveOnboardingData({ completedAt: new Date().toISOString() })
-        onComplete?.()
-        onClose()
+        setShowCompletion(true)
+        // Show completion screen briefly before closing
+        setTimeout(() => {
+            onComplete?.()
+            onClose()
+        }, 2000)
     }
 
     const handleNext = () => {
@@ -185,32 +195,42 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         }
     }
 
-    const handleAvatarUpload = async (imgUrl) => {
-        try {
-            setIsLoading(true)
-            const updatedUser = await userService.update({ ...loggedinUser, imgUrl })
-            // Update Redux store
-            // dispatch(setUser(updatedUser))
-            await checkUserProgress()
-            // Auto-advance to next step after successful upload
-            if (currentStep === 0) {
-                setCurrentStep(1)
-            }
-        } catch (error) {
-            console.error('Error updating avatar:', error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
 
     if (!isOpen) return null
+
+    // Show completion screen
+    if (showCompletion) {
+        return (
+            <div className="onboarding-modal-overlay">
+                <div className="onboarding-modal completion-modal">
+                    <div className="completion-content">
+                        <div className="celebration-icon">🎉</div>
+                        <h2 className="completion-title">את/ה מוכן/ה להתחיל!</h2>
+                        <p className="completion-subtitle">ההדרכה הושלמה בהצלחה</p>
+                        <p className="completion-description">
+                            עכשיו אתה יכול ליהנות מכל התכונות של InstaKilo
+                        </p>
+                        <button 
+                            className="btn-primary completion-btn"
+                            onClick={() => {
+                                onComplete?.()
+                                onClose()
+                            }}
+                        >
+                            אל הפיד שלי
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     const currentStepData = steps[currentStep]
     const isStepCompleted = (stepId) => {
         switch (stepId) {
-            case 'avatar': return userStats.avatarDone
             case 'follow': return userStats.followedCount >= 3
             case 'post': return userStats.firstPostDone
+            case 'profile': return userStats.profileComplete
             default: return false
         }
     }
@@ -242,15 +262,9 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                     
                     <h2 className="step-title">{currentStepData.title}</h2>
                     <p className="step-subtitle">{currentStepData.subtitle}</p>
+                    <p className="step-description">{currentStepData.description}</p>
                     {currentStepData.hint && (
                         <p className="step-hint">{currentStepData.hint}</p>
-                    )}
-
-                    {currentStepData.action === 'upload_avatar' && (
-                        <div className="step-action">
-                            <ImgUploader onUploaded={handleAvatarUpload} />
-                            {isLoading && <div className="loading">מעדכן תמונה...</div>}
-                        </div>
                     )}
 
                     {currentStepData.action === 'follow_users' && (
@@ -282,6 +296,20 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                         </div>
                     )}
 
+                    {currentStepData.action === 'complete_profile' && (
+                        <div className="step-action">
+                            <div className="profile-progress">
+                                <p>פרופיל {userStats.profileComplete ? 'הושלם' : 'לא הושלם'}</p>
+                                <button 
+                                    className="btn-primary"
+                                    onClick={() => handleStepAction(currentStepData)}
+                                >
+                                    השלם פרופיל
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
                 <div className="onboarding-footer">
@@ -291,18 +319,14 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                     
                     {isStepCompleted(currentStepData.id) ? (
                         <button className="btn-complete" onClick={handleNext}>
-                            {currentStep === steps.length - 1 ? 'סיום' : 'הבא'}
+                            {currentStep === steps.length - 1 ? 'סיום' : 'המשך הדרכה'}
                         </button>
                     ) : (
                         <button 
-                            className={`btn-action ${currentStepData.action === 'follow_users' && userStats.followedCount < 3 ? 'disabled' : ''}`}
-                            onClick={() => handleStepAction(currentStepData)}
-                            disabled={currentStepData.action === 'follow_users' && userStats.followedCount < 3}
+                            className="btn-action"
+                            onClick={handleNext}
                         >
-                            {currentStepData.action === 'upload_avatar' ? 'בחירת תמונה' : 
-                             currentStepData.action === 'follow_users' ? `להמשך (${userStats.followedCount}/3)` : 
-                             currentStepData.action === 'create_post' ? 'צור פוסט' :
-                             'המשך'}
+                            להמשך {currentStep + 1}/{steps.length}
                         </button>
                     )}
                 </div>

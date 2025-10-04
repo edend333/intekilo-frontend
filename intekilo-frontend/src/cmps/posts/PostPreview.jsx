@@ -35,8 +35,6 @@ export function PostPreview({ post, onOpenPost }) {
     
     // Debug: Log when post is not found in store (might be deleted)
     if (!currentPost && posts.length > 0) {
-        console.log('⚠️ Post not found in store:', post._id)
-        console.log('⚠️ Available post IDs:', posts.map(p => p._id))
         // If post is not found in store, it might have been deleted
         // Return null to prevent rendering
         return null
@@ -48,6 +46,12 @@ export function PostPreview({ post, onOpenPost }) {
 
     // Check if current user liked this post
     const isLiked = isLikedByMe(loggedinUser?._id, postToDisplay)
+
+    // Check if current user owns this post
+    const isOwner = loggedinUser && postToDisplay && (
+        loggedinUser._id === postToDisplay.owner?._id ||
+        loggedinUser.ROUL === 'admin'
+    )
 
     // Check if current user saved this post
     useEffect(() => {
@@ -109,7 +113,6 @@ export function PostPreview({ post, onOpenPost }) {
         const handleAvatarUpdate = (event) => {
             const { updatedUser } = event.detail
             if (updatedUser && post.owner && updatedUser._id === post.owner._id) {
-                console.log('🔄 PostPreview: Avatar updated for post owner, refreshing post data')
                 // Force re-render by updating the post object
                 // The parent component should handle this, but we can trigger a re-render
                 window.dispatchEvent(new CustomEvent('postDataRefresh', { 
@@ -124,6 +127,39 @@ export function PostPreview({ post, onOpenPost }) {
         }
     }, [post.owner?._id, post._id])
 
+    // Listen for like events from Redux actions
+    useEffect(() => {
+        const handlePostLikeAdded = (event) => {
+            const { postId, like } = event.detail
+            if (postId === post._id) {
+                console.log('📡 PostPreview: Received postLikeAdded event for post:', postId)
+                // Update the post in the parent component's state
+                window.dispatchEvent(new CustomEvent('postLikeUpdated', {
+                    detail: { postId, like, action: 'add' }
+                }))
+            }
+        }
+
+        const handlePostLikeRemoved = (event) => {
+            const { postId, userId } = event.detail
+            if (postId === post._id) {
+                console.log('📡 PostPreview: Received postLikeRemoved event for post:', postId)
+                // Update the post in the parent component's state
+                window.dispatchEvent(new CustomEvent('postLikeUpdated', {
+                    detail: { postId, userId, action: 'remove' }
+                }))
+            }
+        }
+
+        window.addEventListener('postLikeAdded', handlePostLikeAdded)
+        window.addEventListener('postLikeRemoved', handlePostLikeRemoved)
+
+        return () => {
+            window.removeEventListener('postLikeAdded', handlePostLikeAdded)
+            window.removeEventListener('postLikeRemoved', handlePostLikeRemoved)
+        }
+    }, [post._id])
+
     function handleAddComment() {
         if (!txt.trim()) return
         dispatch(addComment(post._id, txt))
@@ -132,11 +168,8 @@ export function PostPreview({ post, onOpenPost }) {
 
     function handleLike() {
         if (!loggedinUser) {
-            console.log('❌ User not logged in')
             return
         }
-
-        console.log('💖 handleLike called - isLiked:', isLiked, 'postId:', post._id)
         
         if (isLiked) {
             dispatch(removePostLike(post._id))
@@ -150,15 +183,8 @@ export function PostPreview({ post, onOpenPost }) {
     }
 
     function handleUserClick(userId) {
-        console.log('🔗 PostPreview: Navigating to profile with userId:', userId)
-        console.log('🔗 PostPreview: Post owner ID:', post.owner?._id)
-        
         // Validate that the userId matches the post owner
         if (userId !== post.owner?._id) {
-            console.error('❌ PostPreview: UserId mismatch!', {
-                clickedUserId: userId,
-                postOwnerId: post.owner?._id
-            })
             // Use the post owner ID instead
             navigate(`/profile/${post.owner._id}`)
         } else {
@@ -192,7 +218,6 @@ export function PostPreview({ post, onOpenPost }) {
             
             // Update Redux store
             dispatch(updateUser(updatedUser))
-            console.log('✅ PostPreview: Save toggle successful, updated user:', updatedUser)
         } catch (error) {
             console.error('Error toggling save:', error)
             // Revert optimistic update
@@ -226,9 +251,6 @@ export function PostPreview({ post, onOpenPost }) {
         
         setIsDeleting(true)
         try {
-            console.log('🗑️ Deleting post:', post._id)
-            console.log('🗑️ Post data:', { _id: post._id, txt: post.txt })
-            
             await dispatch(removePost(post._id))
             
             // Close dialogs and menu
@@ -236,7 +258,7 @@ export function PostPreview({ post, onOpenPost }) {
             setShowMenu(false)
             
             // Show success message
-            console.log('✅ Post deleted successfully')
+            showSuccessMsg('הפוסט נמחק בהצלחה')
         } catch (error) {
             console.error('❌ Error deleting post:', error)
             // Show error message
@@ -281,14 +303,15 @@ export function PostPreview({ post, onOpenPost }) {
                             {getTimeAgo(post.createdAt)}
                         </span>
                     </div>
-                    <div className="post-menu" ref={menuRef}>
-                        <span 
-                            className="dot-menu" 
-                            onClick={handleMenuToggle}
-                        >
-                            •••
-                        </span>
-                        {loggedinUser?._id === post.owner?._id && showMenu && (
+                    {isOwner && (
+                        <div className="post-menu" ref={menuRef}>
+                            <span 
+                                className="dot-menu" 
+                                onClick={handleMenuToggle}
+                            >
+                                •••
+                            </span>
+                        {isOwner && showMenu && (
                             <div className="menu-dropdown">
                                 <button 
                                     className="menu-item edit-btn"
@@ -310,7 +333,8 @@ export function PostPreview({ post, onOpenPost }) {
                                 </button>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    )}
                 </header>
 
                 {post.type === 'video' ? (
@@ -326,10 +350,20 @@ export function PostPreview({ post, onOpenPost }) {
                         onPlay={handleVideoPlay}
                         onPause={handleVideoPause}
                         onEnded={handleVideoEnded}
+                        onClick={handleViewComments}
+                        style={{ cursor: 'pointer' }}
                         className="post-video"
+                        title="Click to view post details"
                     />
                 ) : (
-                    <img className="post-img" src={post.imgUrl} alt="Post" />
+                    <img 
+                        className="post-img" 
+                        src={post.imgUrl} 
+                        alt="Post" 
+                        onClick={handleViewComments}
+                        style={{ cursor: 'pointer' }}
+                        title="Click to view post details"
+                    />
                 )}
 
                 <section className="post-actions">
@@ -453,6 +487,7 @@ export function PostPreview({ post, onOpenPost }) {
 
         <CommentsModal 
             postId={post._id}
+            post={post}
             isOpen={showCommentsModal}
             onClose={() => setShowCommentsModal(false)}
         />
@@ -505,7 +540,6 @@ export function PostPreview({ post, onOpenPost }) {
                             <button 
                                 className="save-btn"
                                 onClick={() => {
-                                    // TODO: Implement save functionality
                                     setShowEditModal(false)
                                 }}
                             >

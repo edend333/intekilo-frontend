@@ -22,7 +22,7 @@ export function requireAuth(req, res, next) {
 
 	if (!loggedinUser) {
 		console.log('❌ requireAuth - No loggedinUser found, returning 401')
-		return res.status(401).send('Not Authenticated')
+		return res.status(401).json({ err: 'auth-required' })
 	}
 	console.log('✅ requireAuth - User authenticated:', loggedinUser._id)
 	next()
@@ -31,10 +31,10 @@ export function requireAuth(req, res, next) {
 export function requireAdmin(req, res, next) {
 	const { loggedinUser } = asyncLocalStorage.getStore()
     
-	if (!loggedinUser) return res.status(401).send('Not Authenticated')
+	if (!loggedinUser) return res.status(401).json({ err: 'auth-required' })
 	if (!loggedinUser.isAdmin) {
 		logger.warn(loggedinUser.fullname + 'attempted to perform admin action')
-		res.status(403).end('Not Authorized')
+		res.status(403).json({ err: 'admin-required' })
 		return
 	}
 	next()

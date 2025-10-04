@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { userService } from '../services/user'
 
-export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollowersUpdate }) {
+export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, currentUserId, onFollowersUpdate }) {
     const [followers, setFollowers] = useState([])
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [filteredFollowers, setFilteredFollowers] = useState([])
+    const [counts, setCounts] = useState({ followers: 0, following: 0 })
     const navigate = useNavigate()
 
     useEffect(() => {
         if (isOpen && userId) {
-            loadFollowers()
+            loadRelationships()
+        } else if (!isOpen) {
+            // Clear search when modal closes
+            setSearchTerm('')
         }
     }, [isOpen, userId])
 
@@ -20,22 +24,30 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
             setFilteredFollowers(followers)
         } else {
             const filtered = followers.filter(follower => 
-                follower.username.toLowerCase().includes(searchTerm.toLowerCase())
+                follower.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                follower.fullname?.toLowerCase().includes(searchTerm.toLowerCase())
             )
             setFilteredFollowers(filtered)
         }
     }, [followers, searchTerm])
 
-    const loadFollowers = async () => {
+    const loadRelationships = async () => {
         try {
             setLoading(true)
-            console.log('👥 Loading followers for user:', userId)
-            const followersData = await userService.getFollowers(userId)
-            console.log('📊 Loaded followers:', followersData.length)
+            console.log('🔗 Loading relationships for profileId:', userId)
             
-            // Add following status for each follower
+            // Use the new relationships endpoint that ensures profileId-based data
+            const relationships = await userService.getRelationships(userId)
+            console.log('📊 Loaded relationships:', relationships)
+            
+            // Set followers data from relationships
+            setFollowers(relationships.followers || [])
+            setCounts(relationships.counts || { followers: 0, following: 0 })
+            
+            // For followers, we need to check if current user follows each follower
+            // But since this endpoint returns followers of the profileId, we check if current user follows them
             const followersWithStatus = await Promise.all(
-                followersData.map(async (follower) => {
+                (relationships.followers || []).map(async (follower) => {
                     try {
                         const isFollowingStatus = await userService.isFollowing(follower._id)
                         return { ...follower, isFollowing: isFollowingStatus }
@@ -48,8 +60,9 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
             
             setFollowers(followersWithStatus)
         } catch (error) {
-            console.error('❌ Error loading followers:', error)
+            console.error('❌ Error loading relationships:', error)
             setFollowers([])
+            setCounts({ followers: 0, following: 0 })
         } finally {
             setLoading(false)
         }
@@ -70,8 +83,8 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
                 await userService.followUser(followerId)
                 console.log('✅ Followed user:', followerId)
             }
-            // Reload followers to update the list
-            loadFollowers()
+            // Reload relationships to update the list
+            await loadRelationships()
             // Notify parent component to update stats
             if (onFollowersUpdate) {
                 onFollowersUpdate()
@@ -86,8 +99,8 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
             console.log('🗑️ Remove follower:', followerId)
             await userService.removeFollower(followerId)
             console.log('✅ Successfully removed follower')
-            // Reload the list to update the UI
-            loadFollowers()
+            // Reload relationships to update the UI
+            await loadRelationships()
             // Notify parent component to update stats
             if (onFollowersUpdate) {
                 onFollowersUpdate()
@@ -103,7 +116,7 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
         <div className="modal-overlay" onClick={onClose}>
             <div className="followers-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>עוקבים</h2>
+                    <h2>עוקבים ({counts.followers})</h2>
                     <button className="close-btn" onClick={onClose}>✖</button>
                 </div>
                 
@@ -156,7 +169,7 @@ export function FollowersModal({ isOpen, onClose, userId, isOwnProfile, onFollow
                                     </div>
                                     
                                     <div className="follower-actions">
-                                        {!isOwnProfile && (
+                                        {!isOwnProfile && currentUserId && follower._id !== currentUserId && (
                                             <button 
                                                 className="follow-btn"
                                                 onClick={() => handleFollowToggle(follower._id, follower.isFollowing)}

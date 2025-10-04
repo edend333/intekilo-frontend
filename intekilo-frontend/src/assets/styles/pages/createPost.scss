@@ -12,6 +12,327 @@
     align-items: center;
     z-index: 9999;
     animation: fadeIn 0.3s ease-out;
+    padding: 10px;
+    
+/* Responsive design */
+// Large screens (desktop)
+@media (min-width: 1200px) {
+  .create-post-modal {
+    max-width: 800px;
+    max-height: 90vh;
+  }
+  
+  .create-post-header {
+    padding: 24px 32px;
+    
+    h2 {
+      font-size: 24px;
+    }
+    
+    .share-btn {
+      font-size: 16px;
+      padding: 12px 24px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 32px;
+  }
+  
+  .step-content {
+    padding: 24px;
+  }
+}
+
+// Medium screens (tablet)
+@media (min-width: 768px) and (max-width: 1199px) {
+  .create-post-modal-overlay {
+    padding: 16px;
+  }
+  
+  .create-post-modal {
+    max-width: 600px;
+    max-height: 85vh;
+  }
+  
+  .create-post-header {
+    padding: 20px 24px;
+    
+    h2 {
+      font-size: 20px;
+    }
+    
+    .share-btn {
+      font-size: 15px;
+      padding: 10px 20px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 24px;
+  }
+  
+  .step-content {
+    padding: 20px;
+  }
+}
+
+// Small screens (mobile)
+@media (max-width: 767px) {
+  .create-post-modal-overlay {
+    padding: 8px;
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+  
+  .create-post-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .create-post-header {
+    padding: 16px 20px;
+    
+    h2 {
+      font-size: 18px;
+    }
+    
+    .share-btn {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 16px;
+  }
+  
+  .step-content {
+    padding: 16px;
+  }
+  
+  .file-input-wrapper {
+    padding: 20px;
+    
+    .file-input-icon {
+      font-size: 48px;
+    }
+    
+    .file-input-text {
+      font-size: 16px;
+    }
+    
+    .file-input-subtext {
+      font-size: 14px;
+    }
+  }
+  
+  .preview-container {
+    padding: 16px;
+    
+    .preview-image {
+      max-height: 300px;
+    }
+  }
+  
+  .caption-input {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+// Extra small screens (small mobile)
+@media (max-width: 480px) {
+  .create-post-modal-overlay {
+    padding: 4px;
+    padding-top: 12px;
+  }
+  
+  .create-post-modal {
+    max-height: 98vh;
+    border-radius: 8px;
+  }
+  
+  .create-post-header {
+    padding: 12px 16px;
+    
+    h2 {
+      font-size: 16px;
+    }
+    
+    .share-btn {
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 14px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 12px;
+  }
+  
+  .step-content {
+    padding: 12px;
+  }
+  
+  .file-input-wrapper {
+    padding: 16px;
+    
+    .file-input-icon {
+      font-size: 40px;
+    }
+    
+    .file-input-text {
+      font-size: 14px;
+    }
+    
+    .file-input-subtext {
+      font-size: 12px;
+    }
+  }
+  
+  .preview-container {
+    padding: 12px;
+    
+    .preview-image {
+      max-height: 250px;
+    }
+  }
+  
+  .caption-input {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+// Landscape orientation (mobile)
+@media (max-height: 500px) and (orientation: landscape) {
+  .create-post-modal-overlay {
+    padding: 4px;
+    align-items: center;
+  }
+  
+  .create-post-modal {
+    max-height: 95vh;
+    height: 95vh;
+  }
+  
+  .create-post-header {
+    padding: 8px 16px;
+    
+    h2 {
+      font-size: 14px;
+    }
+    
+    .share-btn {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 12px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 8px;
+  }
+  
+  .step-content {
+    padding: 8px;
+  }
+  
+  .file-input-wrapper {
+    padding: 12px;
+    
+    .file-input-icon {
+      font-size: 32px;
+    }
+    
+    .file-input-text {
+      font-size: 12px;
+    }
+    
+    .file-input-subtext {
+      font-size: 10px;
+    }
+  }
+  
+  .preview-container {
+    padding: 8px;
+    
+    .preview-image {
+      max-height: 200px;
+    }
+  }
+  
+  .caption-input {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+// Ultra-wide screens
+@media (min-width: 1600px) {
+  .create-post-modal {
+    max-width: 900px;
+    max-height: 85vh;
+  }
+  
+  .create-post-header {
+    padding: 32px 40px;
+    
+    h2 {
+      font-size: 28px;
+    }
+    
+    .share-btn {
+      font-size: 18px;
+      padding: 14px 28px;
+    }
+    
+    .create-post-close-btn {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+  
+  .create-post-content {
+    padding: 40px;
+  }
+  
+  .step-content {
+    padding: 32px;
+  }
+}
 }
 
 .create-post-modal {
@@ -43,6 +364,25 @@
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+/* Mobile-specific animations */
+@keyframes slideUpMobile {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Apply mobile animation */
+@media (max-width: 480px) {
+    .create-post-modal {
+        animation: slideUpMobile 0.3s ease-out;
     }
 }
 
@@ -78,6 +418,12 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    
+    /* Touch-friendly improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .create-post-close-btn:hover {
@@ -108,6 +454,10 @@
     background: white;
     position: relative;
     overflow: hidden;
+    
+    /* Touch-friendly improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .create-post-dropzone::before {
@@ -231,6 +581,11 @@
     z-index: 2;
     position: relative;
     letter-spacing: -0.2px;
+    
+    /* Touch-friendly improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px; /* iOS recommended touch target size */
 }
 
 .create-post-btn:hover {
@@ -467,26 +822,45 @@
     transform: scale(1.1);
 }
 
-/* Responsive */
+/* Mobile Responsive Design */
 @media (max-width: 768px) {
     .create-post-modal {
-        width: 95%;
-        margin: 20px;
-        max-height: 90vh;
+        width: 90vw;
+        max-width: 500px;
+        margin: 20px auto;
+        max-height: 85vh;
+        border-radius: 12px;
+    }
+    
+    .create-post-header {
+        padding: 16px 20px;
+    }
+    
+    .create-post-header h2 {
+        font-size: 18px;
+    }
+    
+    .create-post-close-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
     }
     
     .create-post-content {
-        padding: 40px 20px;
-        min-height: 400px;
+        padding: 30px 20px;
+        min-height: 350px;
     }
     
     .create-post-dropzone {
         padding: 40px 20px;
+        max-width: 320px;
+        margin: 0 auto;
     }
     
     .create-post-icon {
         width: 80px;
         height: 80px;
+        margin-bottom: 24px;
     }
     
     .icon-square {
@@ -500,12 +874,16 @@
     }
     
     .create-post-text {
-        font-size: 18px;
+        font-size: 16px;
+        margin-bottom: 24px;
     }
     
     .create-post-btn {
-        padding: 10px 20px;
+        padding: 12px 24px;
         font-size: 14px;
+        width: 80%;
+        max-width: 200px;
+        margin-top: 15px;
     }
     
     .share-preview {
@@ -520,23 +898,70 @@
 
 @media (max-width: 480px) {
     .create-post-modal {
-        width: 100%;
-        height: 100vh;
-        border-radius: 0;
-        max-height: 100vh;
+        width: 90vw;
+        max-width: 400px;
+        margin: 10px auto;
+        max-height: 80vh;
+        border-radius: 12px;
     }
     
     .create-post-header {
-        padding: 16px 20px;
+        padding: 12px 16px;
+    }
+    
+    .create-post-header h2 {
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    
+    .create-post-close-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
     }
     
     .create-post-content {
-        padding: 30px 20px;
-        min-height: calc(100vh - 80px);
+        padding: 20px 16px;
+        min-height: 300px;
     }
     
     .create-post-dropzone {
-        padding: 30px 15px;
+        padding: 30px 16px;
+        max-width: 280px;
+        margin: 0 auto;
+        border-radius: 16px;
+    }
+    
+    .create-post-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+    }
+    
+    .icon-square {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .icon-square-front {
+        top: 15px;
+        left: 15px;
+    }
+    
+    .create-post-text {
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.4;
+    }
+    
+    .create-post-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+        width: 80%;
+        max-width: 180px;
+        height: 36px;
+        margin-top: 15px;
+        border-radius: 8px;
     }
     
     .share-preview {
@@ -547,6 +972,134 @@
     .preview-file {
         max-width: 250px;
         max-height: 250px;
+    }
+}
+
+/* Very small screens (≤400px) */
+@media (max-width: 400px) {
+    .create-post-modal {
+        width: 95vw;
+        max-width: 360px;
+        margin: 5px auto;
+        max-height: 90vh;
+    }
+    
+    .create-post-header {
+        padding: 10px 12px;
+    }
+    
+    .create-post-header h2 {
+        font-size: 14px;
+    }
+    
+    .create-post-close-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+    
+    .create-post-content {
+        padding: 14px 12px;
+        min-height: 260px;
+    }
+    
+    .create-post-dropzone {
+        padding: 20px 10px;
+        max-width: 240px;
+    }
+    
+    .create-post-icon {
+        width: 45px;
+        height: 45px;
+        margin-bottom: 14px;
+    }
+    
+    .icon-square {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .icon-square-front {
+        top: 8px;
+        left: 8px;
+    }
+    
+    .create-post-text {
+        font-size: 11px;
+        margin-bottom: 14px;
+    }
+    
+    .create-post-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        width: 90%;
+        max-width: 140px;
+        height: 30px;
+        margin-top: 10px;
+    }
+}
+
+/* Extra small screens (iPhone SE) */
+@media (max-width: 375px) {
+    .create-post-modal {
+        width: 95vw;
+        max-width: 350px;
+        margin: 5px auto;
+        max-height: 85vh;
+    }
+    
+    .create-post-header {
+        padding: 10px 14px;
+    }
+    
+    .create-post-header h2 {
+        font-size: 15px;
+    }
+    
+    .create-post-close-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
+    }
+    
+    .create-post-content {
+        padding: 16px 14px;
+        min-height: 280px;
+    }
+    
+    .create-post-dropzone {
+        padding: 24px 12px;
+        max-width: 260px;
+    }
+    
+    .create-post-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 16px;
+    }
+    
+    .icon-square {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .icon-square-front {
+        top: 10px;
+        left: 10px;
+    }
+    
+    .create-post-text {
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .create-post-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+        width: 85%;
+        max-width: 160px;
+        height: 32px;
+        margin-top: 12px;
     }
 }
 

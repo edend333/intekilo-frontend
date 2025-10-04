@@ -89,8 +89,8 @@ const EmojiPicker = ({
         id="emoji-picker"
       >
         <div className="emoji-picker-fallback-content">
-          <h3>בורר אמוג'י</h3>
-          <p>בורר האמוג'י לא זמין כרגע</p>
+          <h3>בחר אמוג'י</h3>
+          {/* <p>בורר האמוג'י לא זמין כרגע</p> */}
           <div className="emoji-fallback-buttons">
             <button onClick={() => handleEmojiSelect('😀')}>😀</button>
             <button onClick={() => handleEmojiSelect('😂')}>😂</button>

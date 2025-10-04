@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router'
+import { useSelector } from 'react-redux'
 import { userService } from './services/user'
 import { postService } from './services/post/post.service'
 import { HomePage } from './pages/HomePage'
@@ -11,6 +12,7 @@ import { UserMsg } from './cmps/UserMsg.jsx'
 import { LoginSignup } from './pages/LoginSignup.jsx'
 import { Login } from './pages/Login.jsx'
 import { Signup } from './pages/Signup.jsx'
+import { AuthWelcome } from './pages/AuthWelcome.jsx'
 import { Sidebar } from './cmps/Sidebar.jsx'
 import { ModalPost } from './pages/ModalPost.jsx'
 import { Profile } from './pages/Profile.jsx'
@@ -29,7 +31,20 @@ export function RootCmp() {
 
                 <main>
                     <Routes>
-                        <Route path="/" element={<HomePage />}>
+                        {/* Public routes */}
+                        <Route path="/auth" element={<AuthWelcome />} />
+                        <Route path="/login" element={<LoginSignup />}>
+                            <Route index element={<Login />} />
+                            <Route path="signup" element={<Signup />} />
+                        </Route>
+                        <Route path="/signup" element={<Signup />} />
+                        
+                        {/* Protected routes */}
+                        <Route path="/" element={
+                            <AuthGuard>
+                                <HomePage />
+                            </AuthGuard>
+                        }>
                             <Route path="post/:postId" element={<ModalPost />} />
                         </Route>
 
@@ -49,17 +64,16 @@ export function RootCmp() {
                                 <Discover />
                             </AuthGuard>
                         } />
-                        <Route path="chat" element={<ChatApp />} />
+                        <Route path="chat" element={
+                            <AuthGuard>
+                                <ChatApp />
+                            </AuthGuard>
+                        } />
                         <Route path="admin" element={
                             <AuthGuard checkAdmin={true}>
                                 <AdminIndex />
                             </AuthGuard>
                         } />
-                        <Route path="login" element={<LoginSignup />}>
-                            <Route index element={<Login />} />
-                            <Route path="signup" element={<Signup />} />
-                        </Route>
-                        <Route path="signup" element={<Signup />} />
                     </Routes>
                 </main>
                 
@@ -73,17 +87,38 @@ export function RootCmp() {
 
 
 function AuthGuard({ children, checkAdmin = false }) {
-    const user = userService.getLoggedinUser()
-    const isNotAllowed = !user || (checkAdmin && !user.isAdmin)
+    // Get user from Redux state first, but also check localStorage as fallback
+    const user = useSelector(state => state.userModule?.user)
+    
+    // If no user in Redux, try to get from localStorage
+    const fallbackUser = user || (() => {
+        try {
+            const storedUser = localStorage.getItem('loggedinUser')
+            return storedUser ? JSON.parse(storedUser) : null
+        } catch (error) {
+            console.error('Error parsing stored user:', error)
+            return null
+        }
+    })()
+    
+    const isNotAllowed = !fallbackUser || (checkAdmin && !fallbackUser.isAdmin)
     if (isNotAllowed) {
-        return <Navigate to="/login" />
+        // Show toast message for better UX
+        if (!fallbackUser) {
+            // Only show toast if user is not authenticated (not admin check)
+            setTimeout(() => {
+                // You can implement a toast system here
+                console.log('יש להתחבר כדי להמשיך')
+            }, 100)
+        }
+        return <Navigate to="/auth" replace />
     }
     return children
 }
 
 function OnboardingWrapper() {
     const [showOnboarding, setShowOnboarding] = useState(false)
-    const user = userService.getLoggedinUser()
+    const user = useSelector(state => state.userModule?.user)
 
     useEffect(() => {
         if (user) {

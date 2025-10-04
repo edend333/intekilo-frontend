@@ -230,6 +230,7 @@
     resize: vertical;
     transition: border-color 0.2s ease;
     font-family: inherit;
+    white-space: pre-wrap; /* Preserve spaces and line breaks */
 
     &:focus {
       outline: none;

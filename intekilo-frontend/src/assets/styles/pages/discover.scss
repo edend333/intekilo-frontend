@@ -59,11 +59,16 @@
   align-items: center;
   text-align: center;
   transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   
   &:hover {
     border-color: #0095f6;
     box-shadow: 0 4px 12px rgba(0, 149, 246, 0.1);
     transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
   }
 }
 
@@ -127,6 +132,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
   
   &.follow {
     background: #0095f6;

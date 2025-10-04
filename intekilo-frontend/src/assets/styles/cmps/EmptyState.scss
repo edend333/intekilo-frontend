@@ -142,6 +142,12 @@
     padding: 20px 16px;
   }
   
+  .empty-state-content {
+    width: 90%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  
   .empty-state-icon {
     font-size: 48px;
     margin-bottom: 16px;
@@ -157,9 +163,16 @@
   }
   
   .empty-state-btn {
-    min-width: 160px;
-    padding: 10px 20px;
+    width: 100%;
+    max-width: 250px;
+    padding: 10px;
     font-size: 14px;
+    min-width: auto;
+  }
+  
+  .empty-state-actions {
+    width: 100%;
+    align-items: center;
   }
 }
 

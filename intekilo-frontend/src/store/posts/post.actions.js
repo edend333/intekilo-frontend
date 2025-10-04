@@ -132,35 +132,54 @@ export function addPostLike(postId) {
       // Get current user and post for optimistic update
       const { userModule, postModule } = getState()
       const currentUser = userModule.user
-      const currentPost = postModule.posts.find(p => p._id === postId)
       
-      if (!currentUser || !currentPost) {
-        throw new Error('User or post not found')
+      if (!currentUser) {
+        throw new Error('User not found')
       }
       
-      // Optimistic update - add like immediately
-      const optimisticLike = {
-        _id: currentUser._id,
-        fullname: currentUser.fullname,
-        imgUrl: currentUser.imgUrl,
-        username: currentUser.username
+      // Find post in store - try both exact match and fallback to any post
+      let currentPost = postModule.posts.find(p => p._id === postId)
+      
+      // If post not found in store, we'll still proceed with the API call
+      // The server will handle the validation
+      if (!currentPost) {
+        console.log('⚠️ Post not found in store, proceeding with API call')
       }
       
-      dispatch({ type: ADD_POST_LIKE, postId, like: optimisticLike })
+      // Optimistic update - add like immediately (only if post exists in store)
+      if (currentPost) {
+        const optimisticLike = {
+          _id: currentUser._id,
+          fullname: currentUser.fullname,
+          imgUrl: currentUser.imgUrl,
+          username: currentUser.username
+        }
+        
+        dispatch({ type: ADD_POST_LIKE, postId, like: optimisticLike })
+      }
       
       // Make API call
       const like = await postService.addLike(postId)
       console.log('✅ addPostLike action - received:', like)
       
-      // The optimistic update should be correct, but we can sync with server response if needed
+      // If post wasn't in store, dispatch a custom event for components to update
+      if (!currentPost) {
+        console.log('📡 Dispatching postLikeAdded event for external components')
+        window.dispatchEvent(new CustomEvent('postLikeAdded', {
+          detail: { postId, like, action: 'add' }
+        }))
+      }
+      
       return like
     } catch (err) {
       console.error('Cannot add post like:', err)
       
-      // Revert optimistic update on error
-      const { userModule } = getState()
+      // Revert optimistic update on error (only if we had a post in store)
+      const { userModule, postModule } = getState()
       const currentUser = userModule.user
-      if (currentUser) {
+      const currentPost = postModule.posts.find(p => p._id === postId)
+      
+      if (currentUser && currentPost) {
         dispatch({ type: REMOVE_POST_LIKE, postId, userId: currentUser._id })
       }
       
@@ -176,28 +195,43 @@ export function removePostLike(postId) {
       console.log('🚀 removePostLike action - postId:', postId)
       
       // Get current user for optimistic update
-      const { userModule } = getState()
+      const { userModule, postModule } = getState()
       const currentUser = userModule.user
       
       if (!currentUser) {
         throw new Error('User not found')
       }
       
-      // Optimistic update - remove like immediately
-      dispatch({ type: REMOVE_POST_LIKE, postId, userId: currentUser._id })
+      // Find post in store
+      const currentPost = postModule.posts.find(p => p._id === postId)
+      
+      // Optimistic update - remove like immediately (only if post exists in store)
+      if (currentPost) {
+        dispatch({ type: REMOVE_POST_LIKE, postId, userId: currentUser._id })
+      }
       
       // Make API call
       const result = await postService.removeLike(postId)
       console.log('✅ removePostLike action - received:', result)
       
+      // If post wasn't in store, dispatch a custom event for components to update
+      if (!currentPost) {
+        console.log('📡 Dispatching postLikeRemoved event for external components')
+        window.dispatchEvent(new CustomEvent('postLikeRemoved', {
+          detail: { postId, userId: currentUser._id, action: 'remove' }
+        }))
+      }
+      
       return result
     } catch (err) {
       console.error('Cannot remove post like:', err)
       
-      // Revert optimistic update on error
-      const { userModule } = getState()
+      // Revert optimistic update on error (only if we had a post in store)
+      const { userModule, postModule } = getState()
       const currentUser = userModule.user
-      if (currentUser) {
+      const currentPost = postModule.posts.find(p => p._id === postId)
+      
+      if (currentUser && currentPost) {
         const optimisticLike = {
           _id: currentUser._id,
           fullname: currentUser.fullname,

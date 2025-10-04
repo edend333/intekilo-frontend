@@ -75,12 +75,21 @@ export function logout() {
     return async (dispatch) => {
         try {
             await userService.logout()
+            // Clear user from Redux store
             dispatch({
                 type: SET_USER,
                 user: null
             })
+            // Disconnect socket
             socketService.logout()
+            console.log('✅ Logout completed - user state cleared')
         } catch (err) {
+            console.error('❌ Logout error:', err)
+            // Even if logout fails, clear Redux state
+            dispatch({
+                type: SET_USER,
+                user: null
+            })
             throw err
         }
     }
@@ -111,5 +120,15 @@ export async function loadUser(userId) {
         store.dispatch({ type: SET_WATCHED_USER, user })
     } catch (err) {
         showErrorMsg('Cannot load user')
+    }
+}
+
+export async function loadFollowingStats(userId) {
+    try {
+        const stats = await userService.getFollowingStats(userId)
+        return stats
+    } catch (err) {
+        console.error('Failed to load following stats:', err)
+        throw err
     }
 }

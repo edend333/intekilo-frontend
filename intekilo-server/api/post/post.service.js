@@ -10,6 +10,7 @@ const PAGE_SIZE = 3
 export const postService = {
     remove,
     query,
+    queryFeedPosts,
     getById,
     add,
     update,
@@ -76,6 +77,112 @@ async function query(filterBy = { txt: '' }) {
     } catch (err) {
         console.error('❌ Error in postService.query:', err)
         logger.error('cannot find posts', err)
+        throw err
+    }
+}
+
+// New function for feed posts based on following users
+async function queryFeedPosts(filterBy = {}) {
+    try {
+        console.log('🔍 postService.queryFeedPosts called with:', filterBy)
+        
+        const { viewerId, cursor, limit = 10 } = filterBy
+        
+        if (!viewerId) {
+            throw new Error('viewerId is required')
+        }
+
+        const collection = await dbService.getCollection('posts')
+        const usersCollection = await dbService.getCollection('users')
+        
+        // Get user's following list
+        const userCriteria = viewerId.match(/^[0-9a-fA-F]{24}$/) 
+            ? { _id: new ObjectId(viewerId) }
+            : { _id: viewerId }
+        
+        console.log('👤 Getting following for viewer:', viewerId)
+        
+        const user = await usersCollection.findOne(userCriteria)
+        if (!user) {
+            throw new Error('User not found')
+        }
+
+        const followingIds = user.following || []
+        console.log('👥 User following IDs:', followingIds)
+        console.log('👥 User following IDs type:', typeof followingIds[0])
+        console.log('👥 User following IDs length:', followingIds.length)
+        
+        // If user has no following, return empty array
+        if (followingIds.length === 0) {
+            console.log('📭 User has no following, returning empty feed')
+            return { posts: [], hasMore: false, totalCount: 0 }
+        }
+
+        // Build criteria for posts from following users
+        // Convert all following IDs to strings (posts are stored with string owner._id)
+        const stringFollowingIds = followingIds.map(id => {
+            // If it's an ObjectId, convert to string
+            if (id && typeof id === 'object' && id.toString) {
+                return id.toString()
+            }
+            // If it's already a string, return as is
+            return String(id)
+        })
+        
+        console.log('🔧 Converted following IDs to strings:', stringFollowingIds)
+        
+        const criteria = {
+            'owner._id': { $in: stringFollowingIds }
+        }
+        
+        console.log('📋 Feed criteria before cursor:', criteria)
+        
+        // Add cursor-based pagination if cursor is provided
+        if (cursor) {
+            criteria._id = { $lt: new ObjectId(cursor) }
+        }
+        
+        const sort = { _id: -1 } // Sort by newest first
+        
+        console.log('📋 Feed criteria:', criteria)
+        console.log('📋 Feed sort:', sort)
+        console.log('📋 Feed limit:', limit)
+        
+        // First, let's check if there are any posts from following users
+        const totalPostsFromFollowing = await collection.countDocuments(criteria)
+        console.log('📊 Total posts from following users:', totalPostsFromFollowing)
+        
+        // Let's also check if there are any posts at all from these specific users
+        for (const followingId of stringFollowingIds) {
+            const stringCount = await collection.countDocuments({ 'owner._id': followingId })
+            console.log(`📊 Posts count for user ${followingId}: ${stringCount}`)
+        }
+        
+        const posts = await collection.find(criteria).sort(sort).limit(limit + 1).toArray()
+        
+        // Check if there are more posts
+        const hasMore = posts.length > limit
+        if (hasMore) {
+            posts.pop() // Remove the extra post
+        }
+        
+        console.log(`📊 Feed query returned ${posts.length} posts, hasMore: ${hasMore}`)
+        if (posts.length > 0) {
+            console.log('📝 First post _id:', posts[0]._id)
+            console.log('📝 First post owner._id:', posts[0].owner?._id)
+            console.log('📝 All posts owner IDs:', posts.map(p => p.owner?._id))
+            console.log('📝 Expected following IDs:', followingIds)
+        }
+        
+        return {
+            posts,
+            hasMore,
+            nextCursor: hasMore && posts.length > 0 ? posts[posts.length - 1]._id : null,
+            totalCount: posts.length
+        }
+    } catch (err) {
+        console.error('❌ Error in postService.queryFeedPosts:', err)
+        logger.error('cannot find feed posts', err)
         throw err
     }
 }

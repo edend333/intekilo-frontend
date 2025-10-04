@@ -1,4 +1,5 @@
 import { authService } from './auth.service.js'
+import { userService } from '../user/user.service.js'
 import { logger } from '../../services/logger.service.js'
 import { asyncLocalStorage } from '../../services/als.service.js'
 
@@ -61,11 +62,28 @@ export async function validateToken(req, res) {
     try {
         const { loggedinUser } = req
         if (loggedinUser) {
-            res.json({ valid: true, user: loggedinUser })
+            // 🔥 טעינה עדכנית מה-דטבייס במקום רק מ-JWT
+            console.log('🔄 validateToken: Loading fresh data from DB for user:', loggedinUser._id)
+            const updatedUser = await userService.getById(loggedinUser._id)
+            console.log('📊 Fresh user data following:', updatedUser?.following)
+            
+            if (updatedUser) {
+                // מחק password ולא שרוצים להחזיר
+                delete updatedUser.password
+                // המרה ObjectId ל-string אם צריך
+                updatedUser._id = updatedUser._id.toString()
+                
+                console.log('✅ validateToken: Returning fresh user data with following count:', updatedUser.following?.length)
+                res.json({ valid: true, user: updatedUser })
+            } else {
+                console.log('❌ validateToken: User not found in DB:', loggedinUser._id)
+                res.status(401).json({ valid: false, message: 'User not found' })
+            }
         } else {
             res.status(401).json({ valid: false, message: 'Invalid or expired token' })
         }
     } catch (err) {
+        console.error('❌ validateToken error:', err)
         res.status(401).json({ valid: false, message: 'Token validation failed' })
     }
 }
