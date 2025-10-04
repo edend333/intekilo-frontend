@@ -5555,3 +5555,77 @@
 4.10.2025, 20:07:46 - INFO - /api/posts | GET |  | {}
 4.10.2025, 20:07:47 - INFO - API GET /comments
 4.10.2025, 20:07:47 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:33:36 - INFO - Server is running on port 3030
+4.10.2025, 20:34:03 - INFO - Server is running on port 3030
+4.10.2025, 20:35:46 - INFO - Server is running on: http://localhost:3030/
+4.10.2025, 20:35:52 - INFO - API GET /auth/validate
+4.10.2025, 20:35:52 - INFO - API GET /posts/feed?limit=3
+4.10.2025, 20:35:52 - INFO - API GET /users/68d798431b6c7c620f8e4730/following-stats
+4.10.2025, 20:35:52 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:35:53 - INFO - API GET /users/me/suggested?limit=5
+4.10.2025, 20:35:53 - INFO - API GET /posts?ownerId=68d798431b6c7c620f8e4730
+4.10.2025, 20:35:53 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:35:53 - INFO - API GET /comments
+4.10.2025, 20:35:53 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:35:53 - INFO - API GET /posts/feed?cursor=68d84d4931cbd379426a1a6c&limit=3
+4.10.2025, 20:35:53 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:35:54 - INFO - API GET /comments
+4.10.2025, 20:35:54 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:35:56 - INFO - API GET /users/68d798431b6c7c620f8e4730/profile
+4.10.2025, 20:35:56 - INFO - /api/users | GET |  | {"id":"68d798431b6c7c620f8e4730"}
+4.10.2025, 20:35:57 - INFO - API GET /posts?ownerId=68d798431b6c7c620f8e4730
+4.10.2025, 20:35:57 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:35:58 - INFO - API GET /posts/feed?limit=3
+4.10.2025, 20:35:58 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:35:58 - INFO - API GET /users/68d798431b6c7c620f8e4730/following-stats
+4.10.2025, 20:35:58 - INFO - API GET /users/me/suggested?limit=5
+4.10.2025, 20:35:59 - INFO - API GET /comments
+4.10.2025, 20:35:59 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:39:02 - INFO - Server is running on: http://0.0.0.0:3030/
+4.10.2025, 20:39:50 - INFO - /api/users | GET |  | {"id":"68d7acaa1b6c7c620f8e4731"}
+4.10.2025, 20:39:50 - INFO - API GET /users/68d7acaa1b6c7c620f8e4731/profile
+4.10.2025, 20:39:51 - INFO - API GET /posts?ownerId=68d7acaa1b6c7c620f8e4731
+4.10.2025, 20:39:51 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:39:51 - INFO - API GET /users/68d7acaa1b6c7c620f8e4731/is-following
+4.10.2025, 20:39:52 - INFO - API GET /users/68d7acaa1b6c7c620f8e4731/is-following
+4.10.2025, 20:39:52 - INFO - API GET /users/68d7acaa1b6c7c620f8e4731/is-following
+4.10.2025, 20:39:52 - INFO - API GET /users/68d798431b6c7c620f8e4730/profile
+4.10.2025, 20:39:52 - INFO - /api/users | GET |  | {"id":"68d798431b6c7c620f8e4730"}
+4.10.2025, 20:39:52 - INFO - API GET /posts?ownerId=68d798431b6c7c620f8e4730
+4.10.2025, 20:39:52 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:39:54 - INFO - API GET /posts/feed?limit=3
+4.10.2025, 20:39:54 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:39:54 - INFO - API GET /users/68d798431b6c7c620f8e4730/following-stats
+4.10.2025, 20:39:54 - INFO - API GET /users/me/suggested?limit=5
+4.10.2025, 20:39:54 - INFO - API GET /comments
+4.10.2025, 20:39:54 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:40:05 - ERROR - Failed to get Mongo collection | TypeError: Cannot read properties of null (reading 'collection')
+4.10.2025, 20:40:05 - ERROR - cannot migrate old comments | TypeError: Cannot read properties of null (reading 'collection')
+4.10.2025, 20:40:05 - INFO - Server is running on: http://0.0.0.0:3030/
+4.10.2025, 20:40:05 - ERROR - Comment migration failed: | TypeError: Cannot read properties of null (reading 'collection')
+4.10.2025, 20:40:39 - INFO - Server is running on: http://0.0.0.0:3030/
+4.10.2025, 20:40:45 - INFO - API GET /users/68d798431b6c7c620f8e4730/profile
+4.10.2025, 20:40:45 - INFO - /api/users | GET |  | {"id":"68d798431b6c7c620f8e4730"}
+4.10.2025, 20:40:46 - INFO - API GET /posts?ownerId=68d798431b6c7c620f8e4730
+4.10.2025, 20:40:46 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:40:47 - INFO - API GET /comments?postId=68d8002d4931751c650ef3ef
+4.10.2025, 20:40:47 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:40:50 - INFO - API GET /comments?postId=Gcjsoi
+4.10.2025, 20:40:50 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:40:51 - INFO - API POST /posts/Gcjsoi/like
+4.10.2025, 20:40:53 - INFO - API POST /posts/Gcjsoi/like
+4.10.2025, 20:40:55 - INFO - API GET /posts/feed?limit=3
+4.10.2025, 20:40:55 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:40:55 - INFO - API GET /users/68d798431b6c7c620f8e4730/following-stats
+4.10.2025, 20:40:56 - INFO - API GET /users/me/suggested?limit=5
+4.10.2025, 20:40:56 - INFO - API GET /comments
+4.10.2025, 20:40:56 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:40:57 - INFO - API POST /posts/68e14fc102d49bad46f3c01f/like
+4.10.2025, 20:40:57 - INFO - API GET /comments
+4.10.2025, 20:40:57 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:40:59 - INFO - API GET /comments?postId=68e14fc102d49bad46f3c01f
+4.10.2025, 20:40:59 - INFO - /api/comments | GET |  | {}
+4.10.2025, 20:41:01 - INFO - API GET /posts/feed?cursor=68d84d4931cbd379426a1a6c&limit=3
+4.10.2025, 20:41:01 - INFO - /api/posts | GET |  | {}
+4.10.2025, 20:41:02 - INFO - API GET /comments
+4.10.2025, 20:41:02 - INFO - /api/comments | GET |  | {}

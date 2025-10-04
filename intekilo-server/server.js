@@ -24,19 +24,23 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(setupAsyncLocalStorage)
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.CORS_ORIGIN?.split(',') || ['https://your-frontend-domain.com']
+    : [
+        'http://127.0.0.1:8080',
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+        'http://localhost:3030',
+      ],
+  credentials: true,
+}
+app.use(cors(corsOptions))
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve('public')))
-} else {
-  app.use(cors({
-    origin: [
-      'http://127.0.0.1:8080',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173',
-      'http://localhost:5173',
-      'http://localhost:3030',
-    ],
-    credentials: true,
-  }))
 }
 
 // Add logging for all API requests
@@ -44,6 +48,11 @@ app.use('/api', (req, res, next) => {
     console.log('🌐 API Request:', req.method, req.url)
     logger.info(`API ${req.method} ${req.url}`)
     next()
+})
+
+// Health check endpoint
+app.get('/api/ping', (req, res) => {
+  res.json({ ok: true })
 })
 
 // API Routes
@@ -62,7 +71,8 @@ app.use('/api/stories', storyRoutes)
 // })
 
 const port = process.env.PORT || 3030
-console.log('port conection', port );
+const host = '0.0.0.0'
+console.log('Server starting on port:', port)
 
 
 const startServer = async () => {
@@ -78,8 +88,9 @@ const startServer = async () => {
       // Don't exit - server can still run without migration
     }
     
-    server.listen(port, () => {
-      logger.info('Server is running on: ' + `http://localhost:${port}/`)
+    server.listen(port, host, () => {
+      logger.info(`Server is running on: http://${host}:${port}/`)
+      console.log(`✅ Server listening on port ${port}`)
     })
   } catch (error) {
     logger.error('Failed to start server:', error)
