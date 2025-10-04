@@ -5629,3 +5629,19 @@
 4.10.2025, 20:41:01 - INFO - /api/posts | GET |  | {}
 4.10.2025, 20:41:02 - INFO - API GET /comments
 4.10.2025, 20:41:02 - INFO - /api/comments | GET |  | {}
+4.10.2025, 21:07:10 - INFO - API GET /users/68d798431b6c7c620f8e4730/profile
+4.10.2025, 21:07:10 - INFO - /api/users | GET |  | {"id":"68d798431b6c7c620f8e4730"}
+4.10.2025, 21:07:10 - INFO - API GET /posts?ownerId=68d798431b6c7c620f8e4730
+4.10.2025, 21:07:10 - INFO - /api/posts | GET |  | {}
+4.10.2025, 21:07:18 - INFO - API POST /auth/login
+4.10.2025, 21:07:18 - INFO - /api/posts | GET |  | {}
+4.10.2025, 21:07:18 - INFO - API GET /posts?ownerId=68e15395ab41e580817513bf
+4.10.2025, 21:07:18 - INFO - API GET /posts/feed?limit=3
+4.10.2025, 21:07:18 - INFO - /api/posts | GET |  | {}
+4.10.2025, 21:07:19 - INFO - API GET /users/me/suggested?limit=5
+4.10.2025, 21:07:19 - INFO - API GET /users/68e15395ab41e580817513bf/following-stats
+4.10.2025, 21:07:19 - INFO - API GET /comments
+4.10.2025, 21:07:19 - INFO - /api/comments | GET |  | {}
+4.10.2025, 21:07:23 - INFO - API POST /posts/Gcjsoi/like
+4.10.2025, 21:07:23 - INFO - API GET /comments
+4.10.2025, 21:07:23 - INFO - /api/comments | GET |  | {}
