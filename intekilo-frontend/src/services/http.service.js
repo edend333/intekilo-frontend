@@ -28,23 +28,15 @@ async function ajax(endpoint, method = 'GET', data = null) {
     try {
         const url = `${BASE_URL}/${endpoint}`
         
-        // Get token from localStorage or cookie
-        const token = localStorage.getItem('loginToken') || 
-                     sessionStorage.getItem('loginToken') ||
-                     document.cookie.split(';').find(c => c.trim().startsWith('loginToken='))?.split('=')[1]
-        
         const options = {
             method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include', // Include cookies for authentication
+            credentials: 'include', // Include HttpOnly cookies
         }
 
-        // Add Authorization header if token exists
-        if (token) {
-            options.headers['Authorization'] = `Bearer ${token}`
-        }
+        // No Authorization header needed - cookies handle authentication
 
         if (data) {
             options.body = JSON.stringify(data)

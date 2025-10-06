@@ -7,12 +7,15 @@ export const SET_USER = 'SET_USER'
 export const SET_WATCHED_USER = 'SET_WATCHED_USER'
 export const REMOVE_USER = 'REMOVE_USER'
 export const SET_USERS = 'SET_USERS'
+export const SET_HYDRATION_STATE = 'SET_HYDRATION_STATE' // New
 
 const initialState = {
     count: 10,
     user: null, // Don't load from sessionStorage initially, wait for token validation
     users: [],
-    watchedUser : null
+    watchedUser : null,
+    isHydrated: false, // New: tracks if auth state has been loaded
+    isAuthenticated: false // New: tracks authentication status
 }
 
 export function userReducer(state = initialState, action) {
@@ -28,7 +31,11 @@ export function userReducer(state = initialState, action) {
             newState = { ...state, count: state.count + action.diff }
             break
         case SET_USER:
-            newState = { ...state, user: action.user }
+            newState = { 
+                ...state, 
+                user: action.user,
+                isAuthenticated: !!action.user // Update auth status
+            }
             break
         case SET_WATCHED_USER:
             newState = { ...state, watchedUser: action.user }
@@ -41,6 +48,12 @@ export function userReducer(state = initialState, action) {
             break
         case SET_USERS:
             newState = { ...state, users: action.users }
+            break
+        case SET_HYDRATION_STATE:
+            newState = { 
+                ...state, 
+                isHydrated: action.isHydrated 
+            }
             break
         default:
     }

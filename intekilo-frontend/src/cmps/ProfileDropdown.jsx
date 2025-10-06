@@ -29,11 +29,11 @@ export function ProfileDropdown({ isOwnProfile = false }) {
     const handleLogout = async () => {
         try {
             await dispatch(logout())
-            navigate('/login')
+            navigate('/auth')
         } catch (error) {
             console.error('Logout failed:', error)
             // Still navigate even if logout fails
-            navigate('/login')
+            navigate('/auth')
         }
     }
 

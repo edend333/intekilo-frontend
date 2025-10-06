@@ -18,7 +18,7 @@ import { ModalPost } from './pages/ModalPost.jsx'
 import { Profile } from './pages/Profile.jsx'
 import { CreatePost } from './pages/CreatePost.jsx'
 import { Discover } from './pages/Discover.jsx'
-import { AuthInitializer } from './cmps/AuthInitializer.jsx'
+import AuthInitializer from './cmps/AuthInitializer.jsx'
 import { OnboardingModal } from './cmps/OnboardingModal.jsx'
 
 
@@ -87,29 +87,23 @@ export function RootCmp() {
 
 
 function AuthGuard({ children, checkAdmin = false }) {
-    // Get user from Redux state first, but also check localStorage as fallback
     const user = useSelector(state => state.userModule?.user)
+    const isHydrated = useSelector(state => state.userModule?.isHydrated)
+    const isAuthenticated = useSelector(state => state.userModule?.isAuthenticated)
     
-    // If no user in Redux, try to get from localStorage
-    const fallbackUser = user || (() => {
-        try {
-            const storedUser = localStorage.getItem('loggedinUser')
-            return storedUser ? JSON.parse(storedUser) : null
-        } catch (error) {
-            console.error('Error parsing stored user:', error)
-            return null
-        }
-    })()
+    // Don't redirect until hydration is complete
+    if (!isHydrated) {
+        return (
+            <div className="auth-loading">
+                <div className="auth-loading-spinner"></div>
+            </div>
+        )
+    }
     
-    const isNotAllowed = !fallbackUser || (checkAdmin && !fallbackUser.isAdmin)
+    const isNotAllowed = !isAuthenticated || (checkAdmin && !user?.isAdmin)
     if (isNotAllowed) {
-        // Show toast message for better UX
-        if (!fallbackUser) {
-            // Only show toast if user is not authenticated (not admin check)
-            setTimeout(() => {
-                // You can implement a toast system here
-                console.log('יש להתחבר כדי להמשיך')
-            }, 100)
+        if (!isAuthenticated) {
+            console.log('יש להתחבר כדי להמשיך')
         }
         return <Navigate to="/auth" replace />
     }

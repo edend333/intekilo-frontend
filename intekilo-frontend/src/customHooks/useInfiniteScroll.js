@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import { postService } from '../services/post/post.service'
 
 export function useInfiniteScroll() {
+  // Get authentication state from Redux
+  const isAuthenticated = useSelector(state => state.userModule?.isAuthenticated)
+  const isHydrated = useSelector(state => state.userModule?.isHydrated)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -50,8 +54,17 @@ export function useInfiniteScroll() {
     }
   }, [])
 
-  // Load initial posts
+  // Load initial posts - only if authenticated
   const loadInitialPosts = useCallback(async () => {
+    // Don't load posts if not authenticated
+    if (!isAuthenticated) {
+      console.log('🚫 Not authenticated, skipping post loading')
+      setLoading(false)
+      setPosts([])
+      setIsEmpty(true)
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
@@ -79,11 +92,11 @@ export function useInfiniteScroll() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [isAuthenticated])
 
-  // Load more posts
+  // Load more posts - only if authenticated
   const loadMorePosts = useCallback(async () => {
-    if (loadingMore || !hasMore || !nextCursor) return
+    if (loadingMore || !hasMore || !nextCursor || !isAuthenticated) return
     
     try {
       setLoadingMore(true)
@@ -107,7 +120,7 @@ export function useInfiniteScroll() {
     } finally {
       setLoadingMore(false)
     }
-  }, [loadingMore, hasMore, nextCursor])
+  }, [loadingMore, hasMore, nextCursor, isAuthenticated])
 
   // Intersection observer callback
   const lastElementCallback = useCallback((node) => {
@@ -134,10 +147,12 @@ export function useInfiniteScroll() {
     }
   }, [hasMore, loadingMore, loadMorePosts])
 
-  // Initialize posts on mount
+  // Initialize posts on mount - only after hydration and if authenticated
   useEffect(() => {
-    loadInitialPosts()
-  }, [loadInitialPosts])
+    if (isHydrated) {
+      loadInitialPosts()
+    }
+  }, [loadInitialPosts, isHydrated])
 
   // Cleanup observer on unmount
   useEffect(() => {

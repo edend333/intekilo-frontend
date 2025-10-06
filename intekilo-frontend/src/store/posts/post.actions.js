@@ -9,8 +9,15 @@ export const REMOVE_POST_LIKE = 'REMOVE_POST_LIKE'
 
 // Load all posts
 export function loadPosts() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      // Check if user is authenticated before loading posts
+      const isAuthenticated = getState().userModule?.isAuthenticated
+      if (!isAuthenticated) {
+        console.log('🚫 Not authenticated, skipping post loading')
+        return []
+      }
+
       const posts = await postService.query()
       dispatch({ type: SET_POSTS, posts })
       return posts
@@ -46,6 +53,13 @@ export function loadPostById(postId) {
 export function addPost(post) {
   return async (dispatch, getState) => {
     try {
+      // Check if user is authenticated before adding post
+      const isAuthenticated = getState().userModule?.isAuthenticated
+      if (!isAuthenticated) {
+        console.log('🚫 Not authenticated, cannot add post')
+        throw new Error('Authentication required to add post')
+      }
+
       const savedPost = await postService.add(post)
       dispatch({ type: ADD_POST, post: savedPost })
       

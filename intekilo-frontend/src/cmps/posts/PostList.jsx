@@ -14,7 +14,11 @@ export function PostList() {
   const dispatch = useDispatch()
   const [showOnboardingBanner, setShowOnboardingBanner] = useState(false)
   const [followingStats, setFollowingStats] = useState(null)
+  
+  // Get authentication state from Redux
   const loggedinUser = useSelector(store => store.userModule.user)
+  const isAuthenticated = useSelector(store => store.userModule.isAuthenticated)
+  const isHydrated = useSelector(store => store.userModule.isHydrated)
   
   const {
     posts,
@@ -89,6 +93,20 @@ export function PostList() {
         })
     }
   }, [loggedinUser])
+
+  // Guard: Don't render feed content until hydrated
+  if (!isHydrated) {
+    return (
+      <div className="auth-loading">
+        <div className="auth-loading-spinner"></div>
+      </div>
+    )
+  }
+
+  // Guard: Don't render feed content if not authenticated
+  if (!isAuthenticated) {
+    return null // This should not happen due to AuthGuard, but safety check
+  }
 
   // Show loading skeleton for initial load
   if (loading) {

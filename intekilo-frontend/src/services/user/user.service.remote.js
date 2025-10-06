@@ -45,8 +45,7 @@ export const userService = {
 	getSavedPosts,
     getLoggedinUser,
     validateToken,
-    getLoginToken,
-    saveLoginToken,
+    getCurrentUser, // New: for hydration
     followUser,
     unfollowUser,
     getFollowers,
@@ -152,10 +151,7 @@ async function removeFollower(followerId) {
 async function login(userCred) {
 	const response = await httpService.post('auth/login', userCred)
 	if (response.user) {
-		// Save the token from the response
-		if (response.loginToken) {
-			saveLoginToken(response.loginToken)
-		}
+		// No need to save token - it's in HttpOnly cookie
 		// Set authInitialized flag to prevent auto-logout issues
 		localStorage.setItem('authInitialized', 'true')
 		sessionStorage.setItem('authInitialized', 'true')
@@ -168,10 +164,7 @@ async function signup(userCred) {
 
 	const response = await httpService.post('auth/signup', userCred)
 	if (response.user) {
-		// Save the token from the response
-		if (response.loginToken) {
-			saveLoginToken(response.loginToken)
-		}
+		// No need to save token - it's in HttpOnly cookie
 		// Set authInitialized flag to prevent auto-logout issues
 		localStorage.setItem('authInitialized', 'true')
 		sessionStorage.setItem('authInitialized', 'true')
@@ -181,37 +174,24 @@ async function signup(userCred) {
 
 async function logout() {
 	try {
+		// Call server logout to clear HttpOnly cookie
 		await httpService.post('auth/logout')
+		_clearLocalUser()
+		// Note: Don't try to clear HttpOnly cookies from client - server handles this
+		console.log('✅ Server logout completed, local data cleared')
 	} catch (err) {
-		// Continue with client-side cleanup even if server fails
+		// Even if server logout fails, clear local data
+		_clearLocalUser()
+		console.log('⚠️ Server logout failed, but local data cleared')
+		throw err
 	}
-	
-	// Complete localStorage cleanup
-	localStorage.removeItem('loggedinUser')
-	localStorage.removeItem('loginToken')
-	localStorage.removeItem('user')
-	localStorage.removeItem('review')
-	localStorage.removeItem('comment')
-	localStorage.removeItem('authInitialized') // CRITICAL: prevents auto-reauth
-	localStorage.removeItem('token')
-	localStorage.removeItem('authToken')
-	localStorage.removeItem('accessToken')
-	// Additional cleanup for any other possible storage keys
-	localStorage.removeItem('intekilo_onboarding')
-	localStorage.removeItem('INTEKILO_STORAGE_KEY_PREFS')
-	// Don't use localStorage.clear() as it might interfere with other apps
+}
 
-	// Complete sessionStorage cleanup
+function _clearLocalUser() {
+	localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
 	sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
-	sessionStorage.removeItem(STORAGE_KEY_LOGIN_TOKEN)
-	sessionStorage.removeItem('authInitialized') // CRITICAL: prevents auto-reauth
-	sessionStorage.removeItem('token')
-	sessionStorage.removeItem('authToken')
-	sessionStorage.removeItem('accessToken')
-	// Don't use sessionStorage.clear() as it might interfere with other apps
-
-	// Enhanced cookie cleanup
-	_clearAllCookies()
+	localStorage.removeItem('authInitialized')
+	sessionStorage.removeItem('authInitialized')
 }
 
 function _clearAllCookies() {
@@ -283,37 +263,19 @@ async function validateToken() {
 	}
 }
 
-function getLoginToken() {
-    // Try localStorage first (persists across page refreshes)
-    let token = localStorage.getItem(STORAGE_KEY_LOGIN_TOKEN)
-    
-    if (token) {
-        return token
-    }
-    
-    // If not in localStorage, try sessionStorage
-    token = sessionStorage.getItem(STORAGE_KEY_LOGIN_TOKEN)
-    
-    if (token) {
-        return token
-    }
-    
-    // If not in sessionStorage, try cookie
-    token = _getCookie(STORAGE_KEY_LOGIN_TOKEN)
-    
-    if (token) {
-        return token
-    }
-    
-    return null
+// New: Get current user for hydration
+async function getCurrentUser() {
+	try {
+		const response = await httpService.get('auth/me')
+		if (response.user) {
+			return _saveLocalUser(response.user)
+		}
+	} catch (err) {
+		throw err
+	}
 }
 
-function saveLoginToken(token) {
-    // Save to both localStorage and sessionStorage
-    localStorage.setItem(STORAGE_KEY_LOGIN_TOKEN, token)
-    sessionStorage.setItem(STORAGE_KEY_LOGIN_TOKEN, token)
-    _setCookie(STORAGE_KEY_LOGIN_TOKEN, token, 1) // 1 day
-}
+// Token management functions removed - using HttpOnly cookies now
 
 function _saveLocalUser(user) {
     // 🛡️ Ensure user has proper default structure for follow functionality

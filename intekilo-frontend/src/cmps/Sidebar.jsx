@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { logout } from '../store/user.actions'
 import { userService } from '../services/user'
 
@@ -7,22 +8,20 @@ export function Sidebar() {
   const navClass = ({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`
   const disabledNavClass = () => 'nav-link disabled'
   const navigate = useNavigate()
-  const [hasToken, setHasToken] = useState(false)
+  
+  // Get user and auth state from Redux
+  const user = useSelector(state => state.userModule?.user)
+  const isAuthenticated = useSelector(state => state.userModule?.isAuthenticated)
+  const isHydrated = useSelector(state => state.userModule?.isHydrated)
+  
   const [loggedinUser, setLoggedinUser] = useState(null)
 
-  // Check for token on component mount
+  // Update local state when Redux state changes
   useEffect(() => {
-    const checkToken = () => {
-      const token = userService.getLoginToken()
-      setHasToken(!!token)
-      
-      // Also get the logged-in user for profile link
-      const user = userService.getLoggedinUser()
+    if (isHydrated) {
       setLoggedinUser(user)
     }
-    
-    checkToken()
-  }, [])
+  }, [user, isHydrated])
 
   // Listen for avatar updates to refresh user data
   useEffect(() => {
@@ -42,19 +41,20 @@ export function Sidebar() {
 
   async function handleLogout() {
     try {
+      console.log('🔄 Sidebar: Starting logout...')
       await logout()
-      setHasToken(false) // Update state immediately
+      console.log('✅ Sidebar: Logout completed')
       setLoggedinUser(null) // Clear user state immediately
       // Add small delay to ensure cleanup completes before navigation
       setTimeout(() => {
-        navigate('/login')
+        console.log('🔄 Sidebar: Navigating to /auth')
+        navigate('/auth')
       }, 100)
     } catch (err) {
-      console.error('Logout failed:', err)
+      console.error('❌ Sidebar: Logout failed:', err)
       // Still navigate even if logout fails
-      setHasToken(false)
       setLoggedinUser(null)
-      navigate('/login')
+      navigate('/auth')
     }
   }
 
@@ -63,7 +63,7 @@ export function Sidebar() {
       <div className="logo">InstaKilo</div>
 
       <nav>
-        <NavLink to={hasToken ? "/" : "/auth"} className={navClass} end data-tooltip="Home">
+        <NavLink to={isAuthenticated ? "/" : "/auth"} className={navClass} end data-tooltip="Home">
           <span className="icon" aria-hidden="true">
             <svg aria-label="Home" height="24" viewBox="0 0 24 24" width="24">
               <title>Home</title>
@@ -94,7 +94,7 @@ export function Sidebar() {
         </div>
 
         {/* Mobile-only Add Post button - replaces Reels */}
-        <NavLink to={hasToken ? "/create-post" : "/auth"} className={navClass} data-tooltip="Add Post" data-mobile-only="true">
+        <NavLink to={isAuthenticated ? "/create-post" : "/auth"} className={navClass} data-tooltip="Add Post" data-mobile-only="true">
           <span className="icon" aria-hidden="true">
             <svg height="24" viewBox="0 0 24 24" width="24">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
@@ -113,7 +113,7 @@ export function Sidebar() {
           <span className="label">Reels</span>
         </div>
 
-        <NavLink className={disabledNavClass()} to={hasToken ? "/discover" : "/auth"}  data-tooltip="Notifications" data-mobile-hidden="true">
+        <NavLink className={disabledNavClass()} to={isAuthenticated ? "/discover" : "/auth"}  data-tooltip="Notifications" data-mobile-hidden="true">
           <span className="icon notification-icon" aria-hidden="true">
             <svg height="24" viewBox="0 0 24 24" width="24">
               <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path>
@@ -123,7 +123,7 @@ export function Sidebar() {
           <span className="label">Notifications</span>
         </NavLink>
 
-        <NavLink to={hasToken ? "/create-post" : "/auth"} className={navClass} data-tooltip="Create" data-mobile-hidden="true">
+        <NavLink to={isAuthenticated ? "/create-post" : "/auth"} className={navClass} data-tooltip="Create" data-mobile-hidden="true">
           <span className="icon" aria-hidden="true">
             <svg height="24" viewBox="0 0 24 24" width="24">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
@@ -147,7 +147,7 @@ export function Sidebar() {
       </nav>
 
       <div className="logout" data-mobile-hidden="true">
-        {hasToken ? (
+        {isAuthenticated ? (
           <button onClick={handleLogout} className="nav-link" data-tooltip="Logout">
             <span className="icon" aria-hidden="true">
               <svg height="24" viewBox="0 0 24 24" width="24">

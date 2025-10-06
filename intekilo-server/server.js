@@ -1,10 +1,14 @@
 import http from 'http'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import cors from 'cors'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 dotenv.config()
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 import connectDB from './config/mongoConnect.js'
 import { authRoutes } from './api/auth/auth.routes.js'

@@ -1,9 +1,28 @@
 // src/cmps/RightSidebar.jsx
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { SuggestedUsers } from './SuggestedUsers'
 
 export function RightSidebar() {
     const navigate = useNavigate()
+    
+    // Get authentication state from Redux
+    const isAuthenticated = useSelector(state => state.userModule?.isAuthenticated)
+    const isHydrated = useSelector(state => state.userModule?.isHydrated)
+
+    // Guard: Don't render sidebar content until hydrated
+    if (!isHydrated) {
+        return (
+            <div className="auth-loading">
+                <div className="auth-loading-spinner"></div>
+            </div>
+        )
+    }
+
+    // Guard: Don't render sidebar content if not authenticated
+    if (!isAuthenticated) {
+        return null // This should not happen due to AuthGuard, but safety check
+    }
 
     function handleUserClick(userId) {
         console.log('🔗 RightSidebar: Navigating to profile with userId:', userId)
