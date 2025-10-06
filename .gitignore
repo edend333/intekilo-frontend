@@ -100,7 +100,7 @@ Desktop.ini
 
 
 # logs
-/intekilo-server/logs/**
+/intekilo-server/logs/**image.png
 *.log
 npm-debug.log*
 yarn-error.log*
