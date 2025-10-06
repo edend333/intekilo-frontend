@@ -98,6 +98,16 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
+
+# logs
+/intekilo-server/logs/**
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+!/intekilo-server/logs/.gitkeep
+
 # Package lock files (optional - some teams prefer to commit these)
 # package-lock.json
 # yarn.lock

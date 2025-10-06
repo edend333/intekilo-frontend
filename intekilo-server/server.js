@@ -43,8 +43,10 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
+// Serve static files from frontend build in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve(__dirname, 'public')))
+  app.use(express.static(path.join(__dirname, "../intekilo-frontend/dist")))
+  console.log('📁 Serving static files from:', path.join(__dirname, "../intekilo-frontend/dist"))
 }
 
 // Add logging for all API requests
@@ -69,15 +71,19 @@ app.use('/api/stories', storyRoutes)
 
 // setupSocketAPI(server)
 
-// fallback – לשים בסוף
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+// Render client for any path (fallback route)
+app.get("*", (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    res.sendFile(path.join(__dirname, "../intekilo-frontend/dist/index.html"))
+  } else {
+    // In development, redirect to frontend dev server
+    res.redirect('http://localhost:5173')
+  }
 })
 
 const port = process.env.PORT || 3030
 const host = '0.0.0.0'
 console.log('Server starting on port:', port)
-
 
 const startServer = async () => {
   try {
@@ -95,6 +101,11 @@ const startServer = async () => {
     server.listen(port, host, () => {
       logger.info(`Server is running on: http://${host}:${port}/`)
       console.log(`✅ Server listening on port ${port}`)
+      if (process.env.NODE_ENV === 'production') {
+        console.log('🚀 Production mode: Serving frontend from build directory')
+      } else {
+        console.log('🔧 Development mode: Frontend should be running on http://localhost:5173')
+      }
     })
   } catch (error) {
     logger.error('Failed to start server:', error)
